@@ -122,10 +122,13 @@ public class CodeGenerationUtils
 		return propName;
 	}
 	
-	public string GenerateMITHeader (string userSelection) {
+	public string GenerateMITHeader (string versionInfo) {
 		string classPrefixCode = Line (0, "//  IMPORTANT: GENERATED CODE  ==>  DO NOT EDIT!");
-		classPrefixCode += Line (0, "//  Generated at " + System.DateTime.Now + ". object for generation was " + userSelection);
-		classPrefixCode += Line (0, "//");
+		classPrefixCode += Line (0, "//  Generated version info: " + versionInfo);
+		classPrefixCode += Line (0, "//  The MIT License (MIT)");
+		classPrefixCode += Line (0, "//  ");
+		classPrefixCode += Line (0, "//  Copyright (c) 2014 kayy");
+		classPrefixCode += Line (0, "//  ");
 		classPrefixCode += Line (0, "//  Permission is hereby granted, free of charge, to any person obtaining a copy");
 		classPrefixCode += Line (0, "//  of this software and associated documentation files (the \"Software\"), to deal");
 		classPrefixCode += Line (0, "//  in the Software without restriction, including without limitation the rights");
