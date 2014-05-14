@@ -24,73 +24,83 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 
-public static class AnimatorWrapperGenerator
+/// <summary>
+/// Code generator to create a class for convenient access to Animator states and parameters. 
+/// The generated class contains methods to query Animator states like: 
+/// 	public bool Is<AnimationStatePrefix><LayerName><AnimationState> (int nameHash)
+/// Parameter access is done by properties:
+///     public float <ParameterPrefix><ParameterName>
+/// AnimationStatePrefix and ParameterPrefix are empty by default. The layer name is used
+/// for all layers higher than 0 by default (can be forced for layer 0 by option forceLayerPrefix).
+/// Example of generated code:
+/// 	public bool IsIdle (int nameHash) { // <= Base.Idle
+///         return nameHash == -1405706489;
+///     }
+///     public float Speed  { // <= Speed ,default: 1
+///         get { return animator.GetFloat (-823668238); }
+///         set { animator.SetFloat (-823668238, value); }
+///     }
+/// </summary>
+public class AnimatorWrapperGenerator
 {
-	static bool forceLayerPrefix = false;
-	static string AnimationStatePrefix = "";
-	static string ParameterPrefix = "";
-
-	const string resourcesDir = "Scripts";
-
-	/// <summary>
-	/// Default name for Save As dialog.
-	/// </summary>
-	static string targetClassNameDefault = "AnimatorWrapper";
-	static string targetCodeFile = targetClassNameDefault + ".cs";
-	static string targetClassName = targetClassNameDefault;
-
-	static string userSelection;
-
-	static Animator animator;
-	static List<LayerStatesList> allLayerStates;
-	// not yet used, but maybe important for multi layer support in the future
-	static List<string> layerNames;
-	static List<string> previousMembers;
-
-	static string code = "";
-
-	static CodeGenerationUtils cg = new CodeGenerationUtils ();
+	AnimatorWrapperGeneratorConfig config;
+	string targetClassName;
 	
-	[MenuItem("Tools/Generate Animator Wrapper")]
-	public static void GenerateAnimatorWrapper () {
-		allLayerStates = new List<LayerStatesList> ();
-		layerNames = new List<string> ();
-		previousMembers = new List<string> ();
-		if (!CheckPreconditions ()) {
-			return;
-		}
+	GameObject selectedGameObject;
+	
+	Animator animator;
+	List<LayerStatesList> allLayerStates = new List<LayerStatesList> ();
+	List<string> layerNames = new List<string> ();
+	List<string> previousMembers = new List<string> ();
+	
+	string code = "";
+	public string Code {
+		get { return code; }
+	}
+
+	CodeGenerationUtils cg = new CodeGenerationUtils ();
+
+	public AnimatorWrapperGenerator (GameObject go, string fileName)
+	{
+		selectedGameObject = go;
+		animator = selectedGameObject.GetComponent<Animator> ();
+		targetClassName = System.IO.Path.GetFileNameWithoutExtension (fileName);
+		config = AnimatorWrapperGeneratorConfigFactory.Get (targetClassName);
+		Prepare ();
 		RegisterExistingNames ();
+	}
+	
+	public bool Generate () {
 		GenerateClass ();
 		if ((previousMembers.Count > 0)) {
 			string removedMembers = "";
 			string consoleMessage = "";
 			int count = previousMembers.Count;
 			for (int i = 0; i < count; i++) {
-				consoleMessage += previousMembers[i] + "\n";
+				consoleMessage += previousMembers [i] + "\n";
 				if (i < 3) {
-					removedMembers += previousMembers[i] + "\n";
-				} else if (i >= count - 1) {
-					removedMembers += "... (" + (count - 3) + " more)\n";
+					removedMembers += previousMembers [i] + "\n";
 				}
+				else
+					if (i >= count - 1) {
+						removedMembers += "... (" + (count - 3) + " more)\n";
+					}
 			}
 			Debug.Log ("Members found in previous version that disappeared now: " + consoleMessage);
-			string s = string.Format ("The following members are found in the previous version of {0} but will not be " +
-			                          "created again:\n{1}\n(See console for details)\nClick 'OK' to generate new version. Click 'Cancel' if you want" +
-			                          " to refactor your code first if other classes refer to these members.", targetClassName, removedMembers);
+			string s = string.Format ("The following members are found in the previous version of {0} but will not be " + "created again:\n{1}\n(See console for details)\nClick 'OK' to generate new version. Click 'Cancel' if you want" + " to refactor your code first if other classes refer to these members.", targetClassName, removedMembers);
 			if (!EditorUtility.DisplayDialog (previousMembers.Count + " Removed Members", s, "OK", "Cancel")) {
-				Debug.Log ("Code not written to " + targetCodeFile + ". The generated code would have been:\n" + code);
-				return ;
+				Debug.Log ("Code generation cancelled for class " + targetClassName + ". The generated code would have been:\n" + code);
+				return false;
 			}
 		}
-		WriteCodeToFile ();
+		return true;
 	}
-
-	static void GenerateClass () {
-		string versionInfo = System.DateTime.Now  + ", selected game object was " + userSelection;
+	
+	void GenerateClass () {
+		string versionInfo = System.DateTime.Now  + ", selected game object was " + selectedGameObject.name;
 		code = cg.GenerateMITHeader (versionInfo);
 		code += cg.Code (0, "using UnityEngine");
 		code += cg.Code (0, "using System.Collections.Generic", 2);
@@ -104,7 +114,7 @@ public static class AnimatorWrapperGenerator
 		code += cg.Line (0, "}");
 	}
 
-	static void AddClassCode () {
+	void AddClassCode () {
 		string memberDeclaration = cg.Code (1, "Animator animator");
 		string methodsCode = "";
 		string constructor = cg.Line (1, "public " + targetClassName + " (Animator animator) {");
@@ -117,7 +127,7 @@ public static class AnimatorWrapperGenerator
 		foreach (LayerStatesList layerStates in allLayerStates) {
 			foreach (string item in layerStates.LayerStates) {
 				int nameHash = Animator.StringToHash (item);
-				string propName = GenerateStateName (AnimationStatePrefix, item, (layerStates.LayerIndex > 0 ? null : layerStates.LayerName));
+				string propName = GenerateStateName (config.AnimationStatePrefix, item, (layerStates.LayerIndex > 0 ? null : layerStates.LayerName));
 				string methodName = "Is" + propName;
 				RegisterMember (methodName);
 				methodsCode += cg.Line (1, "public bool Is" + propName + " (int nameHash) { // <= " + item);
@@ -135,7 +145,7 @@ public static class AnimatorWrapperGenerator
 			for (int i = 0; i < countParameters; i++) {
 				AnimatorControllerParameter parameter = animatorController.GetParameter (i);
 				int paramHash = Animator.StringToHash (parameter.name);
-				string propName = cg.GeneratePropertyName (ParameterPrefix, parameter.name);
+				string propName = cg.GeneratePropertyName (config.ParameterPrefix, parameter.name);
 				if (parameter.type == AnimatorControllerParameterType.Bool) {
 					methodsCode += cg.Line (1, "public bool " + propName + " { // <= " + parameter.name + " ,default: " + parameter.defaultBool);
 					methodsCode += cg.Line (2, "get { return animator.GetBool (" + paramHash + "); }");
@@ -163,23 +173,13 @@ public static class AnimatorWrapperGenerator
 		code += memberDeclaration + "\n" + constructor + "\n" + methodsCode;
 	}
 
-	static void RegisterMember (string member) {
+	void RegisterMember (string member) {
 		if (previousMembers.Contains (member)) {
 			previousMembers.Remove (member);
 		}
 	}
 
-	static bool CheckPreconditions () {
-		if ((Selection.gameObjects == null) || (Selection.gameObjects.Length != 1)) {
-			EditorUtility.DisplayDialog ("No selection", "Please select at least one object to generate an animator wrapper class for.", "OK");
-			return false;
-		}
-		animator = Selection.activeGameObject.GetComponent<Animator> ();
-		if (animator == null) {
-			EditorUtility.DisplayDialog ("No Animator", "Please a game object that contains an animator compnent.", "OK");
-			return false;
-		}
-		userSelection = Selection.activeGameObject.name;
+	void Prepare () {
 		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
 		int layerCount = ac.layerCount;
 		for (int layer = 0; layer < layerCount; layer++) {
@@ -194,16 +194,9 @@ public static class AnimatorWrapperGenerator
 			}
 			allLayerStates.Add (current);
 		}
-		targetCodeFile = userSelection + targetCodeFile;
-		targetCodeFile = EditorUtility.SaveFilePanel ("Generate C# Code for Animator Wrapper Class", resourcesDir, targetCodeFile, "cs");
-		if (targetCodeFile == null || targetCodeFile == "") {
-			return false;
-		}
-		targetClassName = System.IO.Path.GetFileNameWithoutExtension (targetCodeFile);
-		return true;
 	}
 
-	static void RegisterExistingNames () {
+	void RegisterExistingNames () {
 		Assembly assemblyCSharp = Assembly.Load ("Assembly-CSharp");
 		try {
 			Type t = assemblyCSharp.GetType (targetClassName);
@@ -229,9 +222,9 @@ public static class AnimatorWrapperGenerator
 		}
 	}
 
-	static string GenerateStateName (string prefix, string item, string layerPrefix) {
+	string GenerateStateName (string prefix, string item, string layerPrefix) {
 		string propName = item;
-		if (!String.IsNullOrEmpty (layerPrefix) && !forceLayerPrefix) {
+		if (!String.IsNullOrEmpty (layerPrefix) && !config.ForceLayerPrefix) {
 			int i = propName.IndexOf (".");
 			if (i >= 0) {
 				propName = propName.Substring (i + 1);
@@ -240,22 +233,5 @@ public static class AnimatorWrapperGenerator
 		return cg.GeneratePropertyName (prefix, propName);
 	}
 	
-	static void WriteCodeToFile () {
-		using (StreamWriter writer = new StreamWriter (targetCodeFile, false)) {
-			try {
-				writer.WriteLine ("{0}", code);
-				Debug.Log ("Code written to file " + targetCodeFile);
-				// both methods trigger occasionally an IOException: Sharing violation on path ...
-//				EditorApplication.ExecuteMenuItem ("Assets/Sync MonoDevelop Project");
-//				AssetDatabase.Refresh (ImportAssetOptions.Default);
-				return;
-			} catch (System.Exception ex) {
-				string msg = " threw:\n" + ex.ToString ();
-				Debug.LogError (msg);
-				EditorUtility.DisplayDialog ("Error on export", msg, "OK");
-			}
-		}
-	}
-
 }
 
