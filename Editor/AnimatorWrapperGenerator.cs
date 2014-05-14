@@ -26,6 +26,7 @@ using UnityEditorInternal;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Scio.CodeGenerator;
 
 /// <summary>
 /// Code generator to create a class for convenient access to Animator states and parameters. 
@@ -50,12 +51,13 @@ public class AnimatorWrapperGenerator
 	string targetClassName;
 	
 	GameObject selectedGameObject;
-	
 	Animator animator;
-	List<LayerStatesList> allLayerStates = new List<LayerStatesList> ();
-	List<string> layerNames = new List<string> ();
-	List<string> previousMembers = new List<string> ();
 	
+	List<LayerStatesList> allLayerStates = new List<LayerStatesList> ();
+	List<string> previousMembers = new List<string> ();
+
+	ClassCodeElement classCodeElement;
+
 	string code = "";
 	public string Code {
 		get { return code; }
@@ -70,6 +72,7 @@ public class AnimatorWrapperGenerator
 		targetClassName = System.IO.Path.GetFileNameWithoutExtension (fileName);
 		config = AnimatorWrapperGeneratorConfigFactory.Get (targetClassName);
 		Prepare ();
+		Debug.Log (classCodeElement);
 		RegisterExistingNames ();
 	}
 	
@@ -107,7 +110,7 @@ public class AnimatorWrapperGenerator
 		code += cg.MakeComment (0, "Provides convenient access to parameters and states of the Animator class." +
 		                                ""
 		                                );
-		code += cg.Line (0, "public class " + targetClassName);
+		code += cg.Line (0, "public partial class " + targetClassName);
 		code += cg.Line (0, "{");
 		code += cg.Code (1, "const string VersionInfo = \"" + versionInfo + "\"", 2);
 		AddClassCode ();
@@ -180,22 +183,102 @@ public class AnimatorWrapperGenerator
 	}
 
 	void Prepare () {
+		classCodeElement = new ClassCodeElement (targetClassName);
+		PrepareVariables ("DUMMY VERSION");
+		PrepareConstructors ();
+		PrepareMethods ();
+		PrepareProperties ();
 		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
 		int layerCount = ac.layerCount;
 		for (int layer = 0; layer < layerCount; layer++) {
 			string layerName = ac.GetLayer (layer).name;
-			layerNames.Add (layerName);
 			LayerStatesList current = new LayerStatesList (layer, layerName);
 			UnityEditorInternal.StateMachine sm = ac.GetLayer (layer).stateMachine;
 			for (int i = 0; i < sm.stateCount; i++) {
 				UnityEditorInternal.State state = sm.GetState (i);
-				string s = state.uniqueName;
-				current.LayerStates.Add (s);
+				string item = state.uniqueName;
+				current.LayerStates.Add (item);
 			}
 			allLayerStates.Add (current);
 		}
 	}
 
+	public void PrepareVariables (string versionInfo) {
+		VariableCodeElement<string> version = new VariableCodeElement<string> ("VersionInfo", "\"" + versionInfo + "\"");
+		version.Const = true;
+		classCodeElement.Variables.Add (version);
+		GenericVariableCodeElement animator = new GenericVariableCodeElement ("Animator", "animator", "", AbstractCodeElement.AccessType.Private);
+		classCodeElement.Variables.Add (animator);
+	}
+	
+	public void PrepareConstructors () {
+		ConstructorCodeElement withAnimatorParam = new ConstructorCodeElement (targetClassName, "Animator animator");
+		withAnimatorParam.Code.Add ("this.animator = animator;");
+		classCodeElement.Constructors.Add (withAnimatorParam);
+		ConstructorCodeElement defaultConstructor = new ConstructorCodeElement (targetClassName);
+		defaultConstructor.Obsolete = true;
+		defaultConstructor.ErrorOnObsolete = true;
+		defaultConstructor.ObsoleteMessage = "Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead";
+		classCodeElement.Constructors.Add (defaultConstructor);
+	}
+	
+	public void PrepareMethods () {
+		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
+		int layerCount = ac.layerCount;
+		for (int layer = 0; layer < layerCount; layer++) {
+			string layerName = ac.GetLayer (layer).name;
+			UnityEditorInternal.StateMachine sm = ac.GetLayer (layer).stateMachine;
+			for (int i = 0; i < sm.stateCount; i++) {
+				UnityEditorInternal.State state = sm.GetState (i);
+				string item = state.uniqueName;
+				int nameHash = Animator.StringToHash (item);
+				string propName = GenerateStateName (config.AnimationStatePrefix, item, (layer > 0 ? null : layerName));
+				string methodName = "Is" + propName;
+				MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
+				method.Parameters = "int nameHash";
+				method.Code.Add (" return nameHash == " + nameHash + ";");
+				method.Summary.Add ("true if nameHash equals Animator.StringToHash (" + item + ").");
+				classCodeElement.Methods.Add (method);
+			}
+		}
+	}
+
+	public void PrepareProperties () {
+		AnimatorController animatorController = AnimatorController.GetEffectiveAnimatorController(animator);
+		int countParameters = animatorController.parameterCount;
+		if (countParameters > 0) {
+			for (int i = 0; i < countParameters; i++) {
+				AnimatorControllerParameter parameter = animatorController.GetParameter (i);
+				int paramHash = Animator.StringToHash (parameter.name);
+				string propName = cg.GeneratePropertyName (config.ParameterPrefix, parameter.name);
+				if (parameter.type == AnimatorControllerParameterType.Bool) {
+					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
+					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultBool);
+					type.GetterCode.Add ("return animator.GetBool (" + paramHash + ");");
+					type.SetterCode.Add ("animator.SetBool (" + paramHash + ", value);");
+					classCodeElement.Properties.Add (type);
+				} else if (parameter.type == AnimatorControllerParameterType.Float) {
+					GenericPropertyCodeElement type = new PropertyCodeElement<float> (propName);
+					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultFloat);
+					type.GetterCode.Add ("return animator.GetFloat (" + paramHash + ");");
+					type.SetterCode.Add ("animator.SetFloat (" + paramHash + ", value);");
+					classCodeElement.Properties.Add (type);
+				} else if (parameter.type == AnimatorControllerParameterType.Int) {
+					GenericPropertyCodeElement type = new PropertyCodeElement<int> (propName);
+					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultInt);
+					type.GetterCode.Add ("return animator.GetInteger (" + paramHash + ");");
+					type.SetterCode.Add ("animator.SetInteger (" + paramHash + ", value);");
+					classCodeElement.Properties.Add (type);
+				} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
+					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
+					type.Summary.Add ("Access to parameter " + parameter.name);
+					type.GetterCode.Add ("return animator.SetTrigger (" + paramHash + ");");
+					type.SetterCode.Add ("animator.SetBool (" + paramHash + ", value);");
+					classCodeElement.Properties.Add (type);
+				}
+			}
+		}
+	}
 	void RegisterExistingNames () {
 		Assembly assemblyCSharp = Assembly.Load ("Assembly-CSharp");
 		try {
