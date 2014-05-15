@@ -34,6 +34,7 @@ namespace SmartFormat.Extensions
 
             //  We will try using IFormatProvider, IFormattable, and if all else fails, ToString.
             var formatter = formatDetails.Formatter;
+			if (formatter == null) {} // Force the compiler not to complain about unused variable
             string result = null;
             ICustomFormatter cFormatter;
             IFormattable formattable;
