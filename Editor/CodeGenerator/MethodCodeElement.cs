@@ -7,19 +7,29 @@ namespace Scio.CodeGenerator
 {
 	public class GenericMethodCodeElement : MemberCodeElement
 	{
-		public string Parameters = "";
+		public List<ParameterCodeElement> Parameters = new List<ParameterCodeElement> ();
 		public List<string> Code = new List<string> ();
 		
 		public GenericMethodCodeElement (Type type, string name, AccessType access = AccessType.Public) : 
 			base (type, name, access)
 		{
 		}
-		
+
+		public void AddParameter (Type type, string name) {
+			Parameters.Add (new ParameterCodeElement (type, name));
+		}
+
+		public void AddParameter (Type type, string name, object defaultValue) {
+			Parameters.Add (new ParameterCodeElement (type, name, defaultValue));
+		}
+
 		public override string ToString ()
 		{
 			string str = "";
 			Code.ForEach ((string s) => str += s + "\n");
-			return string.Format ("{0} ({1})\n{2}", base.ToString (), Parameters, str);
+			string pStr = "";
+			Parameters.ForEach ((ParameterCodeElement p) => pStr += p + ", ");
+			return string.Format ("{0} ({1})\n{2}", base.ToString (), pStr, str);
 		}
 	}
 	

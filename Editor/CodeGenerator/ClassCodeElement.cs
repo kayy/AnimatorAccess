@@ -14,9 +14,9 @@ namespace Scio.CodeGenerator
 		
 		public List<GenericPropertyCodeElement> Properties = new List<GenericPropertyCodeElement> ();
 	
-		public List<GenericMethodCodeElement> DeprecatedMethods = new List<GenericMethodCodeElement> ();
+		public List<GenericMethodCodeElement> ExistingMethods = new List<GenericMethodCodeElement> ();
 		
-		public List<GenericPropertyCodeElement> DeprecatedProperties = new List<GenericPropertyCodeElement> ();
+		public List<GenericPropertyCodeElement> ExistingProperties = new List<GenericPropertyCodeElement> ();
 		
 		public List<ConstructorCodeElement> Constructors = new List<ConstructorCodeElement> ();
 		
@@ -29,7 +29,7 @@ namespace Scio.CodeGenerator
 			string summaryStr = "";
 			Summary.ForEach ((string s) => summaryStr += "///" + s + "\n");
 			string obs = (Obsolete ? "Obsolete" : "");
-			string str = string.Format ("{0}\n{1}\n{2} class {3}", obs, summaryStr, Access, Name);
+			string str = string.Format ("{0}\n{1}\n{2} class {3}", obs, summaryStr, AccessString, Name);
 			str += "\nconstructors:\n";
 			foreach (ConstructorCodeElement item in Constructors) {
 				str += item + "\n";
@@ -46,12 +46,12 @@ namespace Scio.CodeGenerator
 			foreach (GenericPropertyCodeElement item in Properties) {
 				str += item + "\n";
 			}
-			str += "deprecated methods:\n";
-			foreach (GenericMethodCodeElement item in DeprecatedMethods) {
+			str += "Existing methods:\n";
+			foreach (GenericMethodCodeElement item in ExistingMethods) {
 				str += item + "\n";
 			}
-			str += "deprecated properties:\n";
-			foreach (GenericPropertyCodeElement item in DeprecatedProperties) {
+			str += "Existing properties:\n";
+			foreach (GenericPropertyCodeElement item in ExistingProperties) {
 				str += item + "\n";
 			}
 			return str;

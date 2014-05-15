@@ -21,10 +21,11 @@ public static class MenuGenerateAnimatorWrapper
 		if (!DisplayFileDialog ()) {
 			return;
 		}
-		AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
-		if (gen.Generate ()) {
-			WriteCodeToFile (gen.Code);
-		}
+new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile).GetHashCode();
+//		AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
+//		if (gen.Generate ()) {
+//			WriteCodeToFile (gen.Code);
+//		}
 	}
 	
 	static bool DisplayFileDialog () {

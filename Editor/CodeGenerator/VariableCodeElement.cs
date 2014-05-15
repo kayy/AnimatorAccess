@@ -33,7 +33,7 @@ namespace Scio.CodeGenerator
 	public class VariableCodeElement<T> : GenericVariableCodeElement
 	{
 		public VariableCodeElement (string name, string init, AccessType access = AccessType.Public) : 
-			base (GetFormattedType (typeof (T)), name, init, access) 
+			base (CodeElementUtils.GetFormattedType (typeof (T)), name, init, access) 
 		{
 		}
 		

@@ -188,6 +188,7 @@ public class AnimatorWrapperGenerator
 		PrepareConstructors ();
 		PrepareMethods ();
 		PrepareProperties ();
+		PrepareExistingMembers ();
 		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
 		int layerCount = ac.layerCount;
 		for (int layer = 0; layer < layerCount; layer++) {
@@ -207,7 +208,7 @@ public class AnimatorWrapperGenerator
 		VariableCodeElement<string> version = new VariableCodeElement<string> ("VersionInfo", "\"" + versionInfo + "\"");
 		version.Const = true;
 		classCodeElement.Variables.Add (version);
-		GenericVariableCodeElement animator = new GenericVariableCodeElement ("Animator", "animator", "", AbstractCodeElement.AccessType.Private);
+		GenericVariableCodeElement animator = new GenericVariableCodeElement ("Animator", "animator", "", AccessType.Private);
 		classCodeElement.Variables.Add (animator);
 	}
 	
@@ -216,9 +217,7 @@ public class AnimatorWrapperGenerator
 		withAnimatorParam.Code.Add ("this.animator = animator;");
 		classCodeElement.Constructors.Add (withAnimatorParam);
 		ConstructorCodeElement defaultConstructor = new ConstructorCodeElement (targetClassName);
-		defaultConstructor.Obsolete = true;
-		defaultConstructor.ErrorOnObsolete = true;
-		defaultConstructor.ObsoleteMessage = "Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead";
+		defaultConstructor.Attributes.Add (new ObsoleteAttributeCodeElement ("Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead", true));
 		classCodeElement.Constructors.Add (defaultConstructor);
 	}
 	
@@ -235,7 +234,7 @@ public class AnimatorWrapperGenerator
 				string propName = GenerateStateName (config.AnimationStatePrefix, item, (layer > 0 ? null : layerName));
 				string methodName = "Is" + propName;
 				MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
-				method.Parameters = "int nameHash";
+				method.AddParameter (typeof (int), "nameHash");
 				method.Code.Add (" return nameHash == " + nameHash + ";");
 				method.Summary.Add ("true if nameHash equals Animator.StringToHash (" + item + ").");
 				classCodeElement.Methods.Add (method);
@@ -254,31 +253,51 @@ public class AnimatorWrapperGenerator
 				if (parameter.type == AnimatorControllerParameterType.Bool) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultBool);
-					type.GetterCode.Add ("return animator.GetBool (" + paramHash + ");");
-					type.SetterCode.Add ("animator.SetBool (" + paramHash + ", value);");
+					type.Getter.Code.Add ("return animator.GetBool (" + paramHash + ");");
+					type.Setter.Code.Add ("animator.SetBool (" + paramHash + ", value);");
 					classCodeElement.Properties.Add (type);
 				} else if (parameter.type == AnimatorControllerParameterType.Float) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<float> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultFloat);
-					type.GetterCode.Add ("return animator.GetFloat (" + paramHash + ");");
-					type.SetterCode.Add ("animator.SetFloat (" + paramHash + ", value);");
+					type.Getter.Code.Add ("return animator.GetFloat (" + paramHash + ");");
+					type.Setter.Code.Add ("animator.SetFloat (" + paramHash + ", value);");
 					classCodeElement.Properties.Add (type);
 				} else if (parameter.type == AnimatorControllerParameterType.Int) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<int> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultInt);
-					type.GetterCode.Add ("return animator.GetInteger (" + paramHash + ");");
-					type.SetterCode.Add ("animator.SetInteger (" + paramHash + ", value);");
+					type.Getter.Code.Add ("return animator.GetInteger (" + paramHash + ");");
+					type.Setter.Code.Add ("animator.SetInteger (" + paramHash + ", value);");
 					classCodeElement.Properties.Add (type);
 				} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name);
-					type.GetterCode.Add ("return animator.SetTrigger (" + paramHash + ");");
-					type.SetterCode.Add ("animator.SetBool (" + paramHash + ", value);");
+					type.Setter.Code.Add ("return animator.SetTrigger (" + paramHash + ");");
 					classCodeElement.Properties.Add (type);
 				}
 			}
 		}
 	}
+
+	void PrepareExistingMembers () {
+		Assembly assemblyCSharp = Assembly.Load ("Assembly-CSharp");
+		try {
+			Type t = assemblyCSharp.GetType (targetClassName);
+			if (t == null) {
+				return;
+			}
+			System.Object obj = assemblyCSharp.CreateInstance (targetClassName);
+			const BindingFlags propBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.SetProperty;
+			PropertyInfo[] propertyInfos = obj.GetType().GetProperties(propBinding);
+			CodeElementUtils.AddPropertyInfos (classCodeElement.ExistingProperties, propertyInfos);
+			const BindingFlags methodBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.InvokeMethod;
+			List<MethodInfo> methodInfos = new List<MethodInfo> (obj.GetType ().GetMethods (methodBinding));
+			CodeElementUtils.AddMethodInfos (classCodeElement.ExistingMethods, methodInfos.FindAll (
+				(MethodInfo mi) => mi.Name.StartsWith ("Is")));
+		} catch (System.Exception ex) {
+			Debug.LogWarning (ex.Message + "\n" + ex.StackTrace);
+		}
+	}
+	
 	void RegisterExistingNames () {
 		Assembly assemblyCSharp = Assembly.Load ("Assembly-CSharp");
 		try {
@@ -308,9 +327,11 @@ public class AnimatorWrapperGenerator
 	string GenerateStateName (string prefix, string item, string layerPrefix) {
 		string propName = item;
 		if (!String.IsNullOrEmpty (layerPrefix) && !config.ForceLayerPrefix) {
-			int i = propName.IndexOf (".");
+			int i = propName.IndexOf (prefix + ".");
 			if (i >= 0) {
 				propName = propName.Substring (i + 1);
+			} else {
+				Debug.LogWarning ("Item " + " does not contain [" + layerPrefix + "] as prefix");
 			}
 		}
 		return cg.GeneratePropertyName (prefix, propName);
