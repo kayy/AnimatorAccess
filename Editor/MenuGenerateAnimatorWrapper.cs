@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections;
+using Scio.CodeGenerator;
 
 public static class MenuGenerateAnimatorWrapper
 {
@@ -15,17 +16,37 @@ public static class MenuGenerateAnimatorWrapper
 	static string targetClassNameDefault = "AnimatorWrapper";
 	
 	static string targetCodeFile = targetClassNameDefault + ".cs";
-	
+
+	[MenuItem("Tools/Test Animator Wrapper")]
+	public static void TestAnimatorWrapper () {
+		// FIXME_kay: remove test code
+		targetCodeFile = "/Users/kay/Development/git/SpiceInvaders/SpiceInvaders/Assets/Scripts/Enemy/Generated/UfoAnimatorWrapper.cs";
+		AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
+		CodeGeneratorResult r = a.Prepare ();
+		Debug.Log (r);
+	}
+
 	[MenuItem("Tools/Generate Animator Wrapper")]
 	public static void GenerateAnimatorWrapper () {
 		if (!DisplayFileDialog ()) {
 			return;
 		}
-new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile).GetHashCode();
-//		AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
-//		if (gen.Generate ()) {
-//			WriteCodeToFile (gen.Code);
-//		}
+		AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
+		CodeGeneratorResult result = gen.Prepare ();
+		if (result.HasErrors) {
+			if (result.AskUser) {
+				if (!EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK", "Cancel")) {
+					return;
+				}
+			} else {
+				EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK");
+				return;
+			}
+		}
+		result = gen.GenerateCode ();
+		if (result.Success) {
+			WriteCodeToFile (gen.Code);
+		}
 	}
 	
 	static bool DisplayFileDialog () {

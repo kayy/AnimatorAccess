@@ -24,9 +24,11 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using Scio.CodeGenerator;
+
 
 /// <summary>
 /// Code generator to create a class for convenient access to Animator states and parameters. 
@@ -47,295 +49,153 @@ using Scio.CodeGenerator;
 /// </summary>
 public class AnimatorWrapperGenerator
 {
-	AnimatorWrapperGeneratorConfig config;
-	string targetClassName;
+	/// <summary>
+	/// Caches the last template directory location in order to prevent full directory scan on subsequent calls.
+	/// </summary>
+	public static string LastTemplateDirectoryCache = "";
 	
-	GameObject selectedGameObject;
-	Animator animator;
-	
-	List<LayerStatesList> allLayerStates = new List<LayerStatesList> ();
-	List<string> previousMembers = new List<string> ();
+	AnimatorCodeElementsBuilder builder;
+	ClassCodeElement newClass = null;
 
-	ClassCodeElement classCodeElement;
+	ReflectionCodeElementsBuilder existingClassBuilder;
+	ClassCodeElement existingClass = null;
+
+	CodeGenerator generator;
+	AnimatorWrapperConfig config;
+
+	string className;
+	string pathToTemplate = "";
 
 	string code = "";
-	public string Code {
-		get { return code; }
-	}
-
-	CodeGenerationUtils cg = new CodeGenerationUtils ();
+	public string Code { get { return code; } }
 
 	public AnimatorWrapperGenerator (GameObject go, string fileName)
 	{
-		selectedGameObject = go;
-		animator = selectedGameObject.GetComponent<Animator> ();
-		targetClassName = System.IO.Path.GetFileNameWithoutExtension (fileName);
-		config = AnimatorWrapperGeneratorConfigFactory.Get (targetClassName);
-		Prepare ();
-		Debug.Log (classCodeElement);
-		RegisterExistingNames ();
+		className = Path.GetFileNameWithoutExtension (fileName);
+		config = AnimatorWrapperConfigFactory.Get (className);
+		generator = config.Generator;
+		builder = new AnimatorCodeElementsBuilder (go, className, config);
+		existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", className);
 	}
-	
-	public bool Generate () {
-		GenerateClass ();
-		if ((previousMembers.Count > 0)) {
-			string removedMembers = "";
-			string consoleMessage = "";
-			int count = previousMembers.Count;
-			for (int i = 0; i < count; i++) {
-				consoleMessage += previousMembers [i] + "\n";
-				if (i < 3) {
-					removedMembers += previousMembers [i] + "\n";
-				}
-				else
-					if (i >= count - 1) {
-						removedMembers += "... (" + (count - 3) + " more)\n";
+
+	public CodeGeneratorResult Prepare () {
+		CodeGeneratorResult result = GetPathToTemplate ();
+		if (result.Success) {
+			CodeGeneratorConfig codeGeneratorConfig = new CodeGeneratorConfig (pathToTemplate);
+			result = generator.Prepare (codeGeneratorConfig);
+			if (result.HasErrors) {
+				return result;
+			}
+			newClass = builder.Build ();
+			if (newClass == null) {
+				return result.SetError ("No Input", "The input seems to be invalid. Check that there are any states or parameter to process.");
+			}
+			Debug.Log ("New: " + newClass);
+			if (existingClassBuilder.HasType ()) {
+				try {
+					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is");
+					existingClass = existingClassBuilder.Build ();
+					Debug.Log ("Old: " + existingClass);
+					int remaining = CodeElementUtils.CleanupExistingClass (existingClass, newClass, config.KeepObsoleteMembers);
+					if (remaining > 0) {
+						string removedMembers = "";
+						string consoleMessage = "";
+						List<string> previousMembers = CodeElementUtils.GetCriticalNames (existingClass);
+						for (int i = 0; i < remaining; i++) {
+							consoleMessage += previousMembers [i] + "\n";
+							if (i < 3) {
+								removedMembers += previousMembers [i] + "\n";
+							} else
+							if (i >= remaining - 1) {
+								removedMembers += "... (" + (remaining - 3) + " more)\n";
+							}
+						}
+						Debug.Log ("Members found in previous version that disappeared now: " + consoleMessage);
+						string s = string.Format ("The following members are found in the previous version of {0} but will not be " + "created again:\n{1}\n(See console for details)\nClick 'OK' to generate new version. Click 'Cancel' if you want" + " to refactor your code first if other classes refer to these members.", className, removedMembers);
+						//						Debug.Log ("Code generation cancelled for class " + className + ". The generated code would have been:\n" + code);
+						return result.SetWarning (remaining + " Removed Members", s);
 					}
-			}
-			Debug.Log ("Members found in previous version that disappeared now: " + consoleMessage);
-			string s = string.Format ("The following members are found in the previous version of {0} but will not be " + "created again:\n{1}\n(See console for details)\nClick 'OK' to generate new version. Click 'Cancel' if you want" + " to refactor your code first if other classes refer to these members.", targetClassName, removedMembers);
-			if (!EditorUtility.DisplayDialog (previousMembers.Count + " Removed Members", s, "OK", "Cancel")) {
-				Debug.Log ("Code generation cancelled for class " + targetClassName + ". The generated code would have been:\n" + code);
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	void GenerateClass () {
-		string versionInfo = System.DateTime.Now  + ", selected game object was " + selectedGameObject.name;
-		code = cg.GenerateMITHeader (versionInfo);
-		code += cg.Code (0, "using UnityEngine");
-		code += cg.Code (0, "using System.Collections.Generic", 2);
-		code += cg.MakeComment (0, "Provides convenient access to parameters and states of the Animator class." +
-		                                ""
-		                                );
-		code += cg.Line (0, "public partial class " + targetClassName);
-		code += cg.Line (0, "{");
-		code += cg.Code (1, "const string VersionInfo = \"" + versionInfo + "\"", 2);
-		AddClassCode ();
-		code += cg.Line (0, "}");
-	}
-
-	void AddClassCode () {
-		string memberDeclaration = cg.Code (1, "Animator animator");
-		string methodsCode = "";
-		string constructor = cg.Line (1, "public " + targetClassName + " (Animator animator) {");
-		constructor += cg.Code (2, "this.animator = animator");
-		constructor += cg.Line (1, "}", 2);
-		constructor += cg.Line (1, "[System.ObsoleteAttribute (\"Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead\", true)]");
-		constructor += cg.Line (1, "public " + targetClassName + " () {}", 2);
-		// build code for checking animator states e.g. public IsMyState (hash) ...
-		int layer = 0;
-		foreach (LayerStatesList layerStates in allLayerStates) {
-			foreach (string item in layerStates.LayerStates) {
-				int nameHash = Animator.StringToHash (item);
-				string propName = GenerateStateName (config.AnimationStatePrefix, item, (layerStates.LayerIndex > 0 ? null : layerStates.LayerName));
-				string methodName = "Is" + propName;
-				RegisterMember (methodName);
-				methodsCode += cg.Line (1, "public bool Is" + propName + " (int nameHash) { // <= " + item);
-				methodsCode += cg.Code (2, " return nameHash == " + nameHash);
-				methodsCode += cg.Line (1, "}");
-			}
-			layer++;
-		}
-		AnimatorController animatorController = AnimatorController.GetEffectiveAnimatorController(animator);
-		int countParameters = animatorController.parameterCount;
-		if (countParameters > 0) {
-			// build code for accessing animator parameters as properties e.g.:
-			// public MyParam { get { return animator.GetBool (12345); } set {...}}
-			methodsCode += "\n";
-			for (int i = 0; i < countParameters; i++) {
-				AnimatorControllerParameter parameter = animatorController.GetParameter (i);
-				int paramHash = Animator.StringToHash (parameter.name);
-				string propName = cg.GeneratePropertyName (config.ParameterPrefix, parameter.name);
-				if (parameter.type == AnimatorControllerParameterType.Bool) {
-					methodsCode += cg.Line (1, "public bool " + propName + " { // <= " + parameter.name + " ,default: " + parameter.defaultBool);
-					methodsCode += cg.Line (2, "get { return animator.GetBool (" + paramHash + "); }");
-					methodsCode += cg.Line (2, "set { animator.SetBool (" + paramHash + ", value); }");
-					methodsCode += cg.Line (1, "}");
-				} else if (parameter.type == AnimatorControllerParameterType.Float) {
-					methodsCode += cg.Line (1, "public float " + propName + " { // <= " + parameter.name + " ,default: " + parameter.defaultFloat);
-					methodsCode += cg.Line (2, "get { return animator.GetFloat (" + paramHash + "); }");
-					methodsCode += cg.Line (2, "set { animator.SetFloat (" + paramHash + ", value); }");
-					methodsCode += cg.Line (1, "}");
-				} else if (parameter.type == AnimatorControllerParameterType.Int) {
-					methodsCode += cg.Line (1, "public float " + propName + " { // <= " + parameter.name + " ,default: " + parameter.defaultInt);
-					methodsCode += cg.Line (2, "get { return animator.GetInteger (" + paramHash + "); }");
-					methodsCode += cg.Line (2, "set { animator.Setinteger (" + paramHash + ", value); }");
-					methodsCode += cg.Line (1, "}");
-				} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
-					methodsCode += cg.Line (1, "public bool " + propName + " { // <= " + parameter.name);
-					methodsCode += cg.Line (2, "set { animator.SetTrigger (" + paramHash + "); }");
-					methodsCode += cg.Line (1, "}");
-				}
-				RegisterMember (propName);
-				methodsCode += cg.Line (0 , "");
-			}
-		}
-		code += memberDeclaration + "\n" + constructor + "\n" + methodsCode;
-	}
-
-	void RegisterMember (string member) {
-		if (previousMembers.Contains (member)) {
-			previousMembers.Remove (member);
-		}
-	}
-
-	void Prepare () {
-		classCodeElement = new ClassCodeElement (targetClassName);
-		PrepareVariables ("DUMMY VERSION");
-		PrepareConstructors ();
-		PrepareMethods ();
-		PrepareProperties ();
-		PrepareExistingMembers ();
-		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
-		int layerCount = ac.layerCount;
-		for (int layer = 0; layer < layerCount; layer++) {
-			string layerName = ac.GetLayer (layer).name;
-			LayerStatesList current = new LayerStatesList (layer, layerName);
-			UnityEditorInternal.StateMachine sm = ac.GetLayer (layer).stateMachine;
-			for (int i = 0; i < sm.stateCount; i++) {
-				UnityEditorInternal.State state = sm.GetState (i);
-				string item = state.uniqueName;
-				current.LayerStates.Add (item);
-			}
-			allLayerStates.Add (current);
-		}
-	}
-
-	public void PrepareVariables (string versionInfo) {
-		VariableCodeElement<string> version = new VariableCodeElement<string> ("VersionInfo", "\"" + versionInfo + "\"");
-		version.Const = true;
-		classCodeElement.Variables.Add (version);
-		GenericVariableCodeElement animator = new GenericVariableCodeElement ("Animator", "animator", "", AccessType.Private);
-		classCodeElement.Variables.Add (animator);
-	}
-	
-	public void PrepareConstructors () {
-		ConstructorCodeElement withAnimatorParam = new ConstructorCodeElement (targetClassName, "Animator animator");
-		withAnimatorParam.Code.Add ("this.animator = animator;");
-		classCodeElement.Constructors.Add (withAnimatorParam);
-		ConstructorCodeElement defaultConstructor = new ConstructorCodeElement (targetClassName);
-		defaultConstructor.Attributes.Add (new ObsoleteAttributeCodeElement ("Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead", true));
-		classCodeElement.Constructors.Add (defaultConstructor);
-	}
-	
-	public void PrepareMethods () {
-		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
-		int layerCount = ac.layerCount;
-		for (int layer = 0; layer < layerCount; layer++) {
-			string layerName = ac.GetLayer (layer).name;
-			UnityEditorInternal.StateMachine sm = ac.GetLayer (layer).stateMachine;
-			for (int i = 0; i < sm.stateCount; i++) {
-				UnityEditorInternal.State state = sm.GetState (i);
-				string item = state.uniqueName;
-				int nameHash = Animator.StringToHash (item);
-				string propName = GenerateStateName (config.AnimationStatePrefix, item, (layer > 0 ? null : layerName));
-				string methodName = "Is" + propName;
-				MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
-				method.AddParameter (typeof (int), "nameHash");
-				method.Code.Add (" return nameHash == " + nameHash + ";");
-				method.Summary.Add ("true if nameHash equals Animator.StringToHash (" + item + ").");
-				classCodeElement.Methods.Add (method);
-			}
-		}
-	}
-
-	public void PrepareProperties () {
-		AnimatorController animatorController = AnimatorController.GetEffectiveAnimatorController(animator);
-		int countParameters = animatorController.parameterCount;
-		if (countParameters > 0) {
-			for (int i = 0; i < countParameters; i++) {
-				AnimatorControllerParameter parameter = animatorController.GetParameter (i);
-				int paramHash = Animator.StringToHash (parameter.name);
-				string propName = cg.GeneratePropertyName (config.ParameterPrefix, parameter.name);
-				if (parameter.type == AnimatorControllerParameterType.Bool) {
-					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
-					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultBool);
-					type.Getter.Code.Add ("return animator.GetBool (" + paramHash + ");");
-					type.Setter.Code.Add ("animator.SetBool (" + paramHash + ", value);");
-					classCodeElement.Properties.Add (type);
-				} else if (parameter.type == AnimatorControllerParameterType.Float) {
-					GenericPropertyCodeElement type = new PropertyCodeElement<float> (propName);
-					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultFloat);
-					type.Getter.Code.Add ("return animator.GetFloat (" + paramHash + ");");
-					type.Setter.Code.Add ("animator.SetFloat (" + paramHash + ", value);");
-					classCodeElement.Properties.Add (type);
-				} else if (parameter.type == AnimatorControllerParameterType.Int) {
-					GenericPropertyCodeElement type = new PropertyCodeElement<int> (propName);
-					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultInt);
-					type.Getter.Code.Add ("return animator.GetInteger (" + paramHash + ");");
-					type.Setter.Code.Add ("animator.SetInteger (" + paramHash + ", value);");
-					classCodeElement.Properties.Add (type);
-				} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
-					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
-					type.Summary.Add ("Access to parameter " + parameter.name);
-					type.Setter.Code.Add ("return animator.SetTrigger (" + paramHash + ");");
-					classCodeElement.Properties.Add (type);
+					return result;
+				} catch (System.Exception ex) {
+					Debug.LogWarning (ex.Message + "\n" + ex.StackTrace);
+					result.SetError ("Error", "Oops. An unexpected error occurred. Details" + ex.Message + "\n" + ex.StackTrace);
 				}
 			}
 		}
+		return result;
 	}
 
-	void PrepareExistingMembers () {
-		Assembly assemblyCSharp = Assembly.Load ("Assembly-CSharp");
-		try {
-			Type t = assemblyCSharp.GetType (targetClassName);
-			if (t == null) {
-				return;
-			}
-			System.Object obj = assemblyCSharp.CreateInstance (targetClassName);
-			const BindingFlags propBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.SetProperty;
-			PropertyInfo[] propertyInfos = obj.GetType().GetProperties(propBinding);
-			CodeElementUtils.AddPropertyInfos (classCodeElement.ExistingProperties, propertyInfos);
-			const BindingFlags methodBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.InvokeMethod;
-			List<MethodInfo> methodInfos = new List<MethodInfo> (obj.GetType ().GetMethods (methodBinding));
-			CodeElementUtils.AddMethodInfos (classCodeElement.ExistingMethods, methodInfos.FindAll (
-				(MethodInfo mi) => mi.Name.StartsWith ("Is")));
-		} catch (System.Exception ex) {
-			Debug.LogWarning (ex.Message + "\n" + ex.StackTrace);
+	public CodeGeneratorResult GenerateCode () {
+		FileCodeElement fileElement = new FileCodeElement (newClass);
+		fileElement.Usings.Add (new UsingCodeElement ("UnityEngine"));
+		if (!existingClass.IsEmpty ()) {
+			// TODO_kay: check exisitng class
+			fileElement.Classes.Add (existingClass);
 		}
-	}
-	
-	void RegisterExistingNames () {
-		Assembly assemblyCSharp = Assembly.Load ("Assembly-CSharp");
-		try {
-			Type t = assemblyCSharp.GetType (targetClassName);
-			if (t == null) {
-				return;
-			}
-			System.Object obj = assemblyCSharp.CreateInstance (targetClassName);
-			const BindingFlags propBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty;
-			PropertyInfo[] propertyInfos = obj.GetType().GetProperties(propBinding);
-			foreach (PropertyInfo propertyInfo in propertyInfos) {
-				previousMembers.Add (propertyInfo.Name);
-			}
-			const BindingFlags methodBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.InvokeMethod;
-			MethodInfo[] methodInfos = obj.GetType ().GetMethods (methodBinding);
-			foreach (MethodInfo methodInfo in methodInfos) {
-				if (methodInfo.Name.StartsWith ("Is")) {
-					previousMembers.Add (methodInfo.Name);
-				}
-
-			}
-		} catch (System.Exception ex) {
-			Debug.LogWarning (ex.Message + "\n" + ex.StackTrace);
+		CodeGeneratorResult result = generator.GenerateCode (fileElement);
+		if (result.Success) {
+			code = generator.Code;
 		}
+		return result;
 	}
 
-	string GenerateStateName (string prefix, string item, string layerPrefix) {
-		string propName = item;
-		if (!String.IsNullOrEmpty (layerPrefix) && !config.ForceLayerPrefix) {
-			int i = propName.IndexOf (prefix + ".");
-			if (i >= 0) {
-				propName = propName.Substring (i + 1);
+	public CodeGeneratorResult GetPathToTemplate () {
+		CodeGeneratorResult result = new CodeGeneratorResult ();
+		if (string.IsNullOrEmpty (LastTemplateDirectoryCache) || !Directory.Exists (LastTemplateDirectoryCache)) {
+			result = SearchTemplateDirectory (result);
+			if (result.HasErrors) {
+				return result;
+			}
+		} else {
+			string classSpecificTemplate = Path.Combine (LastTemplateDirectoryCache, className + ".txt");
+			if (File.Exists (classSpecificTemplate)) {
+				pathToTemplate = classSpecificTemplate;
+				return result;
 			} else {
-				Debug.LogWarning ("Item " + " does not contain [" + layerPrefix + "] as prefix");
+				string defaultTemplate = Path.Combine (LastTemplateDirectoryCache, config.GetDefaultTemplateFileName ());
+				if (File.Exists (defaultTemplate)) {
+					pathToTemplate = defaultTemplate;
+					return result;
+				} else {
+					result = SearchTemplateDirectory (result);
+					if (result.HasErrors) {
+						return result;
+					}
+				}
 			}
 		}
-		return cg.GeneratePropertyName (prefix, propName);
+		string defaultTemplate2 = Path.Combine (LastTemplateDirectoryCache, config.GetDefaultTemplateFileName ());
+		if (!File.Exists (defaultTemplate2)) {
+			return result.SetError ("Default Template Not Found", "The default template file " + config.GetDefaultTemplateFileName () + " could not be found. Path: " + defaultTemplate2);
+		}
+		pathToTemplate = defaultTemplate2;
+		Log.Temp ("Found template at: " + pathToTemplate + " Cache dir is now " + LastTemplateDirectoryCache);
+		return result;
 	}
-	
-}
 
+	CodeGeneratorResult SearchTemplateDirectory (CodeGeneratorResult result) {
+		LastTemplateDirectoryCache = "";
+		pathToTemplate = "";
+		string[] files = Directory.GetFiles (Application.dataPath, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
+		if (files.Length == 0) {
+			return result.SetError ("Template Directory Not Found", "The default template " + config.GetDefaultTemplateFileName () + "could not be found anywhere under your Assets directory.");
+		} else if (files.Length > 1) {
+			Debug.Log ("More than one default template found. Searching the best match");
+			string rootDir = config.PathToTemplateDirectory;
+			foreach (string item in files) {
+				if (item.Contains (rootDir)) {
+					pathToTemplate = item;
+					break;
+				}
+			}
+			if (string.IsNullOrEmpty (pathToTemplate)) {
+				pathToTemplate = files [0];
+				Debug.Log ("More than one default template found but non of them matching the path " + rootDir);
+			}
+		} else {
+			pathToTemplate = files [0];
+		}
+		LastTemplateDirectoryCache = Path.GetDirectoryName (pathToTemplate);
+		return result;
+	}
+}

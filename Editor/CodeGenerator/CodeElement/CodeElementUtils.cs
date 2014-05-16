@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Scio.CodeGenerator
 {
@@ -52,7 +53,34 @@ namespace Scio.CodeGenerator
 			return access;
 		}
 
-		public static void AddPropertyInfos (List<GenericPropertyCodeElement> properties, PropertyInfo[] propertyInfos) {
+		public static int CleanupExistingClass (ClassCodeElement existingClass, ClassCodeElement newClass, bool keepObsolete) {
+			int remaining = RemoveDuplicateElements (existingClass.Properties, newClass.Properties, keepObsolete);
+			remaining += RemoveDuplicateElements (existingClass.Variables, newClass.Variables, keepObsolete);
+			remaining += RemoveDuplicateElements (existingClass.Methods, newClass.Methods, keepObsolete);
+			return remaining;
+		}
+		
+		static int RemoveDuplicateElements<T> (List<T> oldMembers, List<T> newMembers, bool keepObsolete) 
+				where T : MemberCodeElement {
+			if (!keepObsolete) {
+				oldMembers.RemoveAll ((element) => element.Obsolete );
+			}
+			oldMembers.RemoveAll ((oldElement) => {
+				string name = oldElement.Name;
+				return newMembers.FindIndex ( (newElement) => newElement.Name == name) != -1;
+			});
+			return oldMembers.Count;
+		}
+
+		public static List<string> GetCriticalNames (ClassCodeElement existingClass)
+		{
+			List<string> names = new List<string> ();
+			existingClass.Properties.ForEach ((item) => names.Add (item.Name));
+			existingClass.Methods.ForEach ((item) => names.Add (item.Name));
+			return names;
+		}
+
+		public static void AddPropertyInfos (List<GenericPropertyCodeElement> properties, List<PropertyInfo> propertyInfos) {
 			foreach (PropertyInfo propertyInfo in propertyInfos) {
 				string name = propertyInfo.Name;
 				Type type = propertyInfo.PropertyType;
@@ -80,7 +108,6 @@ namespace Scio.CodeGenerator
 				if (m.Name.StartsWith ("Is")) {
 				}
 				Type t = m.ReturnType;
-				Log.Temp (t + " " + m.Name);
 				GenericMethodCodeElement methodElement = new GenericMethodCodeElement (t, m.Name, GetAccessType (m));
 				foreach (ParameterInfo param in m.GetParameters ()) {
 					if (param.DefaultValue != null) {
@@ -91,6 +118,7 @@ namespace Scio.CodeGenerator
 						methodElement.AddParameter (param.ParameterType, param.Name);
 					}
 				}
+				AddAttributes (methodElement.Attributes, m.GetCustomAttributes (false));
 				methods.Add (methodElement);
 			}
 		}
@@ -101,7 +129,7 @@ namespace Scio.CodeGenerator
 					ObsoleteAttribute a = (ObsoleteAttribute)o;
 					attributeList.Add (new ObsoleteAttributeCodeElement (a.Message, a.IsError));
 				} else {
-					Log.Temp ("Attribute = " + o.ToString ());
+					Debug.Log ("Attribute = " + o.ToString ());
 				}
 			}
 		}

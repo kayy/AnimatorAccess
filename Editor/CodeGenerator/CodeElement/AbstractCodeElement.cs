@@ -1,6 +1,5 @@
 // Created by Kay
 // Copyright 2013 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 
@@ -13,28 +12,7 @@ namespace Scio.CodeGenerator
 		Private = 1,
 	}
 
-	public class ParameterCodeElement
-	{
-		public string ParameterType;
-		public string Name;
-		public string DefaultValue = "";
-
-		public ParameterCodeElement (Type type, string name) {
-			ParameterType = CodeElementUtils.GetFormattedType (type);
-			Name = name;
-		}
-		public ParameterCodeElement (Type type, string name, object defaultValue) :
-			this (type, name)
-		{
-			DefaultValue = CodeElementUtils.GetFormattedValue (defaultValue);
-		}
-		public override string ToString () {
-			return string.Format ("{0} {1}{2}", ParameterType, Name, (DefaultValue.Length > 0 ? " = " + DefaultValue : ""));
-		}
-		
-	}
-
-	public abstract class AbstractCodeElement
+	public abstract class AbstractCodeElement : CodeElement
 	{
 		protected AccessType Access = AccessType.Public;
 		public string AccessString {
