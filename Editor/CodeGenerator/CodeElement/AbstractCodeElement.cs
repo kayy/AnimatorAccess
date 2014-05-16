@@ -14,12 +14,13 @@ namespace Scio.CodeGenerator
 
 	public abstract class AbstractCodeElement : CodeElement
 	{
-		protected AccessType Access = AccessType.Public;
-		public string AccessString {
-			get { return Access.ToString ().ToLower ();}
+		protected AccessType accessType = AccessType.Public;
+		public string Access {
+			get { return accessType.ToString ().ToLower ();}
 		}
 
-		public bool Static = false;
+		public bool declaredStatic = false;
+		public string Static { get { return (declaredStatic ? "static" : ""); } }
 
 		public List<AttributeCodeElement> Attributes = new List<AttributeCodeElement> ();
 		/// <summary>
@@ -38,7 +39,7 @@ namespace Scio.CodeGenerator
 		protected AbstractCodeElement (string name, AccessType access = AccessType.Public)
 		{
 			Name = name;
-			Access = access;
+			accessType = access;
 		}
 
 		public override string ToString () {
@@ -46,7 +47,7 @@ namespace Scio.CodeGenerator
 			Summary.ForEach ((string s) => summaryStr += "///" + s + "\n");
 			string obs = "";
 			Attributes.ForEach ((AttributeCodeElement a) => obs += (obs.Length > 0 ? "\n" : "") + a);
-			return string.Format ("{0}\n{1}\n{2} {3}", obs, summaryStr, AccessString, Name);
+			return string.Format ("{0}\n{1}\n{2} {3}", obs, summaryStr, Access, Name);
 		}
 		
 	}

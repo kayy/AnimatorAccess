@@ -15,6 +15,11 @@ namespace Scio.CodeGenerator
 		public FileCodeElement (ClassCodeElement c) {
 			Classes.Add (c);
 		}
+
+		public override string ToString () {
+			return string.Format ("[Filet: Usings={0}, Classes={1}]", Usings, Classes);
+		}
+		
 	}
 }
 

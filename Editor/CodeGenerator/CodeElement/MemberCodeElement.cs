@@ -13,6 +13,7 @@ namespace Scio.CodeGenerator
 		public string Origin;
 
 		protected string elementType;
+		public string ElementType { get { return elementType;} }
 		
 		protected MemberCodeElement (Type type, string name, AccessType access = AccessType.Public) :
 			this (CodeElementUtils.GetFormattedType (type), name, access)
@@ -30,7 +31,7 @@ namespace Scio.CodeGenerator
 			Summary.ForEach ((string s) => str += "///" + s + "\n");
 			string obs = "";
 			Attributes.ForEach ((AttributeCodeElement a) => obs += (obs.Length > 0 ? "\n" : "") + a);
-			return string.Format ("{0} {1}\n{2} {3} {4}", obs, str, AccessString, elementType, Name);
+			return string.Format ("{0} {1}\n{2} {3} {4}", obs, str, Access, elementType, Name);
 		}
 	}
 }

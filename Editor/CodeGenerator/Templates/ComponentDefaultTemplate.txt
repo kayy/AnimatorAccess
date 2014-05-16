@@ -1,2 +1,14 @@
 
-WRONG Component
+CORRECT Component
+{Name} is {age} years old and he has {Friends.Count:N0} friends: {{
+    {Friends:{Name}, their friends:
+		{Friends:{Name} |
+		} |
+	} 
+}}
+.
+using {Usings: {Name};|
+|| }
+
+bla bla
+

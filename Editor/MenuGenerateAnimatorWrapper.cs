@@ -23,6 +23,12 @@ public static class MenuGenerateAnimatorWrapper
 		targetCodeFile = "/Users/kay/Development/git/SpiceInvaders/SpiceInvaders/Assets/Scripts/Enemy/Generated/UfoAnimatorWrapper.cs";
 		AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
 		CodeGeneratorResult r = a.Prepare ();
+		if (!r.Error) {
+			r = a.GenerateCode ();
+			if (r.Success) {
+				WriteCodeToFile (a.Code, "/Users/kay/tmp/TimeMachine.ignore/Trash/New.cs");
+			}
+		}
 		Debug.Log (r);
 	}
 
@@ -33,7 +39,7 @@ public static class MenuGenerateAnimatorWrapper
 		}
 		AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (Selection.activeGameObject, targetCodeFile);
 		CodeGeneratorResult result = gen.Prepare ();
-		if (result.HasErrors) {
+		if (result.NoSuccess) {
 			if (result.AskUser) {
 				if (!EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK", "Cancel")) {
 					return;
@@ -71,11 +77,12 @@ public static class MenuGenerateAnimatorWrapper
 		return true;
 	}
 	
-	static void WriteCodeToFile (string code) {
-		using (StreamWriter writer = new StreamWriter (targetCodeFile, false)) {
+	static void WriteCodeToFile (string code, string alternateFile = null) {
+		string file = (alternateFile != null ? alternateFile : targetCodeFile);
+		using (StreamWriter writer = new StreamWriter (file, false)) {
 			try {
 				writer.WriteLine ("{0}", code);
-				Debug.Log ("Code written to file " + targetCodeFile);
+				Debug.Log ("Code written to file " + file);
 				// both methods trigger occasionally an IOException: Sharing violation on path ...
 				//				EditorApplication.ExecuteMenuItem ("Assets/Sync MonoDevelop Project");
 				//				AssetDatabase.Refresh (ImportAssetOptions.Default);

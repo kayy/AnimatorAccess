@@ -7,6 +7,8 @@ namespace Scio.CodeGenerator
 {
 	public class SimpleCodeElement : GenericCodeElement
 	{
+		public string Content { get { return content; } }
+
 		public SimpleCodeElement (string str) : base (str) {
 			this.content = str;
 		}
@@ -34,6 +36,8 @@ namespace Scio.CodeGenerator
 	
 	public class UsingCodeElement : SimpleCodeElement
 	{
+		public string Name { get { return content; } }
+
 		public UsingCodeElement (string usingNamespace) : base (usingNamespace) {
 		}
 	}

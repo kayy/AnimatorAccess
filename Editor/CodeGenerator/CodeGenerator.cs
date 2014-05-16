@@ -31,10 +31,11 @@ namespace Scio.CodeGenerator
 		}
 		public Feedback feedback = Feedback.Success;
 
-		public bool HasErrors { get { return feedback > Feedback.Success; } }
+		public bool NoSuccess { get { return feedback > Feedback.Success; } }
 		public bool Success { get { return feedback == Feedback.Success; } }
 		public bool AskUser { get { return feedback == Feedback.AskUserInput; } }
-		
+		public bool Error { get { return feedback == Feedback.Error; } }
+
 		public string ErrorTitle = "";
 		
 		public string ErrorText = "";

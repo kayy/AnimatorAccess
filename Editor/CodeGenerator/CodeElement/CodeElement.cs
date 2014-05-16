@@ -23,7 +23,7 @@ namespace Scio.CodeGenerator
 	public abstract class GenericCodeElement : CodeElement
 	{
 		protected string content = "";
-		
+
 		protected GenericCodeElement (string str) {
 			this.content = str;
 		}

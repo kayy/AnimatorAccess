@@ -18,8 +18,8 @@ namespace Scio.CodeGenerator
 				}
 				set {
 					access = value;
-					if (parent.Access < access) {
-						parent.Access = access;
+					if (parent.accessType < access) {
+						parent.accessType = access;
 					}
 				}
 			}

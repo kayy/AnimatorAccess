@@ -11,9 +11,11 @@ namespace Scio.CodeGenerator
 		public NameSpaceCodeElement NameSpace = new NameSpaceCodeElement ();
 
 		public bool PartialClass = false;
+		public string Partial { get { return (PartialClass ? "partial" : "");} }
 		
 		public bool AbstractClass = false;
-		
+		public string Abstract { get { return (AbstractClass ? "abstract" : "");} }
+
 		public List<GenericVariableCodeElement> Variables = new List<GenericVariableCodeElement> ();
 		
 		public List<GenericMethodCodeElement> Methods = new List<GenericMethodCodeElement> ();
@@ -36,7 +38,7 @@ namespace Scio.CodeGenerator
 			string summaryStr = "";
 			Summary.ForEach ((string s) => summaryStr += "///" + s + "\n");
 			string obs = (Obsolete ? "Obsolete" : "");
-			string str = string.Format ("{0}\n{1}\n{2} class {3}.{4}", obs, summaryStr, AccessString, NameSpace, Name);
+			string str = string.Format ("{0}\n{1}\n{2} class {3}.{4}", obs, summaryStr, Access, NameSpace, Name);
 			str += "\nconstructors:\n";
 			foreach (ConstructorCodeElement item in Constructors) {
 				str += item + "\n";

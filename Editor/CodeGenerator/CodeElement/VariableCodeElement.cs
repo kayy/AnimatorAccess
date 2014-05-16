@@ -8,13 +8,18 @@ namespace Scio.CodeGenerator
 	public class GenericVariableCodeElement : MemberCodeElement
 	{
 		public bool Const = false;
+		public bool ReadOnly = false;
 
 		public string Modifiers {
 			get { 
 				if (Const) {
 					return "const";
-				} else if (Static) {
-					return "static";
+				} else if (declaredStatic) {
+					if (ReadOnly) {
+						return "static readonly";
+					} else {
+						return "static";
+					}
 				}
 				return "";
 			}

@@ -71,6 +71,7 @@ public class AnimatorWrapperGenerator
 
 	public AnimatorWrapperGenerator (GameObject go, string fileName)
 	{
+		LastTemplateDirectoryCache = null;
 		className = Path.GetFileNameWithoutExtension (fileName);
 		config = AnimatorWrapperConfigFactory.Get (className);
 		generator = config.Generator;
@@ -83,7 +84,7 @@ public class AnimatorWrapperGenerator
 		if (result.Success) {
 			CodeGeneratorConfig codeGeneratorConfig = new CodeGeneratorConfig (pathToTemplate);
 			result = generator.Prepare (codeGeneratorConfig);
-			if (result.HasErrors) {
+			if (result.NoSuccess) {
 				return result;
 			}
 			newClass = builder.Build ();
@@ -143,7 +144,7 @@ public class AnimatorWrapperGenerator
 		CodeGeneratorResult result = new CodeGeneratorResult ();
 		if (string.IsNullOrEmpty (LastTemplateDirectoryCache) || !Directory.Exists (LastTemplateDirectoryCache)) {
 			result = SearchTemplateDirectory (result);
-			if (result.HasErrors) {
+			if (result.NoSuccess) {
 				return result;
 			}
 		} else {
@@ -158,7 +159,7 @@ public class AnimatorWrapperGenerator
 					return result;
 				} else {
 					result = SearchTemplateDirectory (result);
-					if (result.HasErrors) {
+					if (result.NoSuccess) {
 						return result;
 					}
 				}
