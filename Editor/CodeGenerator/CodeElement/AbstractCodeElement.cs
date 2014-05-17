@@ -34,7 +34,7 @@ namespace Scio.CodeGenerator
 		/// <summary>
 		/// Comments to add to summary like this one. 
 		/// </summary>
-		public List<string> Summary = new List<string> ();
+		public SummaryCodeElement Summary = new SummaryCodeElement ();
 	
 		protected AbstractCodeElement (string name, AccessType access = AccessType.Public)
 		{
@@ -43,8 +43,7 @@ namespace Scio.CodeGenerator
 		}
 
 		public override string ToString () {
-			string summaryStr = "";
-			Summary.ForEach ((string s) => summaryStr += "///" + s + "\n");
+			string summaryStr = Summary.ToString ();
 			string obs = "";
 			Attributes.ForEach ((AttributeCodeElement a) => obs += (obs.Length > 0 ? "\n" : "") + a);
 			return string.Format ("{0}\n{1}\n{2} {3}", obs, summaryStr, Access, Name);

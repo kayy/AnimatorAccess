@@ -26,7 +26,8 @@ using {Usings: {Name};|
 {Classes:
 {NameSpace.Name:namespace {} {{|}
     {Attributes:[{Name}, {Parameters:{}|, |, }]
-	|}{Summary}{Access} {Static:{} |}{Partial:{} |}class {Name} 
+	|}{Summary:/// {}||}
+	{Access} {Static:{} |}{Partial:{} |}class {Name} 
     {{
         {Variables:{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
         }
@@ -34,6 +35,12 @@ using {Usings: {Name};|
 		{Constructors:{Attributes:[{Name}, {Parameters:{}|, |, }]
 		|}{Access} {Name} (--XX--{Parameters:{}||}) {{
 			{Code:{}
+		||}|
+        }
+		}}
+		{Properties:{Attributes:[{Name}, {Parameters:{}|, |, }]
+		|}{Access} {ElementType} {Name} {{
+			{Getter:{get {{  }} }
 		||}|
         }
 		}}

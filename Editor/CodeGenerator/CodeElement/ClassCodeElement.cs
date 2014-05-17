@@ -35,8 +35,7 @@ namespace Scio.CodeGenerator
 		}
 
 		public override string ToString () {
-			string summaryStr = "";
-			Summary.ForEach ((string s) => summaryStr += "///" + s + "\n");
+			string summaryStr = Summary.ToString ();
 			string obs = (Obsolete ? "Obsolete" : "");
 			string str = string.Format ("{0}\n{1}\n{2} class {3}.{4}", obs, summaryStr, Access, NameSpace, Name);
 			str += "\nconstructors:\n";

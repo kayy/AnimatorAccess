@@ -27,8 +27,7 @@ namespace Scio.CodeGenerator
 		}
 		
 		public override string ToString () {
-			string str = "";
-			Summary.ForEach ((string s) => str += "///" + s + "\n");
+			string str = Summary.ToString ();
 			string obs = "";
 			Attributes.ForEach ((AttributeCodeElement a) => obs += (obs.Length > 0 ? "\n" : "") + a);
 			return string.Format ("{0} {1}\n{2} {3} {4}", obs, str, Access, elementType, Name);

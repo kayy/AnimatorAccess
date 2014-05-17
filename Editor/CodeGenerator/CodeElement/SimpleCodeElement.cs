@@ -22,15 +22,30 @@ namespace Scio.CodeGenerator
 		}
 	}
 	
-	public class CommentCodeElement : CodeElement
+	public class SummaryCodeElement : CodeElement
 	{
-		public List<LineCommentCodeElement> Comments = new List<LineCommentCodeElement> ();
+		List<string> Comments = new List<string> ();
 
-		public CommentCodeElement (string comment) {
+		public SummaryCodeElement () {
+		}
+		public SummaryCodeElement (string comment) {
+			Add (comment);
 		}
 
-		public void AddComment (string comment) {
-			Comments.Add (new LineCommentCodeElement (comment));
+		public void Add (string comment) {
+			if (Comments.Count == 0) {
+				Comments.Add ("<summary>");
+				Comments.Add ("</summary>");
+			}
+			int i = Comments.Count - 1;
+			if (i > 0) {
+				Comments.Insert (i, comment);
+			}
+		}
+		public override string ToString () {
+			string summaryStr = "";
+			Comments.ForEach ((string s) => summaryStr += "///" + s + "\n");
+			return summaryStr;
 		}
 	}
 	
