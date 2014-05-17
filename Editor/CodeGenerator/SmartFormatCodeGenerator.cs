@@ -50,8 +50,8 @@ namespace Scio.CodeGenerator
 			}
 			Smart.Default.ErrorAction = ErrorAction.OutputErrorInResult;
 			Smart.Default.Parser.ErrorAction = ErrorAction.ThrowError;
+			Smart.Default.Parser.UseAlternativeEscapeChar ('\\');
 			
-			Smart.Default.Parser.UseBraceEscaping ();
 			code = Smart.Format(template, fileCodeElement);
 
 			return result;

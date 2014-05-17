@@ -91,10 +91,10 @@ namespace Scio.CodeGenerator
 					AccessType acc = GetAccessType (m);
 					if (m.Name.StartsWith ("get_")) {
 						p.Getter.Access = acc;
-						p.Getter.Code.Add ("throw new System.NotImplementedException ();");
+						p.Getter.CodeLines.Add ("throw new System.NotImplementedException ();");
 					} else if (m.Name.StartsWith ("set_")) {
 						p.Setter.Access = acc;
-						p.Setter.Code.Add ("throw new System.NotImplementedException ();");
+						p.Setter.CodeLines.Add ("throw new System.NotImplementedException ();");
 					}
 				}
 				AddAttributes (p.Attributes, propertyInfo.GetCustomAttributes (false));

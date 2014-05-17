@@ -92,25 +92,25 @@ public class AnimatorCodeElementsBuilder : CodeElementsBuilder
 				if (parameter.type == AnimatorControllerParameterType.Bool) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultBool);
-					type.Getter.Code.Add ("return animator.GetBool (" + paramHash + ");");
-					type.Setter.Code.Add ("animator.SetBool (" + paramHash + ", value);");
+					type.Getter.CodeLines.Add ("return animator.GetBool (" + paramHash + ");");
+					type.Setter.CodeLines.Add ("animator.SetBool (" + paramHash + ", value);");
 					classCodeElement.Properties.Add (type);
 				} else if (parameter.type == AnimatorControllerParameterType.Float) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<float> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultFloat);
-					type.Getter.Code.Add ("return animator.GetFloat (" + paramHash + ");");
-					type.Setter.Code.Add ("animator.SetFloat (" + paramHash + ", value);");
+					type.Getter.CodeLines.Add ("return animator.GetFloat (" + paramHash + ");");
+					type.Setter.CodeLines.Add ("animator.SetFloat (" + paramHash + ", value);");
 					classCodeElement.Properties.Add (type);
 				} else if (parameter.type == AnimatorControllerParameterType.Int) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<int> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultInt);
-					type.Getter.Code.Add ("return animator.GetInteger (" + paramHash + ");");
-					type.Setter.Code.Add ("animator.SetInteger (" + paramHash + ", value);");
+					type.Getter.CodeLines.Add ("return animator.GetInteger (" + paramHash + ");");
+					type.Setter.CodeLines.Add ("animator.SetInteger (" + paramHash + ", value);");
 					classCodeElement.Properties.Add (type);
 				} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
 					GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
 					type.Summary.Add ("Access to parameter " + parameter.name);
-					type.Setter.Code.Add ("return animator.SetTrigger (" + paramHash + ");");
+					type.Setter.CodeLines.Add ("return animator.SetTrigger (" + paramHash + ");");
 					classCodeElement.Properties.Add (type);
 				}
 			}

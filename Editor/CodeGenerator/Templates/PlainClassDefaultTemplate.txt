@@ -24,27 +24,28 @@
 using {Usings: {Name};|
 || }
 {Classes:
-{NameSpace.Name:namespace {} {{|}
+{NameSpace.Name:namespace {} \{|}
     {Attributes:[{Name}, {Parameters:{}|, |, }]
 	|}{Summary:/// {}||}
 	{Access} {Static:{} |}{Partial:{} |}class {Name} 
-    {{
+    \{
         {Variables:{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
         }
 		
 		{Constructors:{Attributes:[{Name}, {Parameters:{}|, |, }]
-		|}{Access} {Name} (--XX--{Parameters:{}||}) {{
+		|}{Access} {Name} (--XX--{Parameters:{}||}) \{
 			{Code:{}
 		||}|
         }
-		}}
+		\}
 		{Properties:{Attributes:[{Name}, {Parameters:{}|, |, }]
-		|}{Access} {ElementType} {Name} {{
-			{Getter:{get {{  }} }
+		|}{Access} {ElementType} {Name} \{ 
+			{Getter.CodeBlock:{}||}
+		\}
 		||}|
-        }
-		}}
-    }}|
+        
+		\}
+    \}|
     ||}
-}}
+\}
 

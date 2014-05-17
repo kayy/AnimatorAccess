@@ -9,8 +9,9 @@ namespace Scio.CodeGenerator
 	{
 		public class Member
 		{
+			string getOrSet = "";
 			GenericPropertyCodeElement parent;
-			public List<string> Code = new List<string> ();
+			public List<string> CodeLines = new List<string> ();
 			public AccessType access = AccessType.Public;
 			public AccessType Access {
 				get {
@@ -23,7 +24,22 @@ namespace Scio.CodeGenerator
 					}
 				}
 			}
-			public Member (GenericPropertyCodeElement parent) {
+			public List<string> CodeBlock {
+				get { 
+					List<string> code = new List<string> ();
+					if (CodeLines.Count == 1) {
+						code.Add (getOrSet + "{ " + CodeLines [0] + " }");
+						return code ;
+					} else if (CodeLines.Count > 1) {
+						code.Add (getOrSet + "{ ");
+						code.AddRange (CodeLines);
+						code.Add ("}");
+					}
+					return code; 
+				}
+			}
+			public Member (GenericPropertyCodeElement parent, string getOrSet) {
+				this.getOrSet = getOrSet;
 				this.parent = parent;
 			}
 		}
@@ -31,7 +47,7 @@ namespace Scio.CodeGenerator
 		public Member Getter {
 			get {
 				if (getter == null) {
-					getter = new Member (this);
+					getter = new Member (this, "get");
 				}
 				return getter;
 			}
@@ -41,7 +57,7 @@ namespace Scio.CodeGenerator
 		public Member Setter {
 			get {
 				if (setter == null) {
-					setter = new Member (this);
+					setter = new Member (this, "set");
 				}
 				return setter;
 			}
@@ -52,7 +68,12 @@ namespace Scio.CodeGenerator
 		}
 		
 		public string GetterAccess {
-			get { return Getter.Access.ToString ().ToLower ();}
+			get { 
+				if (Getter.Access != accessType) {
+					return Getter.Access.ToString ().ToLower ();
+				}
+				return "";
+			}
 		}
 		
 		public GenericPropertyCodeElement (Type type, string name, AccessType access = AccessType.Public) : 
@@ -71,9 +92,9 @@ namespace Scio.CodeGenerator
 		
 		public override string ToString () {
 			string strGet = "";
-			Getter.Code.ForEach ((string s) =>  strGet += "\n" + s);
+			Getter.CodeLines.ForEach ((string s) =>  strGet += "\n" + s);
 			string strSet = "";
-			Setter.Code.ForEach ((string s) => strSet += "\n" + s);
+			Setter.CodeLines.ForEach ((string s) => strSet += "\n" + s);
 			return string.Format ("{0}\n\tget {{{1}}}\n\tset {{{2}}}", base.ToString (), strGet, strSet);
 		}
 	}
