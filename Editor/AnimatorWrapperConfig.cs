@@ -92,7 +92,7 @@ namespace Scio.AnimatorWrapper {
 			set { autoSelectTemplate = value; }
 		}
 
-		string defaultNamespace = "";
+		string defaultNamespace = "AnimatorAccess";
 		/// <summary>
 		/// The namespace or no namespace directive if empty.
 		/// </summary>

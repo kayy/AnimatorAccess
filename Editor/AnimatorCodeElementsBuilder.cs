@@ -36,22 +36,32 @@ namespace Scio.AnimatorWrapper
 			animator = selectedGameObject.GetComponent<Animator> ();
 		}
 		
-		public ClassCodeElement Build ()
-		{
+		public ClassCodeElement Build () {
 			classCodeElement = new ClassCodeElement (targetClassName);
+			// TODO_kay: fix test code
+//			classCodeElement.SetBaseClass ("MonoBehaviour");
+//			classCodeElement.AddInterface ("DummyCodeGenerator");
+//			classCodeElement.AddInterface ("DummyTest");
+//			classCodeElement.AddInterface ("DummyThird");
 			classCodeElement.Summary.Add ("Convenience class to access Animator states and parameters.");
 			classCodeElement.Summary.Add ("DON'T EDIT! Your changes will be lost when this class is regenerated.");
-			string versionString = "DUMMY VERSION";
-			classCodeElement.Attributes.Add (new GeneratedClassAttributeCodeElement (versionString));
+			string versionString = "" + DateTime.Now;
+			if (!string.IsNullOrEmpty (config.DefaultNamespace)) {
+				classCodeElement.NameSpace = new NameSpaceCodeElement (config.DefaultNamespace);
+			}
 			PrepareVariables (versionString);
-			PrepareConstructors ();
+			if (config.GenerateMonoBehaviourComponent) {
+				classCodeElement.SetBaseClass ("MonoBehaviour");
+				PrepareAwakeMethod ();
+			} else {
+				PrepareConstructors ();
+			}
 			PrepareMethods ();
 			PrepareProperties ();
 			return classCodeElement;
 		}
 		
-		public void PrepareVariables (string versionInfo)
-		{
+		void PrepareVariables (string versionInfo) {
 			VariableCodeElement<string> version = new VariableCodeElement<string> ("VersionInfo", "\"" + versionInfo + "\"");
 			version.Const = true;
 			classCodeElement.Variables.Add (version);
@@ -59,8 +69,7 @@ namespace Scio.AnimatorWrapper
 			classCodeElement.Variables.Add (animator);
 		}
 		
-		public void PrepareConstructors ()
-		{
+		void PrepareConstructors () {
 			ConstructorCodeElement withAnimatorParam = new ConstructorCodeElement (targetClassName, "Animator animator");
 			withAnimatorParam.Code.Add ("this.animator = animator;");
 			classCodeElement.Constructors.Add (withAnimatorParam);
@@ -68,9 +77,14 @@ namespace Scio.AnimatorWrapper
 			defaultConstructor.Attributes.Add (new ObsoleteAttributeCodeElement ("Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead", true));
 			classCodeElement.Constructors.Add (defaultConstructor);
 		}
+
+		void PrepareAwakeMethod () {
+			MethodCodeElement<bool> method = new MethodCodeElement<bool> ("Awake");
+			method.Code.Add ("animator = GetComponent<Animator> ();");
+			classCodeElement.Methods.Add (method);
+		}
 		
-		public void PrepareMethods ()
-		{
+		void PrepareMethods () {
 			UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
 			int layerCount = ac.layerCount;
 			for (int layer = 0; layer < layerCount; layer++) {
@@ -83,6 +97,7 @@ namespace Scio.AnimatorWrapper
 					string propName = GenerateStateName (config.AnimationStatePrefix, item, (layer > 0 ? null : layerName));
 					string methodName = "Is" + propName;
 					MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
+					method.Origin = "state " + item;
 					method.AddParameter (typeof(int), "nameHash");
 					method.Code.Add (" return nameHash == " + nameHash + ";");
 					method.Summary.Add ("true if nameHash equals Animator.StringToHash (" + item + ").");
@@ -91,8 +106,7 @@ namespace Scio.AnimatorWrapper
 			}
 		}
 		
-		public void PrepareProperties ()
-		{
+		void PrepareProperties () {
 			AnimatorController animatorController = AnimatorController.GetEffectiveAnimatorController (animator);
 			int countParameters = animatorController.parameterCount;
 			if (countParameters > 0) {
@@ -100,29 +114,35 @@ namespace Scio.AnimatorWrapper
 					AnimatorControllerParameter parameter = animatorController.GetParameter (i);
 					int paramHash = Animator.StringToHash (parameter.name);
 					string propName = cg.GeneratePropertyName (config.ParameterPrefix, parameter.name);
+					GenericPropertyCodeElement type = null;
 					if (parameter.type == AnimatorControllerParameterType.Bool) {
-						GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
+						type = new PropertyCodeElement<bool> (propName);
 						type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultBool);
 						type.Getter.CodeLines.Add ("return animator.GetBool (" + paramHash + ");");
 						type.Setter.CodeLines.Add ("animator.SetBool (" + paramHash + ", value);");
 						classCodeElement.Properties.Add (type);
 					} else if (parameter.type == AnimatorControllerParameterType.Float) {
-						GenericPropertyCodeElement type = new PropertyCodeElement<float> (propName);
+						type = new PropertyCodeElement<float> (propName);
 						type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultFloat);
 						type.Getter.CodeLines.Add ("return animator.GetFloat (" + paramHash + ");");
 						type.Setter.CodeLines.Add ("animator.SetFloat (" + paramHash + ", value);");
 						classCodeElement.Properties.Add (type);
 					} else if (parameter.type == AnimatorControllerParameterType.Int) {
-						GenericPropertyCodeElement type = new PropertyCodeElement<int> (propName);
+						type = new PropertyCodeElement<int> (propName);
 						type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultInt);
 						type.Getter.CodeLines.Add ("return animator.GetInteger (" + paramHash + ");");
 						type.Setter.CodeLines.Add ("animator.SetInteger (" + paramHash + ", value);");
 						classCodeElement.Properties.Add (type);
 					} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
-						GenericPropertyCodeElement type = new PropertyCodeElement<bool> (propName);
+						type = new PropertyCodeElement<bool> (propName);
 						type.Summary.Add ("Access to parameter " + parameter.name);
-						type.Setter.CodeLines.Add ("return animator.SetTrigger (" + paramHash + ");");
+						type.Setter.CodeLines.Add ("animator.SetTrigger (" + paramHash + ");");
 						classCodeElement.Properties.Add (type);
+					} else {
+						Debug.LogWarning ("Could not find type for param " + parameter + " as it seems to be no base type.");
+					}
+					if (type != null) {
+						type.Origin = "parameter " + parameter;
 					}
 				}
 			}

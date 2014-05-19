@@ -18,6 +18,8 @@ namespace Scio.AnimatorWrapper
 		static string targetClassNameDefault = "AnimatorWrapper";
 		
 		static string targetCodeFile = targetClassNameDefault + ".cs";
+
+		static string backupLastCode = "";
 	
 		[MenuItem("Tools/Test Animator Wrapper")]
 		public static void TestAnimatorWrapper ()
@@ -29,10 +31,11 @@ namespace Scio.AnimatorWrapper
 			if (!r.Error) {
 				r = a.GenerateCode ();
 				if (r.Success) {
-					WriteCodeToFile (a.Code, "/Users/kay/tmp/TimeMachine.ignore/Trash/New.cs");
+					WriteCodeToFile (a.Code, true, "/Users/kay/tmp/TimeMachine.ignore/Trash/New.cs");
 				}
+			} else {
+				Debug.Log (r);
 			}
-			Debug.Log (r);
 		}
 	
 		[MenuItem("Tools/Generate Animator Wrapper")]
@@ -55,10 +58,24 @@ namespace Scio.AnimatorWrapper
 			}
 			result = gen.GenerateCode ();
 			if (result.Success) {
-				WriteCodeToFile (gen.Code);
+				WriteCodeToFile (gen.Code, true);
 			}
 		}
 		
+		[MenuItem("Tools/Undo Last Generation")]
+		public static void UndoLastGeneration () {
+			if (!string.IsNullOrEmpty (targetCodeFile)) {
+				if (!string.IsNullOrEmpty (backupLastCode)) {
+					string s = backupLastCode;
+					WriteCodeToFile (s, false);
+				} else {
+					Debug.LogWarning ("No code backup found.");
+				}
+			} else {
+				Debug.LogWarning ("No target file for undo found.");
+			}
+		}
+
 		static bool DisplayFileDialog ()
 		{
 			if ((Selection.gameObjects == null) || (Selection.gameObjects.Length == 0)) {
@@ -82,9 +99,12 @@ namespace Scio.AnimatorWrapper
 			return true;
 		}
 		
-		static void WriteCodeToFile (string code, string alternateFile = null)
-		{
+		static void WriteCodeToFile (string code, bool saveBackup, string alternateFile = null) {
 			string file = (alternateFile != null ? alternateFile : targetCodeFile);
+			if (saveBackup && File.Exists (file)) {
+				 SaveBackupCode (file);
+
+			}
 			using (StreamWriter writer = new StreamWriter (file, false)) {
 				try {
 					writer.WriteLine ("{0}", code);
@@ -101,6 +121,22 @@ namespace Scio.AnimatorWrapper
 			}
 		}
 		
+		static void SaveBackupCode (string file) {
+			using (StreamReader reader = new StreamReader (file)) {
+				try {
+					backupLastCode = reader.ReadToEnd ();
+					Debug.Log ("Last Code: " + backupLastCode);
+					// both methods trigger occasionally an IOException: Sharing violation on path ...
+					//				EditorApplication.ExecuteMenuItem ("Assets/Sync MonoDevelop Project");
+					//				AssetDatabase.Refresh (ImportAssetOptions.Default);
+					return;
+				}
+				catch (System.Exception ex) {
+					string msg = " threw:\n" + ex.ToString ();
+					Debug.LogError (msg);
+				}
+			}
+		}
 	}
 }
 

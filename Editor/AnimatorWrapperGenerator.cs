@@ -78,7 +78,7 @@ namespace Scio.AnimatorWrapper
 			config = AnimatorWrapperConfigFactory.Get (className);
 			generator = config.Generator;
 			builder = new AnimatorCodeElementsBuilder (go, className, config);
-			existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", className);
+			existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", config.DefaultNamespace, className);
 		}
 	
 		public CodeGeneratorResult Prepare ()
@@ -129,14 +129,16 @@ namespace Scio.AnimatorWrapper
 			return result;
 		}
 	
-		public CodeGeneratorResult GenerateCode ()
-		{
+		public CodeGeneratorResult GenerateCode () {
+			Log.Temp ("OLD" + existingClass);
+			if (!config.ForceOverwritingOldClass && !existingClass.IsEmpty ()) {
+				string msg = string.Format ("Animator state or parameter is no longer valid{0}. Refactor your code to not contain any references.", (config.KeepObsoleteMembers ? "" : " and will be removed in the next code generation"));
+				existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
+				newClass.MergeMethods (existingClass);
+				newClass.MergeProperties (existingClass);
+			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);
 			fileElement.Usings.Add (new UsingCodeElement ("UnityEngine"));
-			if (!existingClass.IsEmpty ()) {
-				// TODO_kay: check exisitng class
-				fileElement.Classes.Add (existingClass);
-			}
 			CodeGeneratorResult result = generator.GenerateCode (fileElement);
 			if (result.Success) {
 				code = generator.Code;
