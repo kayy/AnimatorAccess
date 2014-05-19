@@ -26,21 +26,26 @@ using {Usings: {Name};|
 {Classes:
 {NameSpace.Name:namespace {} \{|}
     {Attributes:[{Name}, {Parameters:{}|, |, }]
-	|}{Summary:/// {}||}
-	{Access} {Static:{} |}{Partial:{} |}class {Name} 
+	|}{Summary:{Comments:/// {}
+	||}||}{Access} {Static:{} |}{Partial:{} |}class {Name} 
     \{
         {Variables:{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
         }
-		
-		{Constructors:{Attributes:[{Name}, {Parameters:{}|, |, }]
+		{Constructors:
+		{Attributes:[{Name}, {Parameters:{}|, |, }]
 		|}{Access} {Name} (--XX--{Parameters:{}||}) \{
 			{Code:{}
-		||}|
+		\}||}|
         }
 		\}
-		{Properties:{Attributes:[{Name}, {Parameters:{}|, |, }]
-		|}{Access} {ElementType} {Name} \{ 
-			{Getter.CodeBlock:{}||}
+		
+		{Properties:{Attributes:
+		[{Name}, {Parameters:{}|, |, }]
+		|}{Summary:{Comments:/// {}
+		||}||}{Access} {ElementType} {Name} \{ 
+			{Code:{}|
+			|
+			}
 		\}
 		||}|
         

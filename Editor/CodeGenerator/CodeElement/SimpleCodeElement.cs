@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Scio.CodeGenerator
+namespace Scio.CodeGeneration
 {
 	public class SimpleCodeElement : GenericCodeElement
 	{
@@ -24,7 +24,18 @@ namespace Scio.CodeGenerator
 	
 	public class SummaryCodeElement : CodeElement
 	{
-		List<string> Comments = new List<string> ();
+		List<string> comments = new List<string> ();
+		public List<string> Comments {
+			get {
+				List<string> formattedComments = new List<string> ();
+				if (comments.Count > 0) {
+					formattedComments.Add ("<summary>");
+					formattedComments.AddRange (comments);
+					formattedComments.Add ("</summary>");
+				}
+				return comments;
+			}
+		}
 
 		public SummaryCodeElement () {
 		}
@@ -33,18 +44,18 @@ namespace Scio.CodeGenerator
 		}
 
 		public void Add (string comment) {
-			if (Comments.Count == 0) {
-				Comments.Add ("<summary>");
-				Comments.Add ("</summary>");
+			if (comments.Count == 0) {
+				comments.Add ("<summary>");
+				comments.Add ("</summary>");
 			}
-			int i = Comments.Count - 1;
+			int i = comments.Count - 1;
 			if (i > 0) {
-				Comments.Insert (i, comment);
+				comments.Insert (i, comment);
 			}
 		}
 		public override string ToString () {
 			string summaryStr = "";
-			Comments.ForEach ((string s) => summaryStr += "///" + s + "\n");
+			comments.ForEach ((string s) => summaryStr += "/// " + s);
 			return summaryStr;
 		}
 	}

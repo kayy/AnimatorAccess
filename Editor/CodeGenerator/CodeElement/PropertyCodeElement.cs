@@ -1,9 +1,10 @@
 // Created by Kay
 // Copyright 2013 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
-namespace Scio.CodeGenerator
+namespace Scio.CodeGeneration
 {
 	public class GenericPropertyCodeElement : MemberCodeElement
 	{
@@ -31,8 +32,8 @@ namespace Scio.CodeGenerator
 						code.Add (getOrSet + "{ " + CodeLines [0] + " }");
 						return code ;
 					} else if (CodeLines.Count > 1) {
-						code.Add (getOrSet + "{ ");
-						code.AddRange (CodeLines);
+						code.Add (getOrSet + "{");
+						CodeLines.ForEach ((s) => code.Add (s));
 						code.Add ("}");
 					}
 					return code; 
@@ -63,8 +64,12 @@ namespace Scio.CodeGenerator
 			}
 		}
 
-		public string SetterAccess {
-			get { return Setter.Access.ToString ().ToLower ();}
+		public List<string> Code {
+			get { 
+				List<string> l = Getter.CodeBlock;
+				l.AddRange (Setter.CodeBlock);
+				return l;
+			}
 		}
 		
 		public string GetterAccess {

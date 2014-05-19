@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 using System;
 
-namespace Scio.CodeGenerator
+namespace Scio.CodeGeneration
 {
 	/// <summary>
 	/// Marker interface for all code elements.

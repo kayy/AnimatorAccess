@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 
-namespace Scio.CodeGenerator
+namespace Scio.CodeGeneration
 {
 	public class ClassCodeElement : AbstractCodeElement
 	{

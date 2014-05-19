@@ -5,7 +5,7 @@ using System.Collections;
 using SmartFormat;
 using SmartFormat.Core;
 
-namespace Scio.CodeGenerator
+namespace Scio.CodeGeneration
 {
 	public class SmartFormatCodeGenerator : CodeGenerator
 	{

@@ -2,7 +2,7 @@
 // Copyright 2013 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
 using System.Collections.Generic;
 
-namespace Scio.CodeGenerator
+namespace Scio.CodeGeneration
 {
 	public class FileCodeElement : CodeElement
 	{
