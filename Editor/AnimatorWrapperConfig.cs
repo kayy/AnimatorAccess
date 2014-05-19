@@ -2,8 +2,9 @@
 // Copyright 2013 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
 using UnityEngine;
 using System.Collections;
+using Scio.CodeGeneration;
 
-namespace Scio.CodeGenerator {
+namespace Scio.AnimatorWrapper {
 	/// <summary>
 	/// Contains all configuration parameters available for controlling the code generation. If you like to change
 	/// something, DO NOT EDIT THIS CLASS! As this is a partial class there is an easier and more convenient way:
@@ -14,7 +15,7 @@ namespace Scio.CodeGenerator {
 	/// 
 	/// Example file AnimatorWrapperConfigExt.cs:
 	/// -----------------------
-	/// namespace Scio.CodeGenerator {
+	/// namespace Scio.AnimatorWrapper {
 	///     public partial class AnimatorWrapperrConfig {
 	///         public AnimatorWrapperConfig () {
 	///             ForceLayerPrefix = true;

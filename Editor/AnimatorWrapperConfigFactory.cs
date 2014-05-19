@@ -3,10 +3,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Scio.CodeGenerator
+namespace Scio.AnimatorWrapper
 {
 	/// <summary>
-	/// DO NOT EDIT THIS CLASS! THER ARE EASIER WAYS. 
+	/// DO NOT EDIT THIS CLASS! THERE ARE EASIER WAYS. 
 	/// Summary: Factory for providing configuration parameters depending on the class to generate. If you like to 
 	/// change something, the appropriate way is:
 	/// 
@@ -16,7 +16,7 @@ namespace Scio.CodeGenerator
 	/// 
 	/// Example file AnimatorWrapperConfigFactoryExt.cs:
 	/// -----------------------
-	/// namespace Scio.CodeGenerator {
+	/// namespace Scio.AnimatorWrapper {
 	///     public partial class AnimatorWrapperConfigFactory {
 	///         static AnimatorWrapperConfigFactory () {
 	///             instance = new AnimatorWrapperConfigFactory ();
