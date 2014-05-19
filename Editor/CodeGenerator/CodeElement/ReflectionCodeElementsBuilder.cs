@@ -30,15 +30,20 @@ namespace Scio.CodeGeneration
 			set { propertyInfoFilter = value; }
 		}
 
-		public ReflectionCodeElementsBuilder (string assembyName, string className) {
+		public ReflectionCodeElementsBuilder (string assembyName, string nameSpace, string className) {
 			this.assembyName = assembyName;
-			this.className = className;
+			if (string.IsNullOrEmpty (nameSpace)) {
+				this.className = className;
+			} else {
+				this.className = nameSpace + "." + className;
+			}
 		}
 
 		public bool HasType () {
 			try {
 				Assembly assemblyCSharp = Assembly.Load (assembyName);
 				Type t = assemblyCSharp.GetType (className);
+				Log.Temp (className +  " has reflection type = " + t);
 				if (t == null) {
 					return false;
 				}

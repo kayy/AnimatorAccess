@@ -80,6 +80,14 @@ namespace Scio.CodeGeneration
 			return names;
 		}
 
+		public static void MergeElements<T> (List<T> target, List<T> other, Predicate<T> filter = null) {
+			if (filter == null) {
+				filter = new System.Predicate<T> ((t) => true );
+			}
+			List<T> filteredList = other.FindAll (filter);
+			target.AddRange (filteredList);
+		}
+
 		public static void AddPropertyInfos (List<GenericPropertyCodeElement> properties, List<PropertyInfo> propertyInfos) {
 			foreach (PropertyInfo propertyInfo in propertyInfos) {
 				string name = propertyInfo.Name;

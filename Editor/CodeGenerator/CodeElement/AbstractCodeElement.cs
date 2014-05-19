@@ -42,6 +42,15 @@ namespace Scio.CodeGeneration
 			accessType = access;
 		}
 
+		public void AddAttribute (AttributeCodeElement attribute) {
+			AttributeCodeElement existingAttribute = Attributes.Find ((a) => a.Name == attribute.Name);
+			if (existingAttribute == null) {
+				Attributes.Add (attribute);
+			} else {
+				Log.Temp ("Duplicate Attribute : " + attribute);
+			}
+		}
+
 		public override string ToString () {
 			string summaryStr = Summary.ToString ();
 			string obs = "";

@@ -21,36 +21,44 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-using {Usings: {Name};|
-|| }
+{Usings:using {Name};
+||}
 {Classes:
 {NameSpace.Name:namespace {} \{|}
-    {Attributes:[{Name}, {Parameters:{}|, |, }]
+    {Attributes:[{Name} ({Parameters:{}|, |, })]
 	|}{Summary:{Comments:/// {}
-	||}||}{Access} {Static:{} |}{Partial:{} |}class {Name} 
+	||}||}{Access} {Static:{} |}{Partial:{} |}class {Name}{HasBaseClassOrInterfaces: : |}{BaseClassAndInterfaces:{}|, }
     \{
         {Variables:{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
         }
 		{Constructors:
-		{Attributes:[{Name}, {Parameters:{}|, |, }]
-		|}{Access} {Name} (--XX--{Parameters:{}||}) \{
+		{Attributes:[{Name} ({Parameters:{}|, |, })]
+		|}{Summary:{Comments:/// {}
+		||}||}{Access} {Name} ({Parameters:{}||}) \{
 			{Code:{}
-		\}||}|
+			||}
+		\}|
         }
-		\}
-		
-		{Properties:{Attributes:
-		[{Name}, {Parameters:{}|, |, }]
+		{Properties:
+		{Attributes:[{Name} ({Parameters:{}|, |, })]
 		|}{Summary:{Comments:/// {}
 		||}||}{Access} {ElementType} {Name} \{ 
 			{Code:{}|
 			|
 			}
 		\}
-		||}|
-        
+		||}
+		{Methods:
+		{Attributes:[{Name} ({Parameters:{}|, |, })]
+		|}{Summary:{Comments:/// {}
+		||}||}{Access} {ElementType} {Name} ({Parameters:{}|, |, }) \{ 
+			{Code:{}|
+			|
+			}
 		\}
+		||}
+        
     \}|
-    ||}
+    |}
 \}
 
