@@ -43,7 +43,6 @@ namespace Scio.CodeGeneration
 			try {
 				Assembly assemblyCSharp = Assembly.Load (assembyName);
 				Type t = assemblyCSharp.GetType (className);
-				Log.Temp (className +  " has reflection type = " + t);
 				if (t == null) {
 					return false;
 				}

@@ -130,7 +130,6 @@ namespace Scio.AnimatorWrapper
 		}
 	
 		public CodeGeneratorResult GenerateCode () {
-			Log.Temp ("OLD" + existingClass);
 			if (!config.ForceOverwritingOldClass && !existingClass.IsEmpty ()) {
 				string msg = string.Format ("Animator state or parameter is no longer valid{0}. Refactor your code to not contain any references.", (config.KeepObsoleteMembers ? "" : " and will be removed in the next code generation"));
 				existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
@@ -177,7 +176,7 @@ namespace Scio.AnimatorWrapper
 				return result.SetError ("Default Template Not Found", "The default template file " + config.GetDefaultTemplateFileName () + " could not be found. Path: " + defaultTemplate2);
 			}
 			pathToTemplate = defaultTemplate2;
-			Log.Temp ("Found template at: " + pathToTemplate + " Cache dir is now " + LastTemplateDirectoryCache);
+			Debug.Log ("Found template at: " + pathToTemplate + " Cache dir is now " + LastTemplateDirectoryCache);
 			return result;
 		}
 	

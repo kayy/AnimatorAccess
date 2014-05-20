@@ -28,7 +28,7 @@ namespace Scio.AnimatorWrapper {
 	/// </summary>
 	public partial class AnimatorWrapperConfig 
 	{
-		const string defaultMonoBehaviourTemplateFileName = "ComponentDefaultTemplate.txt";
+		const string defaultMonoBehaviourTemplateFileName = "PlainClassDefaultTemplate.txt";
 		protected virtual string DefaultMonoBehaviourTemplateFileName {
 			get { return defaultMonoBehaviourTemplateFileName; }
 		}
@@ -73,7 +73,7 @@ namespace Scio.AnimatorWrapper {
 			set { keepObsoleteMembers = value; }
 		}
 		
-		bool generateMonoBehaviourComponent = false;
+		bool generateMonoBehaviourComponent = true;
 		/// <summary>
 		/// If true, a MonoBehaviour will be generated, otherwise a plain class.
 		/// </summary>

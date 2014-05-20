@@ -42,7 +42,6 @@ namespace Scio.CodeGeneration
 		}
 
 		public CodeGeneratorResult GenerateCode (FileCodeElement c) {
-			Log.Temp ("Classes : " + c.Classes.Count);
 			this.fileCodeElement = c;
 			result = new CodeGeneratorResult ();
 			if (fileCodeElement == null) {

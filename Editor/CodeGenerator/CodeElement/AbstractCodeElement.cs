@@ -47,7 +47,7 @@ namespace Scio.CodeGeneration
 			if (existingAttribute == null) {
 				Attributes.Add (attribute);
 			} else {
-				Log.Temp ("Duplicate Attribute : " + attribute);
+				Logger.AddInfo ("Duplicate Attribute", "Trying to add an attribute twice [" + attribute + "] at " + Name);
 			}
 		}
 

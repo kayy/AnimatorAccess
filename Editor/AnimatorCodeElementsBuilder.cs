@@ -79,7 +79,7 @@ namespace Scio.AnimatorWrapper
 		}
 
 		void PrepareAwakeMethod () {
-			MethodCodeElement<bool> method = new MethodCodeElement<bool> ("Awake");
+			GenericMethodCodeElement method = new GenericMethodCodeElement ("void", "Awake");
 			method.Code.Add ("animator = GetComponent<Animator> ();");
 			classCodeElement.Methods.Add (method);
 		}

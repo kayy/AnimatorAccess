@@ -11,10 +11,13 @@ namespace Scio.CodeGeneration
 		public List<string> Code = new List<string> ();
 		
 		public GenericMethodCodeElement (Type type, string name, AccessType access = AccessType.Public) : 
-			base (type, name, access)
-		{
+			base (type, name, access) {
 		}
 
+		public GenericMethodCodeElement (string type, string name, AccessType access = AccessType.Public) : 
+			base (type, name, access) {
+		}
+		
 		public void AddParameter (Type type, string name) {
 			Parameters.Add (new ParameterCodeElement (type, name));
 		}
