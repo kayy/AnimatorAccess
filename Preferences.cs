@@ -26,7 +26,7 @@ namespace Scio.AnimatorWrapper
 			TemplateDir,
 			BackupDir,
 			PostProcessingFile,
-
+			AutoRefreshAssetDatabase,
 			ForceOverwritingOldClass,
 			KeepObsoleteMembers,
 			DefaultNamespace,

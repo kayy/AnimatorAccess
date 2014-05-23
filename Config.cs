@@ -36,6 +36,11 @@ namespace Scio.AnimatorWrapper {
 			get { return pathToTemplateDirectory; }
 		}
 
+		public virtual bool AutoRefreshAssetDatabase {
+			get { return Preferences.GetBool (Preferences.Key.AutoRefreshAssetDatabase); }
+			set { Preferences.SetBool (Preferences.Key.AutoRefreshAssetDatabase, value); }
+		}
+
 		/// <summary>
 		/// true means the user will not be asked if existing members should be removed in new code.
 		/// The default behaviour (false) is to recreate existing members with the obsolete attribute once. Afterwards

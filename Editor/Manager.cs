@@ -76,6 +76,7 @@ namespace Scio.AnimatorWrapper
 				r = a.GenerateCode ();
 				if (r.Success) {
 					BackupAndSave (a.Code, file);
+					EditorStatusObserver.Refresh ();
 				}
 			} else {
 				Debug.Log (r);
@@ -93,6 +94,7 @@ namespace Scio.AnimatorWrapper
 				try {
 					File.Copy (backupFile, file, true);
 					File.Delete (backupFile);
+					EditorStatusObserver.Refresh ();
 				} catch (System.Exception ex) {
 					Debug.LogWarning (ex.Message);
 				}

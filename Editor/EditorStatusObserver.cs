@@ -28,6 +28,11 @@ namespace Scio.AnimatorWrapper
 			EditorApplication.update -= OnEditorApplicationUpdate;
 		}
 	
+		public static void Refresh () {
+			if (Preferences.GetBool (Preferences.Key.AutoRefreshAssetDatabase)) {
+				AssetDatabase.Refresh ();
+			}
+		}
 		public static void RegisterForPostProcessing (string fullClassName)
 		{
 			Preferences.SetString (Preferences.Key.PostProcessingFile, fullClassName);

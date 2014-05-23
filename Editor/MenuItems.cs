@@ -15,7 +15,7 @@ namespace Scio.AnimatorWrapper
 		/// To put the items as submenu under Windows for example set "Window/Animator Access/".
 		/// This doesn't work for the Component menu.
 		/// </summary>
-		const string RootMenu = "Window/Animator Access/";
+		const string RootMenu = "Animator Access/";
 
 		const string MenuTest = RootMenu + "Test Animator Wrapper %#t";
 		const string MenuCreate = RootMenu + "Create Animator Access";
