@@ -35,10 +35,10 @@ namespace Scio.AnimatorWrapper
 	/// <summary>
 	/// Code generator to create a class for convenient access to Animator states and parameters. 
 	/// The generated class contains methods to query Animator states like: 
-	/// 	public bool Is<AnimationStatePrefix><LayerName><AnimationState> (int nameHash)
+	/// 	public bool Is<AnimatorStatePrefix><LayerName><AnimationState> (int nameHash)
 	/// Parameter access is done by properties:
 	///     public float <ParameterPrefix><ParameterName>
-	/// AnimationStatePrefix and ParameterPrefix are empty by default. The layer name is used
+	/// AnimatorStatePrefix and ParameterPrefix are empty by default. The layer name is used
 	/// for all layers higher than 0 by default (can be forced for layer 0 by option forceLayerPrefix).
 	/// Example of generated code:
 	/// 	public bool IsIdle (int nameHash) { // <= Base.Idle
@@ -63,9 +63,17 @@ namespace Scio.AnimatorWrapper
 		ClassCodeElement existingClass = null;
 	
 		CodeGenerator generator;
-		AnimatorWrapperConfig config;
+		Config config;
 	
-		string className;
+		string className = "";
+
+		public string ClassName {
+			get { return className; }
+		}
+		public string FullClassName {
+			get { return (config.DefaultNamespace == null ? "" : config.DefaultNamespace + ".") + className; }
+		}
+
 		string pathToTemplate = "";
 	
 		string code = "";
@@ -73,15 +81,26 @@ namespace Scio.AnimatorWrapper
 	
 		public AnimatorWrapperGenerator (GameObject go, string fileName)
 		{
-			LastTemplateDirectoryCache = null;
 			className = Path.GetFileNameWithoutExtension (fileName);
 			config = AnimatorWrapperConfigFactory.Get (className);
-			generator = config.Generator;
+			generator = new SmartFormatCodeGenerator ();
 			builder = new AnimatorCodeElementsBuilder (go, className, config);
 			existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", config.DefaultNamespace, className);
 		}
 	
-		public CodeGeneratorResult Prepare ()
+		public AnimatorWrapperGenerator (GameObject go)
+		{
+			AnimatorAccess.BaseAnimatorAccess animatorAccess = go.GetComponent<AnimatorAccess.BaseAnimatorAccess> ();
+			if (animatorAccess != null) {
+				existingClassBuilder = new ReflectionCodeElementsBuilder (animatorAccess);
+			}
+			className = existingClassBuilder.ClassName;
+			config = AnimatorWrapperConfigFactory.Get (className);
+			generator = new SmartFormatCodeGenerator ();
+			builder = new AnimatorCodeElementsBuilder (go, className, config);
+		}
+		
+		public CodeGeneratorResult Prepare (bool forceUpdate)
 		{
 			CodeGeneratorResult result = GetPathToTemplate ();
 			if (result.Success) {
@@ -94,14 +113,14 @@ namespace Scio.AnimatorWrapper
 				if (newClass == null) {
 					return result.SetError ("No Input", "The input seems to be invalid. Check that there are any states or parameter to process.");
 				}
-				Debug.Log ("New: " + newClass);
+//				Debug.Log ("New: " + newClass);
 				if (existingClassBuilder.HasType ()) {
 					try {
 						existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is");
 						existingClass = existingClassBuilder.Build ();
-						Debug.Log ("Old: " + existingClass);
+//						Debug.Log ("Old: " + existingClass);
 						int remaining = CodeElementUtils.CleanupExistingClass (existingClass, newClass, config.KeepObsoleteMembers);
-						if (remaining > 0) {
+						if (remaining > 0 && !forceUpdate) {
 							string removedMembers = "";
 							string consoleMessage = "";
 							List<string> previousMembers = CodeElementUtils.GetCriticalNames (existingClass);
@@ -124,17 +143,21 @@ namespace Scio.AnimatorWrapper
 						Debug.LogWarning (ex.Message + "\n" + ex.StackTrace);
 						result.SetError ("Error", "Oops. An unexpected error occurred. Details" + ex.Message + "\n" + ex.StackTrace);
 					}
+				} else {
+					Debug.Log ("Generating source for " + className + " the very first time");
 				}
 			}
 			return result;
 		}
 	
 		public CodeGeneratorResult GenerateCode () {
-			if (!config.ForceOverwritingOldClass && !existingClass.IsEmpty ()) {
-				string msg = string.Format ("Animator state or parameter is no longer valid{0}. Refactor your code to not contain any references.", (config.KeepObsoleteMembers ? "" : " and will be removed in the next code generation"));
-				existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
-				newClass.MergeMethods (existingClass);
-				newClass.MergeProperties (existingClass);
+			if (!config.ForceOverwritingOldClass) {
+				if (existingClass != null  && !existingClass.IsEmpty ()) {
+					string msg = string.Format ("Animator state or parameter is no longer valid{0}. Refactor your code to not contain any references.", (config.KeepObsoleteMembers ? "" : " and will be removed in the next code generation"));
+					existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
+					newClass.MergeMethods (existingClass);
+					newClass.MergeProperties (existingClass);
+				}
 			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);
 			fileElement.Usings.Add (new UsingCodeElement ("UnityEngine"));
@@ -148,12 +171,14 @@ namespace Scio.AnimatorWrapper
 		public CodeGeneratorResult GetPathToTemplate ()
 		{
 			CodeGeneratorResult result = new CodeGeneratorResult ();
+			LastTemplateDirectoryCache = Preferences.GetString (Preferences.Key.TemplateDir);
 			if (string.IsNullOrEmpty (LastTemplateDirectoryCache) || !Directory.Exists (LastTemplateDirectoryCache)) {
 				result = SearchTemplateDirectory (result);
 				if (result.NoSuccess) {
 					return result;
 				}
 			} else {
+//				Debug.Log ("Loading from cache dir : " + LastTemplateDirectoryCache);
 				string classSpecificTemplate = Path.Combine (LastTemplateDirectoryCache, className + ".txt");
 				if (File.Exists (classSpecificTemplate)) {
 					pathToTemplate = classSpecificTemplate;
@@ -176,7 +201,6 @@ namespace Scio.AnimatorWrapper
 				return result.SetError ("Default Template Not Found", "The default template file " + config.GetDefaultTemplateFileName () + " could not be found. Path: " + defaultTemplate2);
 			}
 			pathToTemplate = defaultTemplate2;
-			Debug.Log ("Found template at: " + pathToTemplate + " Cache dir is now " + LastTemplateDirectoryCache);
 			return result;
 		}
 	
@@ -204,6 +228,7 @@ namespace Scio.AnimatorWrapper
 				pathToTemplate = files [0];
 			}
 			LastTemplateDirectoryCache = Path.GetDirectoryName (pathToTemplate);
+			Preferences.SetString (Preferences.Key.TemplateDir, LastTemplateDirectoryCache);
 			return result;
 		}
 	}

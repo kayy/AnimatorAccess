@@ -11,6 +11,7 @@ namespace Scio.CodeGeneration
 		object obj;
 		string assembyName;
 		string className;
+		public string ClassName { get { return className; } }
 
 		BindingFlags propertiesBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
 			BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.SetProperty;
@@ -39,14 +40,25 @@ namespace Scio.CodeGeneration
 			}
 		}
 
+		public ReflectionCodeElementsBuilder (object o) {
+			this.obj = o;
+			if (obj != null) {
+				Type type = obj.GetType ();
+				className = type.Name;
+				assembyName = type.Assembly.GetName ().Name;
+			}
+		}
+
 		public bool HasType () {
 			try {
-				Assembly assemblyCSharp = Assembly.Load (assembyName);
-				Type t = assemblyCSharp.GetType (className);
-				if (t == null) {
-					return false;
+				if (obj == null) {
+					Assembly assemblyCSharp = Assembly.Load (assembyName);
+					Type t = assemblyCSharp.GetType (className);
+					if (t == null) {
+						return false;
+					}
+					obj = assemblyCSharp.CreateInstance (className);
 				}
-				obj = assemblyCSharp.CreateInstance (className);
 				return obj != null;
 			} catch (System.Exception ex) {
 				if (ex == null) {}
@@ -55,7 +67,7 @@ namespace Scio.CodeGeneration
 		}
 
 		public ClassCodeElement Build () {
-			if (obj == null && !HasType ()) {
+			if (!HasType ()) {
 				return null;
 			}
 			ClassCodeElement classCodeElement = new ClassCodeElement (className);

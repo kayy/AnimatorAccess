@@ -126,6 +126,7 @@ namespace Scio.CodeGeneration
 						methodElement.AddParameter (param.ParameterType, param.Name);
 					}
 				}
+				methodElement.Code.Add ("throw new System.NotImplementedException ();");
 				AddAttributes (methodElement.Attributes, m.GetCustomAttributes (false));
 				methods.Add (methodElement);
 			}

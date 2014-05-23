@@ -36,32 +36,49 @@ namespace Scio.AnimatorWrapper
 		/// <returns>The specific config.</returns>
 		/// <param name="className">key to look for in configs.</param>
 		/// <param name="relativePath">Relative path from Assets dir.</param>
-		AnimatorWrapperConfig GetSpecificConfig (string className, string relativePath);
+		Config GetSpecificConfig (string className, string relativePath);
+
+		Config GetDefaultConfig ();
 	}
 
 	public partial class AnimatorWrapperConfigFactory : IAnimatorWrapperConfigFactory
 	{
 		protected static IAnimatorWrapperConfigFactory instance = null;
-	
-		public static AnimatorWrapperConfig Get (string className, string relativePath = "")
-		{
-			if (instance == null) {
-				instance = new AnimatorWrapperConfigFactory ();
+
+		public static IAnimatorWrapperConfigFactory Instance {
+			get {
+				if (instance == null) {
+					instance = new AnimatorWrapperConfigFactory ();
+				}
+				return instance;
 			}
-			return instance.GetSpecificConfig (className, relativePath);
+		}
+	
+		public static Config Get (string className, string relativePath = "") {
+			return Instance.GetSpecificConfig (className, relativePath);
 		}
 
-		public AnimatorWrapperConfig GetSpecificConfig (string className, string relativePath) {
-			if (configs.ContainsKey (className)) {
-				AnimatorWrapperConfig c = configs [className];
-				Log.Debug ("Using special config for " + className + ": " + c.ToString ());
+		public static Config DefaultConfig {
+			get {
+				return Instance.GetDefaultConfig ();
+			}
+		}
+
+		public Config GetSpecificConfig (string className, string relativePath) {
+			if (!string.IsNullOrEmpty (className) && configs.ContainsKey (className)) {
+				Config c = configs [className];
+				Debug.Log ("Using special config for " + className + ": " + c.ToString ());
 				return c;
 			}
 			return defaultConfig;
 		}
-		
-		protected Dictionary<string, AnimatorWrapperConfig> configs = new Dictionary<string, AnimatorWrapperConfig> ();
-		protected AnimatorWrapperConfig defaultConfig = new AnimatorWrapperConfig ();
+
+		public Config GetDefaultConfig () {
+			return defaultConfig;
+		}
+
+		protected Dictionary<string, Config> configs = new Dictionary<string, Config> ();
+		protected Config defaultConfig = new Config ();
 	}
 }
 
