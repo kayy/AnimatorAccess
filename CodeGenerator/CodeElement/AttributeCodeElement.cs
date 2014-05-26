@@ -45,9 +45,12 @@ namespace Scio.CodeGeneration
 
 	public class GeneratedClassAttributeCodeElement : AttributeCodeElement
 	{
-		public GeneratedClassAttributeCodeElement (string creationDate) : base ("Scio.CodeGeneration.GeneratedClassAttribute")
+		public GeneratedClassAttributeCodeElement (string creationDate, string lastVersionDate = "") : base ("Scio.CodeGeneration.GeneratedClassAttribute")
 		{
 			AddStringParameter (creationDate);
+			if (!string.IsNullOrEmpty (lastVersionDate)) {
+				AddStringParameter (lastVersionDate);
+			}
 		}
 	}
 

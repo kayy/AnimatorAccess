@@ -76,15 +76,20 @@ namespace Scio.AnimatorWrapper
 				r = a.GenerateCode ();
 				if (r.Success) {
 					BackupAndSave (a.Code, file);
-					EditorStatusObserver.Refresh ();
+					EditorStatusObserver.CheckForAutoRefresh ();
 				}
 			} else {
 				Debug.Log (r);
 			}
 		}
 
-		public void CheckForUpdates (GameObject activeGameObject) {
-			throw new System.NotImplementedException ();
+		public void CheckForUpdates (GameObject go) {
+			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
+			a.Compare (go);
+		}
+
+		public void Refresh () {
+			EditorStatusObserver.Refresh ();
 		}
 		
 		public void Undo (BaseAnimatorAccess component) {
@@ -94,7 +99,7 @@ namespace Scio.AnimatorWrapper
 				try {
 					File.Copy (backupFile, file, true);
 					File.Delete (backupFile);
-					EditorStatusObserver.Refresh ();
+					EditorStatusObserver.CheckForAutoRefresh ();
 				} catch (System.Exception ex) {
 					Debug.LogWarning (ex.Message);
 				}

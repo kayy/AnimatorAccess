@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public class GenericVariableCodeElement : MemberCodeElement
+	public class GenericFieldCodeElement : MemberCodeElement
 	{
 		public bool Const = false;
 		public bool ReadOnly = false;
@@ -27,17 +27,20 @@ namespace Scio.CodeGeneration
 
 		public string InitialiserCode = "";
 
-		public GenericVariableCodeElement (string type, string name , string init = "", AccessType access = AccessType.Public) : 
-			base (type, name, access)
-		{
+		public GenericFieldCodeElement (string type, string name , string init = "", AccessType access = AccessType.Public) : 
+			base (type, name, access) {
+			InitialiserCode = init;
+		}
+		public GenericFieldCodeElement (Type type, string name , string init = "", AccessType access = AccessType.Public) : 
+			base (type, name, access) {
 			InitialiserCode = init;
 		}
 
 	}
 
-	public class VariableCodeElement<T> : GenericVariableCodeElement
+	public class FieldCodeElement<T> : GenericFieldCodeElement
 	{
-		public VariableCodeElement (string name, string init, AccessType access = AccessType.Public) : 
+		public FieldCodeElement (string name, string init, AccessType access = AccessType.Public) : 
 			base (CodeElementUtils.GetFormattedType (typeof (T)), name, init, access) 
 		{
 		}

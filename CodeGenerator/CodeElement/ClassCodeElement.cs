@@ -32,7 +32,7 @@ namespace Scio.CodeGeneration
 		}
 		public bool HasBaseClassOrInterfaces { get { return !string.IsNullOrEmpty (baseClass) || interfaces.Count > 0; } }
 
-		public List<GenericVariableCodeElement> Variables = new List<GenericVariableCodeElement> ();
+		public List<GenericFieldCodeElement> Fields = new List<GenericFieldCodeElement> ();
 		
 		public List<GenericMethodCodeElement> Methods = new List<GenericMethodCodeElement> ();
 		
@@ -46,7 +46,7 @@ namespace Scio.CodeGeneration
 		}
 
 		public bool IsEmpty () {
-			int i = Variables.Count + Methods.Count + Properties.Count + Constructors.Count;
+			int i = Fields.Count + Methods.Count + Properties.Count + Constructors.Count;
 			return i == 0;
 		}
 
@@ -70,7 +70,7 @@ namespace Scio.CodeGeneration
 			Constructors.ForEach ((c) => c.AddAttribute (attribute));
 			Methods.ForEach ((c) => c.AddAttribute (attribute));
 			Properties.ForEach ((c) => c.AddAttribute (attribute));
-			Variables.ForEach ((c) => c.AddAttribute (attribute));
+			Fields.ForEach ((c) => c.AddAttribute (attribute));
 		}
 
 		public override string ToString () {
@@ -84,7 +84,7 @@ namespace Scio.CodeGeneration
 				str += item + "\n";
 			}
 			str += "variables:\n";
-			foreach (GenericVariableCodeElement item in Variables) {
+			foreach (GenericFieldCodeElement item in Fields) {
 				str += item + "\n";
 			}
 			str += "methods:\n";

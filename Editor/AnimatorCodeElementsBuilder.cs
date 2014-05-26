@@ -29,11 +29,6 @@ namespace Scio.AnimatorWrapper
 		
 		public ClassCodeElement Build () {
 			classCodeElement = new ClassCodeElement (targetClassName);
-			// TODO_kay: fix test code
-//			classCodeElement.SetBaseClass ("MonoBehaviour");
-//			classCodeElement.AddInterface ("DummyCodeGenerator");
-//			classCodeElement.AddInterface ("DummyTest");
-//			classCodeElement.AddInterface ("DummyThird");
 			classCodeElement.Summary.Add ("Convenience class to access Animator states and parameters.");
 			classCodeElement.Summary.Add ("DON'T EDIT! Your changes will be lost when this class is regenerated.");
 			string versionString = "" + DateTime.Now;
@@ -41,7 +36,7 @@ namespace Scio.AnimatorWrapper
 			if (!string.IsNullOrEmpty (config.DefaultNamespace)) {
 				classCodeElement.NameSpace = new NameSpaceCodeElement (config.DefaultNamespace);
 			}
-			PrepareVariables ();
+			PrepareFields ();
 			if (config.GenerateMonoBehaviourComponent) {
 				classCodeElement.SetBaseClass (config.MonoBehaviourComponentBaseClass);
 				PrepareAwakeMethod ();
@@ -53,9 +48,9 @@ namespace Scio.AnimatorWrapper
 			return classCodeElement;
 		}
 		
-		void PrepareVariables () {
-			GenericVariableCodeElement animatorVar = new GenericVariableCodeElement ("Animator", "animator", "", AccessType.Private);
-			classCodeElement.Variables.Add (animatorVar);
+		void PrepareFields () {
+			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Private);
+			classCodeElement.Fields.Add (animatorVar);
 		}
 		
 		void PrepareConstructors () {

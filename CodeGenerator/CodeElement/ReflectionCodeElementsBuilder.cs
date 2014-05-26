@@ -13,12 +13,21 @@ namespace Scio.CodeGeneration
 		string className;
 		public string ClassName { get { return className; } }
 
+		BindingFlags fieldBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
+			BindingFlags.NonPublic;
+		
 		BindingFlags propertiesBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
 			BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.SetProperty;
 
 		BindingFlags methodBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
 			BindingFlags.InvokeMethod;
 
+		Predicate<FieldInfo> fieldInfoFilter = null;
+		public Predicate<FieldInfo> FieldInfoFilter {
+			get { return fieldInfoFilter; }
+			set { fieldInfoFilter = value; }
+		}
+		
 		Predicate<MethodInfo> methodInfoFilter = null;
 		public Predicate<MethodInfo> MethodInfoFilter {
 			get { return methodInfoFilter; }
@@ -67,10 +76,10 @@ namespace Scio.CodeGeneration
 		}
 
 		public ClassCodeElement Build () {
-			if (!HasType ()) {
-				return null;
-			}
 			ClassCodeElement classCodeElement = new ClassCodeElement (className);
+			if (!HasType ()) {
+				return classCodeElement;
+			}
 			Type type = obj.GetType ();
 			classCodeElement.NameSpace.Name = type.Namespace;
 			PropertyInfo[] propertyInfoArray = type.GetProperties (propertiesBinding);
@@ -79,6 +88,9 @@ namespace Scio.CodeGeneration
 			MethodInfo[] methodInfoArray = type.GetMethods (methodBinding);
 			List<MethodInfo> methodInfos = GetFilteredList (methodInfoArray, methodInfoFilter);
 			CodeElementUtils.AddMethodInfos (classCodeElement.Methods, methodInfos);
+			FieldInfo[] fieldInfoArray = type.GetFields (fieldBinding);
+			List<FieldInfo> fieldInfos = GetFilteredList (fieldInfoArray, fieldInfoFilter);
+			CodeElementUtils.AddFieldInfos (classCodeElement.Fields, fieldInfos);
 			return classCodeElement;
 		}
 

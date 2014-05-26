@@ -52,14 +52,52 @@ namespace Scio.CodeGeneration
 			}
 			return access;
 		}
-
+		
+		static AccessType GetAccessType (FieldInfo field) {
+			if (field == null) {
+				return AccessType.Private;
+			}
+			AccessType access = AccessType.Public;
+			if (field.IsFamily) {
+				access = AccessType.Protected;
+			} else if (field.IsPrivate) {
+				access = AccessType.Private;
+			}
+			return access;
+		}
+		
 		public static int CleanupExistingClass (ClassCodeElement existingClass, ClassCodeElement newClass, bool keepObsolete) {
 			int remaining = RemoveDuplicateElements (existingClass.Properties, newClass.Properties, keepObsolete);
-			remaining += RemoveDuplicateElements (existingClass.Variables, newClass.Variables, keepObsolete);
+			remaining += RemoveDuplicateElements (existingClass.Fields, newClass.Fields, keepObsolete);
 			remaining += RemoveDuplicateElements (existingClass.Methods, newClass.Methods, keepObsolete);
 			return remaining;
 		}
 		
+		public static List<ClassMemberCompareElement> CompareClasses (ClassCodeElement existingClass, ClassCodeElement newClass, bool keepObsolete) {
+			List<ClassMemberCompareElement> l = CompareElements (existingClass.Fields, newClass.Fields, keepObsolete);
+			l.AddRange (CompareElements (existingClass.Properties, newClass.Properties, keepObsolete));
+			l.AddRange (CompareElements (existingClass.Methods, newClass.Methods, keepObsolete));
+			return l;
+		}
+
+		static List<ClassMemberCompareElement> CompareElements<T> (List<T> oldMembers, List<T> newMembers, bool keepObsolete) 
+				where T : MemberCodeElement {
+			List<ClassMemberCompareElement> result = new List<ClassMemberCompareElement> ();
+			IEnumerable<T> newMinusOldList = newMembers.Except (oldMembers, new MemberNameComparer<T> ());
+			foreach (T newElement in newMinusOldList) {
+				result.Add (new ClassMemberCompareElement (newElement, ClassMemberCompareElement.Result.New));
+			}
+			IEnumerable<T> oldMinusNewList = oldMembers.Except (newMembers, new MemberNameComparer<T> ());
+			foreach (T oldElement in oldMinusNewList) {
+				if (keepObsolete || !oldElement.Obsolete) {
+					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Obsolete));
+				} else {
+					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Remove));
+				}
+			}
+			return result;
+		}
+
 		static int RemoveDuplicateElements<T> (List<T> oldMembers, List<T> newMembers, bool keepObsolete) 
 				where T : MemberCodeElement {
 			if (!keepObsolete) {
@@ -113,8 +151,6 @@ namespace Scio.CodeGeneration
 
 		public static void AddMethodInfos (List<GenericMethodCodeElement> methods, List<MethodInfo> methodInfos) {
 			foreach (MethodInfo m in methodInfos) {
-				if (m.Name.StartsWith ("Is")) {
-				}
 				Type t = m.ReturnType;
 				GenericMethodCodeElement methodElement = new GenericMethodCodeElement (t, m.Name, GetAccessType (m));
 				foreach (ParameterInfo param in m.GetParameters ()) {
@@ -129,6 +165,15 @@ namespace Scio.CodeGeneration
 				methodElement.Code.Add ("throw new System.NotImplementedException ();");
 				AddAttributes (methodElement.Attributes, m.GetCustomAttributes (false));
 				methods.Add (methodElement);
+			}
+		}
+		
+		public static void AddFieldInfos (List<GenericFieldCodeElement> fields, List<FieldInfo> fieldInfos) {
+			foreach (FieldInfo f in fieldInfos) {
+				Type t = f.FieldType;
+				GenericFieldCodeElement fieldElement = new GenericFieldCodeElement (t, f.Name, "", GetAccessType (f));
+				AddAttributes (fieldElement.Attributes, f.GetCustomAttributes (false));
+				fields.Add (fieldElement);
 			}
 		}
 		

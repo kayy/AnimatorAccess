@@ -26,12 +26,17 @@ namespace Scio.AnimatorWrapper
 				version += " not available";
 			}
 			GUILayout.Label (version);
-			if(GUILayout.Button("Update")) {
-				Manager.SharedInstance.Update (Selection.activeGameObject);
-			}
+			EditorGUILayout.BeginHorizontal();
 			if(GUILayout.Button("Check For Updates")) {
 				Manager.SharedInstance.CheckForUpdates (Selection.activeGameObject);
 			}
+			if(GUILayout.Button("Update")) {
+				Manager.SharedInstance.Update (Selection.activeGameObject);
+			}
+			if(GUILayout.Button("Refresh")) {
+				Manager.SharedInstance.Refresh ();
+			}
+			EditorGUILayout.EndHorizontal();
 			if (Manager.SharedInstance.HasBackup (AnimatorWrapperEditorUtils.GetActiveAnimatorAccessComponent ())) {
 				if (GUILayout.Button ("Undo")) {
 					Manager.SharedInstance.Undo (AnimatorWrapperEditorUtils.GetActiveAnimatorAccessComponent ());

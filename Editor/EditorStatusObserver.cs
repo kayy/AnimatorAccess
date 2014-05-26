@@ -28,13 +28,17 @@ namespace Scio.AnimatorWrapper
 			EditorApplication.update -= OnEditorApplicationUpdate;
 		}
 	
-		public static void Refresh () {
+		public static void CheckForAutoRefresh () {
 			if (Preferences.GetBool (Preferences.Key.AutoRefreshAssetDatabase)) {
-				AssetDatabase.Refresh ();
+				Refresh ();
 			}
 		}
-		public static void RegisterForPostProcessing (string fullClassName)
-		{
+
+		public static void Refresh () {
+			AssetDatabase.Refresh ();
+		}
+
+		public static void RegisterForPostProcessing (string fullClassName) {
 			Preferences.SetString (Preferences.Key.PostProcessingFile, fullClassName);
 			AssetDatabase.Refresh (ImportAssetOptions.Default);
 		}

@@ -10,9 +10,11 @@ namespace Scio.CodeGeneration
 	{
 		public readonly string CreationDate;
 		
-		public GeneratedClassAttribute (string creationDate)  // url is a positional parameter
-		{
+		public readonly string LastVersionDate;
+		
+		public GeneratedClassAttribute (string creationDate, string lastVersionDate = "") {
 			this.CreationDate = creationDate;
+			this.LastVersionDate = lastVersionDate;
 		}
 		
 	}

@@ -25,7 +25,15 @@ namespace Scio.CodeGeneration
 		{
 			elementType = typeString;
 		}
-		
+
+		public override bool Equals (object obj) {
+			return obj is MemberCodeElement && Name == ((MemberCodeElement)(obj)).Name;
+		}
+
+		public override int GetHashCode () {
+			return Name.GetHashCode ();
+		}
+
 		public override string ToString () {
 			string str = Summary.ToString ();
 			string obs = "";
