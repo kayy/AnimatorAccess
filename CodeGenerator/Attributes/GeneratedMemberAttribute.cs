@@ -10,7 +10,7 @@ namespace Scio.CodeGeneration
 		public readonly string CreationDate;
 		
 		bool forceRegeneration;
-		public bool Version {
+		public bool ForceRegeneration {
 			get { return forceRegeneration; }
 			set { forceRegeneration = value; }
 		}

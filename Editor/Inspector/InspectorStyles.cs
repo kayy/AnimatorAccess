@@ -7,16 +7,22 @@ namespace Scio.AnimatorWrapper {
 	
 	public static class InspectorStyles
 	{
-		public static GUIStyle buttonDisabled = null;
-		
+		public static GUIStyle ButtonDisabled = null;
+		public static GUIStyle MidMiniButtonHighLighted = null;
+		public static GUIStyle RightMiniButtonHighLighted = null;
+		public static GUIStyle ButtonRegular = null;
+
 		static InspectorStyles () {
-			if (buttonDisabled == null) {
-				buttonDisabled = new GUIStyle ("button");
-				buttonDisabled.name = "disabled";
-				//				styleDisabled.font = GUI.skin.font;
-				buttonDisabled.normal.textColor = Color.gray;
-			}
-			
+			ButtonDisabled = new GUIStyle ("button");
+			ButtonDisabled.name = "ButtonDisabled";
+			ButtonDisabled.normal.textColor = Color.gray;
+			MidMiniButtonHighLighted = new GUIStyle ("miniButtonMid");
+			MidMiniButtonHighLighted.name = "MidMiniButtonHighLighted";
+			MidMiniButtonHighLighted.normal.textColor = Color.white;
+			RightMiniButtonHighLighted = new GUIStyle ("miniButtonRight");
+			RightMiniButtonHighLighted.name = "RightMiniButtonHighLighted";
+			RightMiniButtonHighLighted.normal.textColor = Color.white;
+			ButtonRegular = new GUIStyle ("button");
 		}
 	}
 }

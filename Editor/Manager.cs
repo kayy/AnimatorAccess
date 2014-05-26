@@ -15,6 +15,8 @@ namespace Scio.AnimatorWrapper
 	public class Manager
 	{
 		public const string resourcesDir = "Scripts";
+
+		const string baseAnimatorAccessCS = "BaseAnimatorAccess.cs";
 			
 		static Manager instance = null;
 		public static Manager SharedInstance {
@@ -22,10 +24,21 @@ namespace Scio.AnimatorWrapper
 				if (instance == null) {
 					instance = new Manager ();
 					instance.repository.Prepare ();
+					string[] files = Directory.GetFiles (Application.dataPath, baseAnimatorAccessCS, SearchOption.AllDirectories);
+					if (files.Length != 1) {
+						Debug.LogError ("Install directory not found! File " + baseAnimatorAccessCS + " could not be found anywhere under your Assets directory.");
+						instance.InstallDir = Application.dataPath;
+					} else {
+						string s = Path.GetDirectoryName (files[0]);
+						string appDataPath = Application.dataPath;
+						instance.InstallDir = s.Substring (appDataPath.Length + 1);
+					}
 				}
 				return instance;
 			}
 		}
+
+		public string InstallDir;
 
 		MetaInfoRepository repository = new MetaInfoRepository ();
 
@@ -83,9 +96,9 @@ namespace Scio.AnimatorWrapper
 			}
 		}
 
-		public void CheckForUpdates (GameObject go) {
+		public List<ClassMemberCompareElement> CheckForUpdates (GameObject go) {
 			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
-			a.Compare (go);
+			return a.Compare (go);
 		}
 
 		public void Refresh () {
@@ -97,7 +110,11 @@ namespace Scio.AnimatorWrapper
 				string backupFile = repository.RemoveBackup (component);
 				string file = repository.GetFile (component);
 				try {
+					FileInfo sourceInfo = new FileInfo (backupFile);
+					System.DateTime t = sourceInfo.CreationTime;
 					File.Copy (backupFile, file, true);
+					File.SetCreationTime (file, t);
+					File.SetLastWriteTime (file, t);
 					File.Delete (backupFile);
 					EditorStatusObserver.CheckForAutoRefresh ();
 				} catch (System.Exception ex) {
@@ -110,6 +127,10 @@ namespace Scio.AnimatorWrapper
 
 		public bool HasBackup (BaseAnimatorAccess component) {
 			return repository.HasBackup (component);
+		}
+
+		public string GetBackupTimestamp (BaseAnimatorAccess component) {
+			return repository.GetBackupTimestamp (component);
 		}
 
 		public void ShowSettings ()

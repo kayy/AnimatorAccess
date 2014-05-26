@@ -27,6 +27,10 @@ namespace Scio.CodeGeneration
 			AddParameter ("\"" + param + "\"");
 		}
 
+		public string GetParameter (int i) {
+			return Parameters.Count >= i - 1 ? Parameters [i] : "";
+		}
+
 		public override string ToString () {
 			string str = "";
 			Parameters.ForEach ((string s) => str += (str.Length > 0 ? ", " : "") + s);
@@ -59,11 +63,6 @@ namespace Scio.CodeGeneration
 		public GeneratedMemberAttributeCodeElement (string creationDate) : base ("Scio.CodeGeneration.GeneratedMemberAttribute")
 		{
 			AddStringParameter (creationDate);
-		}
-		public GeneratedMemberAttributeCodeElement (string creationDate, bool forceRegeneration) : base ("Scio.CodeGeneration.GeneratedMemberAttribute")
-		{
-			AddStringParameter (creationDate);
-			AddParameter (forceRegeneration);
 		}
 	}
 }

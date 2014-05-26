@@ -119,7 +119,14 @@ namespace Scio.AnimatorWrapper {
 			return (GenerateMonoBehaviourComponent ? DefaultMonoBehaviourTemplateFileName : DefaultPlainClassTemplateFileName);
 		}
 
-
+		/// <summary>
+		/// If true, more log messages are written to console view.
+		/// </summary>
+		public virtual bool DebugMode {
+			get { return Preferences.GetBool (Preferences.Key.DebugMode); }
+			set { Preferences.SetBool (Preferences.Key.DebugMode, value); }
+		}
+		
 	}
 }
 

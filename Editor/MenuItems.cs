@@ -48,6 +48,11 @@ namespace Scio.AnimatorWrapper
 			Manager.SharedInstance.Create (Selection.activeGameObject, targetCodeFile);
 		}
 
+		[MenuItem(MenuCreate, true)]
+		public static bool ValidateCreateAnimatorAccess () {
+			return AnimatorWrapperEditorUtils.GetActiveAnimatorAccessComponent () == null;
+		}
+
 		[MenuItem(MenuUpdate)]
 		public static void UpdateAnimatorAccess () {
 			Manager.SharedInstance.Update (Selection.activeGameObject);

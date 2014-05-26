@@ -177,11 +177,17 @@ namespace Scio.CodeGeneration
 			}
 		}
 		
-		static void AddAttributes (List<AttributeCodeElement> attributeList, object[] attributeObjects) {
+		public static void AddAttributes (List<AttributeCodeElement> attributeList, object[] attributeObjects) {
 			foreach (object o in attributeObjects) {
 				if (o is ObsoleteAttribute) {
 					ObsoleteAttribute a = (ObsoleteAttribute)o;
 					attributeList.Add (new ObsoleteAttributeCodeElement (a.Message, a.IsError));
+				} else if (o is GeneratedClassAttribute) {
+					GeneratedClassAttribute a = (GeneratedClassAttribute)o;
+					attributeList.Add (new GeneratedClassAttributeCodeElement (a.CreationDate, a.LastVersionDate));
+				} else if (o is GeneratedMemberAttribute) {
+					GeneratedMemberAttribute a = (GeneratedMemberAttribute)o;
+					attributeList.Add (new GeneratedMemberAttributeCodeElement (a.CreationDate));
 				} else {
 					Debug.Log ("Attribute = " + o.ToString ());
 				}

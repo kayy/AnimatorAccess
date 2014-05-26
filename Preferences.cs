@@ -33,7 +33,8 @@ namespace Scio.AnimatorWrapper
 			MonoBehaviourComponentBaseClass,
 			ForceLayerPrefix,
 			AnimatorStatePrefix,
-			ParameterPrefix
+			ParameterPrefix,
+			DebugMode
 		}
 		const string Prefix = "Scio.AnimatorWrapper.";
 

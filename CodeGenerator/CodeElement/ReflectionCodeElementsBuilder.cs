@@ -82,6 +82,7 @@ namespace Scio.CodeGeneration
 			}
 			Type type = obj.GetType ();
 			classCodeElement.NameSpace.Name = type.Namespace;
+			CodeElementUtils.AddAttributes (classCodeElement.Attributes, type.GetCustomAttributes (false));
 			PropertyInfo[] propertyInfoArray = type.GetProperties (propertiesBinding);
 			List<PropertyInfo> propertyInfos = GetFilteredList (propertyInfoArray, propertyInfoFilter);
 			CodeElementUtils.AddPropertyInfos (classCodeElement.Properties, propertyInfos);

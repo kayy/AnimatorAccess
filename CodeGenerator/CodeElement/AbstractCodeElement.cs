@@ -44,11 +44,10 @@ namespace Scio.CodeGeneration
 
 		public void AddAttribute (AttributeCodeElement attribute) {
 			AttributeCodeElement existingAttribute = Attributes.Find ((a) => a.Name == attribute.Name);
-			if (existingAttribute == null) {
-				Attributes.Add (attribute);
-			} else {
-				Logger.AddInfo ("Duplicate Attribute", "Trying to add an attribute twice [" + attribute + "] at " + Name);
+			if (existingAttribute != null) {
+				Attributes.Remove (existingAttribute);
 			}
+			Attributes.Add (attribute);
 		}
 
 		public override string ToString () {

@@ -9,9 +9,9 @@ namespace Scio.CodeGeneration
 	{
 		public enum Result
 		{
-			Remove = -1,
-			Obsolete = 0,
 			New = 1,
+			Remove = 2,
+			Obsolete = 3,
 		}
 		public Result result;
 	
