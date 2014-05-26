@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 // 
-// Copyright (c) 2014 kayy
+// Copyright (c) 2014 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

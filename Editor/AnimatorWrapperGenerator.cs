@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 // 
-// Copyright (c) 2014 kayy
+// Copyright (c) 2014 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@
 
 using UnityEngine;
 using UnityEditor;
-using UnityEditorInternal;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -79,6 +78,13 @@ namespace Scio.AnimatorWrapper
 		string code = "";
 		public string Code { get { return code; } }
 	
+		/// <summary>
+		/// Contructor in case of the very first generation of an AnimatorAccess class. On subsequent generations 
+		/// AnimatorWrapperGenerator (GameObject go) is called.
+		/// </summary>
+		/// <param name="go">GameObject to generate an AnimatorAccess class for.</param>
+		/// <param name="fileName">File name where to save the file. A subdirectory 'Generated' is recommended to 
+		/// emphasize that this code shouldn't be edited.</param>
 		public AnimatorWrapperGenerator (GameObject go, string fileName)
 		{
 			className = Path.GetFileNameWithoutExtension (fileName);
@@ -88,6 +94,10 @@ namespace Scio.AnimatorWrapper
 			existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", config.DefaultNamespace, className);
 		}
 	
+		/// <summary>
+		/// Udpate contructor.
+		/// </summary>
+		/// <param name="go">GameObject to generate an AnimatorAccess class for.</param>
 		public AnimatorWrapperGenerator (GameObject go)
 		{
 			AnimatorAccess.BaseAnimatorAccess animatorAccess = go.GetComponent<AnimatorAccess.BaseAnimatorAccess> ();
@@ -100,6 +110,10 @@ namespace Scio.AnimatorWrapper
 			builder = new AnimatorCodeElementsBuilder (go, className, config);
 		}
 
+		/// <summary>
+		/// Builds the new and the existing classes' ClassCodeElements, evaluates all changes and returns a list of them.
+		/// </summary>
+		/// <param name="go">Go.</param>
 		public List<ClassMemberCompareElement> Compare (GameObject go) {
 			CodeGeneratorResult result = BuildClasses ();
 			if (result.Success) {
@@ -142,8 +156,11 @@ namespace Scio.AnimatorWrapper
 			return result;
 		}
 
-		public CodeGeneratorResult Prepare (bool forceUpdate) {
+		public CodeGeneratorResult PrepareCodeGeneration (bool forceUpdate) {
 			CodeGeneratorResult result = BuildClasses ();
+			if (result.Error) {
+				return result;
+			}
 			if (!existingClass.IsEmpty ()) {
 				int remaining = CodeElementUtils.CleanupExistingClass (existingClass, newClass, config.KeepObsoleteMembers);
 				if (remaining > 0 && !forceUpdate) {
@@ -224,7 +241,9 @@ namespace Scio.AnimatorWrapper
 		{
 			LastTemplateDirectoryCache = "";
 			pathToTemplate = "";
-			string[] files = Directory.GetFiles (Manager.SharedInstance.InstallDir, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
+			string searchRoot = Path.Combine (Application.dataPath, Manager.SharedInstance.InstallDir);
+			Logger.Debug ("Searching for default template in " + searchRoot);
+			string[] files = Directory.GetFiles (searchRoot, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
 			if (files.Length == 0) {
 				return result.SetError ("Template Directory Not Found", "The default template " + config.GetDefaultTemplateFileName () + "could not be found anywhere under your Assets directory.");
 			} else if (files.Length > 1) {

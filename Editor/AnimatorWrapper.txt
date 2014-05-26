@@ -1,8 +1,0 @@
-{Name} is {age} years old and he has {Friends.Count:N0} friends: {{
-    {Friends:{Name}, their friends:
-		{Friends:{Name} |
-		} |
-	} 
-}}
-.
-EOF

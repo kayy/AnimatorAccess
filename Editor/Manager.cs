@@ -1,6 +1,24 @@
-// Created by Kay
-// Copyright 2013 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
-
+// The MIT License (MIT)
+// 
+// Copyright (c) 2014 by SCIO System-Consulting GmbH & Co. KG. All rights reserved.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -12,6 +30,9 @@ using System.Reflection;
 
 namespace Scio.AnimatorWrapper
 {
+	/// <summary>
+	/// Main façade for accessing all features of AnimatorAccessGenerator.
+	/// </summary>
 	public class Manager
 	{
 		public const string resourcesDir = "Scripts";
@@ -33,7 +54,8 @@ namespace Scio.AnimatorWrapper
 						string appDataPath = Application.dataPath;
 						instance.InstallDir = s.Substring (appDataPath.Length + 1);
 					}
-					Logger.Set = new UnityLogger ();
+					bool logLevel = Preferences.GetBool (Preferences.Key.DebugMode);
+					Logger.Set = new UnityLogger (logLevel);
 				}
 				return instance;
 			}
@@ -47,7 +69,7 @@ namespace Scio.AnimatorWrapper
 		
 		public void TestAnimatorWrapper (GameObject go) {
 			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
-			CodeGeneratorResult r = a.Prepare (true);
+			CodeGeneratorResult r = a.PrepareCodeGeneration (true);
 			if (!r.Error) {
 				r = a.GenerateCode ();
 				if (r.Success) {
@@ -57,20 +79,19 @@ namespace Scio.AnimatorWrapper
 				Debug.Log (r);
 			}
 		}
-		
+
+		/// <summary>
+		/// Create a new AnimatorAccess component for the specified game object and saves it to targetCodeFile. The 
+		/// caller is responsible for ensuring that there is not yet a component existing with the same name.
+		/// </summary>
+		/// <param name="go">Go.</param>
+		/// <param name="targetCodeFile">Target code file.</param>
 		public void Create (GameObject go, string targetCodeFile) {
 			AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (go, targetCodeFile);
-			CodeGeneratorResult result = gen.Prepare (false);
+			CodeGeneratorResult result = gen.PrepareCodeGeneration (false);
 			if (result.NoSuccess) {
-				if (result.AskUser) {
-					if (!EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK", "Cancel")) {
-						return;
-					}
-				}
-				else {
-					EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK");
-					return;
-				}
+				EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK");
+				return;
 			}
 			result = gen.GenerateCode ();
 			if (result.Success) {
@@ -79,13 +100,17 @@ namespace Scio.AnimatorWrapper
 			}
 		}
 
+		/// <summary>
+		/// Updates the AnimatorAccess component of the specified game object.
+		/// </summary>
+		/// <param name="go">Go.</param>
 		public void Update (GameObject go) {
 			string file = GetTargetFile (go);
 			if (string.IsNullOrEmpty (file)) {
 				return;
 			}
 			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
-			CodeGeneratorResult r = a.Prepare (true);
+			CodeGeneratorResult r = a.PrepareCodeGeneration (true);
 			if (!r.Error) {
 				r = a.GenerateCode ();
 				if (r.Success) {
@@ -105,7 +130,11 @@ namespace Scio.AnimatorWrapper
 		public void Refresh () {
 			EditorStatusObserver.Refresh ();
 		}
-		
+
+		/// <summary>
+		/// Restore the current AnimatorAcces component, if there is a backup available.
+		/// </summary>
+		/// <param name="component">Component.</param>
 		public void Undo (BaseAnimatorAccess component) {
 			if (HasBackup (component)) {
 				string backupFile = repository.RemoveBackup (component);
