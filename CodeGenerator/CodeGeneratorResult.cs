@@ -14,26 +14,6 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public static class Logger
-	{
-		static List<CodeGeneratorResult> result = new List<CodeGeneratorResult> ();
-		public static void Clear () {
-			result.Clear ();
-		}
-
-		public static void AddError (string title = null, string text = null) {
-			result.Insert (0, new CodeGeneratorResult ().SetError (title, text));
-		}
-		
-		public static void AddWarning (string title = null, string text = null) {
-			result.Insert (0, new CodeGeneratorResult ().SetWarning  (title, text));
-		}
-
-		public static void AddInfo (string title = null, string text = null) {
-			result.Insert (0, new CodeGeneratorResult ().SetSuccess (title, text));
-		}
-	}
-	
 	public class CodeGeneratorResult
 	{
 		public enum Feedback
@@ -58,31 +38,31 @@ namespace Scio.CodeGeneration
 			ErrorTitle = "";
 			ErrorText = "";
 		}
-		public CodeGeneratorResult SetError (string title = null, string text = null) {
+		public CodeGeneratorResult SetError (object title = null, object text = null) {
 			return Check (false, feedback, Feedback.Error, title, text);
 		}
 		
-		public CodeGeneratorResult SetWarning (string title = null, string text = null) {
+		public CodeGeneratorResult SetWarning (object title = null, object text = null) {
 			return Check (false, feedback, Feedback.AskUserInput, title, text);
 		}
 		
-		public CodeGeneratorResult SetSuccess (string title = null, string text = null) {
-			this.ErrorTitle = title;
-			this.ErrorText = text;
+		public CodeGeneratorResult SetSuccess (object title = null, object text = null) {
+			this.ErrorTitle = (title != null ? title.ToString () : "");
+			this.ErrorText = (text != null ? text.ToString () : "");
 			return this;
 		}
 		
 		public CodeGeneratorResult Check (bool condition, Feedback ok, Feedback failed, 
-		                                  string title = null, string text = null) {
+		                                  object title = null, object text = null) {
 			if (condition) {
 				feedback = ok;
 			} else {
 				feedback = failed;
-				if (!String.IsNullOrEmpty (title)) {
-					ErrorTitle = title;
+				if (title != null) {
+					ErrorTitle = title.ToString ();
 				}
-				if (!String.IsNullOrEmpty (text)) {
-					ErrorText = text;
+				if (text != null) {
+					ErrorText = text.ToString ();
 				}
 			}
 			return this;

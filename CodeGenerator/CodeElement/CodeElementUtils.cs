@@ -189,7 +189,7 @@ namespace Scio.CodeGeneration
 					GeneratedMemberAttribute a = (GeneratedMemberAttribute)o;
 					attributeList.Add (new GeneratedMemberAttributeCodeElement (a.CreationDate));
 				} else {
-					Debug.Log ("Attribute = " + o.ToString ());
+					Scio.CodeGeneration.Logger.Debug ("Attribute = " + o.ToString ());
 				}
 			}
 		}

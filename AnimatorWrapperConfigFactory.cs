@@ -25,6 +25,7 @@ namespace Scio.AnimatorWrapper
 	///     }
 	/// }
 	/// -----------------------
+	/// But you should really know what you are doing !
 	/// If you want even more control, just create your own factory class and register it the way shown above.
 	/// </summary>
 	public interface IAnimatorWrapperConfigFactory
@@ -67,7 +68,7 @@ namespace Scio.AnimatorWrapper
 		public Config GetSpecificConfig (string className, string relativePath) {
 			if (!string.IsNullOrEmpty (className) && configs.ContainsKey (className)) {
 				Config c = configs [className];
-				Debug.Log ("Using special config for " + className + ": " + c.ToString ());
+				Scio.CodeGeneration.Logger.Debug ("Using special config for " + className + ": " + c.ToString ());
 				return c;
 			}
 			return defaultConfig;

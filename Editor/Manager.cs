@@ -33,6 +33,7 @@ namespace Scio.AnimatorWrapper
 						string appDataPath = Application.dataPath;
 						instance.InstallDir = s.Substring (appDataPath.Length + 1);
 					}
+					Logger.Set = new UnityLogger ();
 				}
 				return instance;
 			}
@@ -92,7 +93,7 @@ namespace Scio.AnimatorWrapper
 					EditorStatusObserver.CheckForAutoRefresh ();
 				}
 			} else {
-				Debug.Log (r);
+				Logger.Debug (r);
 			}
 		}
 
@@ -143,12 +144,12 @@ namespace Scio.AnimatorWrapper
 			using (StreamWriter writer = new StreamWriter (file, false)) {
 				try {
 					writer.WriteLine ("{0}", code);
-					Debug.Log ("Code written to file " + file);
+					Logger.Debug ("Code written to file " + file);
 					return;
 				}
 				catch (System.Exception ex) {
 					string msg = " threw:\n" + ex.ToString ();
-					Debug.LogError (msg);
+					Logger.Error (msg);
 					EditorUtility.DisplayDialog ("Error on export", msg, "OK");
 				}
 			}

@@ -126,7 +126,7 @@ namespace Scio.AnimatorWrapper
 				if (newClass.IsEmpty ()) {
 					return result.SetError ("No Input", "The input seems to be invalid. Check that there are any states or parameter to process.");
 				}
-				//				Debug.Log ("New: " + newClass);
+				Logger.Debug ("New: " + newClass);
 				if (existingClassBuilder.HasType ()) {
 					try {
 						existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is");
@@ -136,7 +136,7 @@ namespace Scio.AnimatorWrapper
 						result.SetError ("Error", "Oops. An unexpected error occurred. Details" + ex.Message + "\n" + ex.StackTrace);
 					}
 				} else {
-					Debug.Log ("Generating source for " + className + " the very first time");
+					Logger.Info ("Generating source for " + className + " the very first time");
 				}
 			}
 			return result;
@@ -159,7 +159,7 @@ namespace Scio.AnimatorWrapper
 							removedMembers += "... (" + (remaining - 3) + " more)\n";
 						}
 					}
-					Debug.Log ("Members found in previous version that disappeared now: " + consoleMessage);
+					Logger.Debug ("Members found in previous version that disappeared now: " + consoleMessage);
 					string s = string.Format ("The following members are found in the previous version of {0} but will not be " + "created again:\n{1}\n(See console for details)\nClick 'OK' to generate new version. Click 'Cancel' if you want" + " to refactor your code first if other classes refer to these members.", className, removedMembers);
 					result.SetWarning (remaining + " Removed Members", s);
 				}
@@ -195,7 +195,6 @@ namespace Scio.AnimatorWrapper
 					return result;
 				}
 			} else {
-//				Debug.Log ("Loading from cache dir : " + LastTemplateDirectoryCache);
 				string classSpecificTemplate = Path.Combine (LastTemplateDirectoryCache, className + ".txt");
 				if (File.Exists (classSpecificTemplate)) {
 					pathToTemplate = classSpecificTemplate;
@@ -229,7 +228,7 @@ namespace Scio.AnimatorWrapper
 			if (files.Length == 0) {
 				return result.SetError ("Template Directory Not Found", "The default template " + config.GetDefaultTemplateFileName () + "could not be found anywhere under your Assets directory.");
 			} else if (files.Length > 1) {
-				Debug.Log ("More than one default template found. Searching the best match");
+				Logger.Info ("More than one default template found. Searching the best match");
 				string rootDir = config.PathToTemplateDirectory;
 				foreach (string item in files) {
 					if (item.Contains (rootDir)) {
@@ -239,7 +238,7 @@ namespace Scio.AnimatorWrapper
 				}
 				if (string.IsNullOrEmpty (pathToTemplate)) {
 					pathToTemplate = files [0];
-					Debug.Log ("More than one default template found but non of them matching the path " + rootDir);
+					Logger.Debug ("More than one default template found but non of them matching the path " + rootDir);
 				}
 			} else {
 				pathToTemplate = files [0];

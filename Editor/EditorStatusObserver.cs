@@ -5,6 +5,7 @@ using UnityEditor;
 using System;
 using System.IO;
 using System.Reflection;
+using Scio.CodeGeneration;
 
 namespace Scio.AnimatorWrapper
 {
@@ -53,15 +54,16 @@ namespace Scio.AnimatorWrapper
 			}
 			GameObject activeGameObject = Selection.activeGameObject;
 			if (activeGameObject == null) {
+				Logger.Debug ("No game object selected");
 			} else if (activeGameObject.GetComponent (t) != null) {
-				Debug.Log (activeGameObject.name + " already has a component " + t.Name + " attached");
+				Logger.Debug (activeGameObject.name + " already has a component " + t.Name + " attached");
 			} else if (activeGameObject.GetComponent<Animator> () == null) {
-				Debug.Log ("No animator component, skipping");
+				Logger.Debug ("No animator component, skipping");
 			} else {
 				if (EditorUtility.DisplayDialog ("Add Commponent", "Add " + className + " to " + activeGameObject.name + " ?", "Yes", "No")) {
 					Component c = activeGameObject.AddComponent (t);
 					if (c == null) {
-						Debug.LogWarning ("Could not add component of type " + t + ".");
+						Logger.Warning ("Could not add component of type " + t + ".");
 					}
 				}
 			}
