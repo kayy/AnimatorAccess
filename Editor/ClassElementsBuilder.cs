@@ -134,16 +134,15 @@ namespace Scio.AnimatorAccessGenerator
 					return result.SetError ("No Input", "The input seems to be invalid. Check that there are any states or parameter to process.");
 				}
 				Logger.Debug ("New: " + newClass);
-				if (existingClassBuilder.HasType ()) {
-					try {
-						existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is");
-						existingClass = existingClassBuilder.Build ();
-					} catch (System.Exception ex) {
-						Debug.LogWarning (ex.Message + "\n" + ex.StackTrace);
-						result.SetError ("Error", "Oops. An unexpected error occurred. Details" + ex.Message + "\n" + ex.StackTrace);
-					}
-				} else {
+				if (!existingClassBuilder.HasType ()) {
 					Logger.Info ("Generating source for " + className + " the very first time");
+				}
+				try {
+					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is");
+					existingClass = existingClassBuilder.Build ();
+				} catch (System.Exception ex) {
+					Logger.Warning (ex.Message + "\n" + ex.StackTrace);
+					result.SetError ("Error", "Oops. An unexpected error occurred. Details" + ex.Message + "\n" + ex.StackTrace);
 				}
 			}
 			return result;

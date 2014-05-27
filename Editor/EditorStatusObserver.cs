@@ -47,13 +47,13 @@ namespace Scio.AnimatorAccessGenerator
 	
 		static void OnEditorApplicationUpdate ()
 		{
-			string fullClassName = Preferences.GetString (Preferences.Key.PostProcessingFile);
-			if (!string.IsNullOrEmpty (fullClassName)) {
-				DisplayAddComponentDialog (fullClassName);
-				Preferences.Delete (Preferences.Key.PostProcessingFile);
-			}
 			// avoid unnecessary upates (100/sec)
 			EditorApplication.update -= OnEditorApplicationUpdate;
+			string fullClassName = Preferences.GetString (Preferences.Key.PostProcessingFile);
+			Preferences.Delete (Preferences.Key.PostProcessingFile);
+			if (!string.IsNullOrEmpty (fullClassName)) {
+				DisplayAddComponentDialog (fullClassName);
+			}
 		}
 	
 		public static void CheckForAutoRefresh () {

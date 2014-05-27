@@ -104,7 +104,7 @@ namespace Scio.AnimatorAccessGenerator
 						type.Setter.CodeLines.Add ("animator.SetTrigger (" + paramHash + ");");
 						classCodeElement.Properties.Add (type);
 					} else {
-						Debug.LogWarning ("Could not find type for param " + parameter + " as it seems to be no base type.");
+						Logger.Warning ("Could not find type for param " + parameter + " as it seems to be no base type.");
 					}
 					if (type != null) {
 						type.Origin = "parameter " + parameter;
@@ -121,7 +121,7 @@ namespace Scio.AnimatorAccessGenerator
 				if (i >= 0) {
 					propName = propName.Substring (layerPrefix.Length + 1);
 				} else {
-					Debug.LogWarning ("Item [" + item + "] does not contain [" + layerPrefix + "] as prefix");
+					Logger.Warning ("Item [" + item + "] does not contain [" + layerPrefix + "] as prefix");
 				}
 			}
 			return CodeGenerationUtils.GeneratePropertyName (prefix, propName);

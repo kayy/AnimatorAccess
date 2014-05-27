@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using AnimatorAccess;
-
+using Scio.CodeGeneration;
 
 namespace Scio.AnimatorAccessGenerator
 {
@@ -54,7 +54,7 @@ namespace Scio.AnimatorAccessGenerator
 					Directory.CreateDirectory (backupDir);
 					Preferences.SetString (Preferences.Key.BackupDir, backupDir);
 				} catch (System.Exception ex) {
-					Debug.LogWarning (ex.Message);
+					Logger.Warning (ex.Message);
 					backupDir = "";
 				}
 			}
@@ -129,7 +129,7 @@ namespace Scio.AnimatorAccessGenerator
 				}
 				catch (System.Exception ex) {
 					string msg = " threw:\n" + ex.ToString ();
-					Debug.LogError (msg);
+					Logger.Error (msg);
 				}
 			}
 			return "";

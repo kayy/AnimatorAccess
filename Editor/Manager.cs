@@ -35,9 +35,9 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public class Manager
 	{
-		public const string resourcesDir = "Scripts";
+		public const string ResourcesDir = "Scripts";
 
-		const string baseAnimatorAccessCS = "BaseAnimatorAccess.cs";
+		const string BaseAnimatorAccessCS = "BaseAnimatorAccess.cs";
 			
 		static Manager instance = null;
 		public static Manager SharedInstance {
@@ -45,9 +45,9 @@ namespace Scio.AnimatorAccessGenerator
 				if (instance == null) {
 					instance = new Manager ();
 					instance.repository.Prepare ();
-					string[] files = Directory.GetFiles (Application.dataPath, baseAnimatorAccessCS, SearchOption.AllDirectories);
+					string[] files = Directory.GetFiles (Application.dataPath, BaseAnimatorAccessCS, SearchOption.AllDirectories);
 					if (files.Length != 1) {
-						Debug.LogError ("Install directory not found! File " + baseAnimatorAccessCS + " could not be found anywhere under your Assets directory.");
+						Debug.LogError ("Install directory not found! File " + BaseAnimatorAccessCS + " could not be found anywhere under your Assets directory.");
 						instance.InstallDir = Application.dataPath;
 					} else {
 						string s = Path.GetDirectoryName (files[0]);
@@ -76,7 +76,7 @@ namespace Scio.AnimatorAccessGenerator
 					WriteToFile (a.Code, "/Users/kay/tmp/TimeMachine.ignore/Trash/New.cs");
 				}
 			} else {
-				Debug.Log (r);
+				Logger.Debug (r);
 			}
 		}
 
@@ -149,10 +149,10 @@ namespace Scio.AnimatorAccessGenerator
 					File.Delete (backupFile);
 					EditorStatusObserver.CheckForAutoRefresh ();
 				} catch (System.Exception ex) {
-					Debug.LogWarning (ex.Message);
+					Logger.Warning (ex.Message);
 				}
 			} else {
-				Debug.LogWarning ("No target file for undo found.");
+				Logger.Warning ("No target file for undo found.");
 			}
 		}
 
@@ -203,7 +203,7 @@ namespace Scio.AnimatorAccessGenerator
 			string targetCodeFile = a.GetType ().Name + ".cs";
 			string[] files = Directory.GetFiles (Application.dataPath, targetCodeFile, SearchOption.AllDirectories);
 			if (files.Length > 1 || files.Length == 0) {
-				targetCodeFile = EditorUtility.SaveFilePanel (files.Length + " target file(s) found. Please select", resourcesDir, targetCodeFile, "cs");
+				targetCodeFile = EditorUtility.SaveFilePanel (files.Length + " target file(s) found. Please select", ResourcesDir, targetCodeFile, "cs");
 				if (targetCodeFile == null || targetCodeFile == "") {
 					return "";
 				}

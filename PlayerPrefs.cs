@@ -215,11 +215,13 @@ namespace PreviewLabs.AnimatorAccessGenerator
 		public static void DeleteKey(string key)
 		{
 			playerPrefsDict.Remove(key);
+			hashTableChanged = true;
 		}
 		
 		public static void DeleteAll()
 		{
 			playerPrefsDict.Clear();
+			hashTableChanged = true;
 		}
 		
 		public static void Flush()

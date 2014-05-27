@@ -57,8 +57,10 @@ namespace Scio.AnimatorAccessGenerator
 		}
 		
 		public static void SetString (Key key, string s) {
-			PlayerPrefs.SetString (Prefix + key, s);
-			PlayerPrefs.Flush ();
+			if (GetString (key) != s) {
+				PlayerPrefs.SetString (Prefix + key, s);
+				PlayerPrefs.Flush ();
+			}
 		}
 		
 		public static bool GetBool (Key key) {
@@ -66,8 +68,10 @@ namespace Scio.AnimatorAccessGenerator
 		}
 		
 		public static void SetBool (Key key, bool s) {
-			PlayerPrefs.SetBool (Prefix + key, s);
-			PlayerPrefs.Flush ();
+			if (GetBool (key) != s) {
+				PlayerPrefs.SetBool (Prefix + key, s);
+				PlayerPrefs.Flush ();
+			}
 		}
 		
 		public static int GetInt (Key key) {
@@ -75,8 +79,10 @@ namespace Scio.AnimatorAccessGenerator
 		}
 		
 		public static void SetInt (Key key, int s) {
-			PlayerPrefs.SetInt (Prefix + key, s);
-			PlayerPrefs.Flush ();
+			if (GetInt (key) != s) {
+				PlayerPrefs.SetInt (Prefix + key, s);
+				PlayerPrefs.Flush ();
+			}
 		}
 		
 		public static float GetFloat (Key key) {
@@ -84,12 +90,15 @@ namespace Scio.AnimatorAccessGenerator
 		}
 		
 		public static void SetFloat (Key key, float s) {
-			PlayerPrefs.SetFloat (Prefix + key, s);
-			PlayerPrefs.Flush ();
+			if (GetFloat (key) != s) {
+				PlayerPrefs.SetFloat (Prefix + key, s);
+				PlayerPrefs.Flush ();
+			}
 		}
 		
 		public static void Delete (Key key) {
 			PlayerPrefs.DeleteKey (Prefix + key);
+			PlayerPrefs.Flush ();
 		}
 
 	}

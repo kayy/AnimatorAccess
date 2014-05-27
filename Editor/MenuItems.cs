@@ -99,7 +99,7 @@ namespace Scio.AnimatorAccessGenerator
 				return false;
 			}
 			targetCodeFile = activeGameObject.name + targetClassNameDefault + ".cs";
-			targetCodeFile = EditorUtility.SaveFilePanel ("Generate C# Code for Animator Access Class", Manager.resourcesDir, targetCodeFile, "cs");
+			targetCodeFile = EditorUtility.SaveFilePanel ("Generate C# Code for Animator Access Class", Manager.ResourcesDir, targetCodeFile, "cs");
 			if (targetCodeFile == null || targetCodeFile == "") {
 				return false;
 			}
