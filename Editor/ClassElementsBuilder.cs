@@ -50,11 +50,6 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public class ClassElementsBuilder
 	{
-		/// <summary>
-		/// Caches the last template directory location in order to prevent full directory scan on subsequent calls.
-		/// </summary>
-		public static string LastTemplateDirectoryCache = "";
-		
 		AnimatorCodeElementsBuilder builder;
 		ClassCodeElement newClass = null;
 	
@@ -73,8 +68,6 @@ namespace Scio.AnimatorAccessGenerator
 			get { return (config.DefaultNamespace == null ? "" : config.DefaultNamespace + ".") + className; }
 		}
 
-		string pathToTemplate = "";
-	
 		string code = "";
 		public string Code { get { return code; } }
 	
@@ -129,10 +122,10 @@ namespace Scio.AnimatorAccessGenerator
 		}
 
 		CodeGeneratorResult BuildClasses () {
-			CodeGeneratorResult result = GetPathToTemplate ();
+			TemplateLookup templateLookup = new TemplateLookup (config);
+			CodeGeneratorResult result = templateLookup.GetPathToTemplate (className);
 			if (result.Success) {
-				TemplateEngineConfig codeGeneratorConfig = new TemplateEngineConfig (pathToTemplate);
-				result = generator.Prepare (codeGeneratorConfig);
+				result = generator.Prepare (templateLookup.TemplateConfig);
 				if (result.NoSuccess) {
 					return result;
 				}
@@ -201,74 +194,6 @@ namespace Scio.AnimatorAccessGenerator
 			}
 			return result;
 		}
-	
-		public CodeGeneratorResult GetPathToTemplate ()
-		{
-			CodeGeneratorResult result = new CodeGeneratorResult ();
-			LastTemplateDirectoryCache = Preferences.GetString (Preferences.Key.TemplateDir);
-			if (string.IsNullOrEmpty (LastTemplateDirectoryCache) || !Directory.Exists (LastTemplateDirectoryCache)) {
-				result = SearchTemplateDirectory (result);
-				if (result.NoSuccess) {
-					return result;
-				}
-			} else {
-				string classSpecificTemplate = Path.Combine (LastTemplateDirectoryCache, className + ".txt");
-				if (File.Exists (classSpecificTemplate)) {
-					pathToTemplate = classSpecificTemplate;
-					return result;
-				} else {
-					string defaultTemplate = Path.Combine (LastTemplateDirectoryCache, config.GetDefaultTemplateFileName ());
-					if (File.Exists (defaultTemplate)) {
-						pathToTemplate = defaultTemplate;
-						return result;
-					} else {
-						result = SearchTemplateDirectory (result);
-						if (result.NoSuccess) {
-							return result;
-						}
-					}
-				}
-			}
-			string defaultTemplate2 = Path.Combine (LastTemplateDirectoryCache, config.GetDefaultTemplateFileName ());
-			if (!File.Exists (defaultTemplate2)) {
-				return result.SetError ("Default Template Not Found", "The default template file " + config.GetDefaultTemplateFileName () + " could not be found. Path: " + defaultTemplate2);
-			}
-			pathToTemplate = defaultTemplate2;
-			return result;
-		}
-	
-		CodeGeneratorResult SearchTemplateDirectory (CodeGeneratorResult result)
-		{
-			LastTemplateDirectoryCache = "";
-			pathToTemplate = "";
-			string searchRoot = Path.Combine (Application.dataPath, Manager.SharedInstance.InstallDir);
-			Logger.Debug ("Searching for default template in " + searchRoot);
-			string[] files = Directory.GetFiles (searchRoot, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
-			if (files.Length == 0) {
-				// fallback, scan all directories under Assets folder
-				files = Directory.GetFiles (Application.dataPath, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
-			}
-			if (files.Length == 0) {
-				return result.SetError ("Template Directory Not Found", "The default template " + config.GetDefaultTemplateFileName () + "could not be found anywhere under your Assets directory.");
-			} else if (files.Length > 1) {
-				Logger.Info ("More than one default template found. Searching the best match");
-				string rootDir = config.PathToTemplateDirectory;
-				foreach (string item in files) {
-					if (item.Contains (rootDir)) {
-						pathToTemplate = item;
-						break;
-					}
-				}
-				if (string.IsNullOrEmpty (pathToTemplate)) {
-					pathToTemplate = files [0];
-					Logger.Debug ("More than one default template found but non of them matching the path " + rootDir);
-				}
-			} else {
-				pathToTemplate = files [0];
-			}
-			LastTemplateDirectoryCache = Path.GetDirectoryName (pathToTemplate);
-			Preferences.SetString (Preferences.Key.TemplateDir, LastTemplateDirectoryCache);
-			return result;
-		}
+
 	}
 }

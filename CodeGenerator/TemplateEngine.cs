@@ -36,7 +36,7 @@ namespace Scio.CodeGeneration
 	{
 		public string TemplatePath { get; set; }
 
-		public TemplateEngineConfig (string templatePath) {
+		public TemplateEngineConfig (string templatePath = "") {
 			this.TemplatePath = templatePath;
 		}
 	}

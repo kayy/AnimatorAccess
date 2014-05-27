@@ -119,6 +119,7 @@ namespace Scio.AnimatorAccessGenerator
 				}
 			} else {
 				Logger.Debug (r);
+				EditorUtility.DisplayDialog (r.ErrorTitle, r.ErrorText, "OK");
 			}
 		}
 
