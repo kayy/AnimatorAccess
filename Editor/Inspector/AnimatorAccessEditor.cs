@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using Scio.CodeGeneration;
 using AnimatorAccess;
 
-namespace Scio.AnimatorWrapper 
+namespace Scio.AnimatorAccessGenerator 
 {
 	[CustomEditor(typeof(AnimatorAccess.BaseAnimatorAccess), true)]
 	public class AnimatorAccessEditor : Editor 

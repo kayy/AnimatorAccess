@@ -28,7 +28,7 @@ using System.Reflection;
 using Scio.CodeGeneration;
 
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// Analyses Animator and AnimatorController components for building a new ClassCodeElement.

@@ -29,11 +29,8 @@ namespace Scio.CodeGeneration
 	{
 		public readonly string CreationDate;
 		
-		public readonly string LastVersionDate;
-		
-		public GeneratedClassAttribute (string creationDate, string lastVersionDate = "") {
+		public GeneratedClassAttribute (string creationDate) {
 			this.CreationDate = creationDate;
-			this.LastVersionDate = lastVersionDate;
 		}
 		
 	}

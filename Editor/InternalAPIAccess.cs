@@ -25,7 +25,7 @@ using UnityEditorInternal;
 using System.Collections.Generic;
 using Scio.CodeGeneration;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// Encapsulates all critical access to UnityEditorInternal stuff. Methods within this class might be affected

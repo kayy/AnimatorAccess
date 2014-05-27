@@ -203,7 +203,7 @@ namespace Scio.CodeGeneration
 					attributeList.Add (new ObsoleteAttributeCodeElement (a.Message, a.IsError));
 				} else if (o is GeneratedClassAttribute) {
 					GeneratedClassAttribute a = (GeneratedClassAttribute)o;
-					attributeList.Add (new GeneratedClassAttributeCodeElement (a.CreationDate, a.LastVersionDate));
+					attributeList.Add (new GeneratedClassAttributeCodeElement (a.CreationDate));
 				} else if (o is GeneratedMemberAttribute) {
 					GeneratedMemberAttribute a = (GeneratedMemberAttribute)o;
 					attributeList.Add (new GeneratedMemberAttributeCodeElement (a.CreationDate));

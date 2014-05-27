@@ -20,11 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//#define TEST_ANIMATOR_WRAPPER
+
 using UnityEngine;
 using UnityEditor;
 using AnimatorAccess;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	public static class MenuItems
 	{
@@ -49,14 +51,10 @@ namespace Scio.AnimatorWrapper
 
 #if TEST_ANIMATOR_WRAPPER
 		[MenuItem(MenuTest)]
-		public static void TestAnimatorWrapper () {
-			Manager.SharedInstance.TestAnimatorWrapper (Selection.activeGameObject);
+		public static void TestAnimatorAccessGenerator () {
+			Manager.SharedInstance.TestAnimatorAccessGenerator (Selection.activeGameObject);
 		}
 
-		[MenuItem(MenuTest, true)]
-		public static bool ValidateTestAnimatorWrapper () {
-			return Selection.activeObject != null;
-		}
 #endif
 		[MenuItem(MenuCreate)]
 		public static void CreateAnimatorAccess () {
@@ -68,7 +66,7 @@ namespace Scio.AnimatorWrapper
 
 		[MenuItem(MenuCreate, true)]
 		public static bool ValidateCreateAnimatorAccess () {
-			return AnimatorWrapperEditorUtils.GetActiveAnimatorAccessComponent () == null;
+			return InspectorUtils.GetActiveAnimatorAccessComponent () == null;
 		}
 
 		[MenuItem(MenuUpdate)]
@@ -78,7 +76,7 @@ namespace Scio.AnimatorWrapper
 
 		[MenuItem(MenuUpdate, true)]
 		public static bool ValidateUpdateAnimatorAccess () {
-			return AnimatorWrapperEditorUtils.GetActiveAnimatorAccessComponent () != null;
+			return InspectorUtils.GetActiveAnimatorAccessComponent () != null;
 		}
 
 		[MenuItem(MenuSettings)]

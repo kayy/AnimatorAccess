@@ -23,7 +23,7 @@ using UnityEngine;
 using System.Collections;
 using Scio.CodeGeneration;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	public class UnityLogger : ILogger
 	{

@@ -15,11 +15,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace PreviewLabs.AnimatorWrapper
+namespace PreviewLabs.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// Derived from PreviewLabs PlayerPrefs (s. note at the beginning of the file). Writes key value pairs in a text
-	/// file in <Application.persistentDataPath>/AnimatorWrapperConfig.txt. Keys are sorted in alpha numeric order.
+	/// file in <Application.persistentDataPath>/AnimatorAccessConfig.txt. Keys are sorted in alpha numeric order.
 	/// </summary>
 	public static class PlayerPrefs
 	{
@@ -34,7 +34,7 @@ namespace PreviewLabs.AnimatorWrapper
 		private const string PARAMETERS_SEPERATOR = "\n";
 		private const string KEY_VALUE_SEPERATOR = ":";
 		
-		public static readonly string fileName = Application.persistentDataPath + "/AnimatorWrapperConfig.txt";
+		public static readonly string fileName = Application.persistentDataPath + "/AnimatorAccessConfig.txt";
 		
 		static bool ReadFile () {
 			StreamReader fileReader = null;

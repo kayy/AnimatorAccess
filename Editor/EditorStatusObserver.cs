@@ -26,7 +26,7 @@ using System.IO;
 using System.Reflection;
 using Scio.CodeGeneration;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// Handles post processing after AssetDatabase.Refresh. Especially after calling Create ... all assemblies are 

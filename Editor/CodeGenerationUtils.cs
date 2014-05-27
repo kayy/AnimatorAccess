@@ -25,59 +25,62 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-public static class CodeGenerationUtils
+namespace Scio.AnimatorAccessGenerator
 {
-	public static string GenerateVariableName (string prefix, string item) {
-		string varName = "";
-		bool firstChar = true;
-		foreach (Char c in item) {
-			if (firstChar) {
-				firstChar = false;
-				if (Char.IsLetter (c)) {
-					varName += c;
-				} else {
-					varName += "_";
-					if (Char.IsDigit (c)) {
+	public static class CodeGenerationUtils
+	{
+		public static string GenerateVariableName (string prefix, string item) {
+			string varName = "";
+			bool firstChar = true;
+			foreach (Char c in item) {
+				if (firstChar) {
+					firstChar = false;
+					if (Char.IsLetter (c)) {
 						varName += c;
+					} else {
+						varName += "_";
+						if (Char.IsDigit (c)) {
+							varName += c;
+						}
+					}
+				} else {
+					if (Char.IsLetterOrDigit (c)) {
+						varName += c;
+					} else {
+						varName += "_";
 					}
 				}
-			} else {
-				if (Char.IsLetterOrDigit (c)) {
-					varName += c;
-				} else {
-					varName += "_";
-				}
 			}
+			string fullName = String.IsNullOrEmpty (prefix) ? varName.Substring (0, 1).ToLower () : (prefix + varName.Substring (0, 1).ToUpper ());
+			if (String.IsNullOrEmpty (prefix)) {
+				fullName = varName.Substring (0, 1).ToLower ();
+			} else {
+				string p = prefix.Substring (0, 1).ToLower () + (prefix.Length > 1 ? prefix.Substring (1) : "");
+				fullName = p + varName.Substring (0, 1).ToUpper ();
+			}
+			if (varName.Length > 1) {
+				fullName += varName.Substring (1);
+			}
+			return fullName;
 		}
-		string fullName = String.IsNullOrEmpty(prefix) ? varName.Substring (0, 1).ToLower () : (prefix + varName.Substring (0, 1).ToUpper ());
-		if (String.IsNullOrEmpty(prefix)) {
-			fullName = varName.Substring (0, 1).ToLower ();
-		} else {
-			string p = prefix.Substring (0, 1).ToLower () + (prefix.Length > 1 ? prefix.Substring (1) : "");
-			fullName = p + varName.Substring (0, 1).ToUpper ();
+		
+		public static string GeneratePropertyName (string prefix, string item) {
+			string varName = GenerateVariableName (prefix, item);
+			string propName = varName.Substring (0, 1).ToUpper ();
+			if (varName.Length > 1) {
+				propName += varName.Substring (1);
+			}
+			return propName;
 		}
-		if (varName.Length > 1) {
-			fullName += varName.Substring (1);
-		}
-		return fullName;
-	}
 	
-	public static string GeneratePropertyName (string prefix, string item) {
-		string varName = GenerateVariableName (prefix, item);
-		string propName = varName.Substring (0,1).ToUpper ();
-		if (varName.Length > 1) {
-			propName += varName.Substring (1);
-		}
-		return propName;
-	}
-
-	public static string GetPathToFile (string fileName, string rootDir = null) {
-		string dir = (string.IsNullOrEmpty (rootDir) ? Application.dataPath : rootDir);
-		string[] files = Directory.GetFiles (dir, fileName, SearchOption.AllDirectories);
-		if (files.Length == 0) {
-			return "";
-		} else {
-			return files [0];
+		public static string GetPathToFile (string fileName, string rootDir = null) {
+			string dir = (string.IsNullOrEmpty (rootDir) ? Application.dataPath : rootDir);
+			string[] files = Directory.GetFiles (dir, fileName, SearchOption.AllDirectories);
+			if (files.Length == 0) {
+				return "";
+			} else {
+				return files [0];
+			}
 		}
 	}
 }

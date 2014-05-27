@@ -23,24 +23,24 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// DO NOT EDIT THIS CLASS! THERE ARE EASIER WAYS. 
 	/// Summary: Factory for providing configuration parameters depending on the class to generate. If you like to 
 	/// change something, the appropriate way is:
 	/// 
-	/// Create a new C# file e.g. AnimatorWrapperConfigExt.cs and change the class name to be the other 
+	/// Create a new C# file e.g. ConfigFactoryExt.cs and change the class name to be the other 
 	/// (additional) part of this partial class definition.
 	/// Then define a default constructor and set the porperties you like.
 	/// 
-	/// Example file AnimatorWrapperConfigFactoryExt.cs:
+	/// Example file ConfigFactoryExt.cs:
 	/// -----------------------
-	/// namespace Scio.AnimatorWrapper {
-	///     public partial class AnimatorWrapperConfigFactory {
-	///         static AnimatorWrapperConfigFactory () {
-	///             instance = new AnimatorWrapperConfigFactory ();
-	///             instance.defaultConfig = new MyAnimatorWrapperConfig ();
+	/// namespace Scio.AnimatorAccessGenerator {
+	///     public partial class ConfigFactory {
+	///         static ConfigFactory () {
+	///             instance = new ConfigFactory ();
+	///             instance.defaultConfig = new MyConfig ();
 	///         }
 	///     }
 	/// }
@@ -48,7 +48,7 @@ namespace Scio.AnimatorWrapper
 	/// But you should really know what you are doing !
 	/// If you want even more control, just create your own factory class and register it the way shown above.
 	/// </summary>
-	public interface IAnimatorWrapperConfigFactory
+	public interface IConfigFactory
 	{
 		/// <summary>
 		/// Gets the specific config for the given class. Default behaviour is: 
@@ -62,14 +62,14 @@ namespace Scio.AnimatorWrapper
 		Config GetDefaultConfig ();
 	}
 
-	public partial class AnimatorWrapperConfigFactory : IAnimatorWrapperConfigFactory
+	public partial class ConfigFactory : IConfigFactory
 	{
-		protected static IAnimatorWrapperConfigFactory instance = null;
+		protected static IConfigFactory instance = null;
 
-		public static IAnimatorWrapperConfigFactory Instance {
+		public static IConfigFactory Instance {
 			get {
 				if (instance == null) {
-					instance = new AnimatorWrapperConfigFactory ();
+					instance = new ConfigFactory ();
 				}
 				return instance;
 			}

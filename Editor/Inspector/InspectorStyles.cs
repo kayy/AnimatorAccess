@@ -22,7 +22,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Scio.AnimatorWrapper {
+namespace Scio.AnimatorAccessGenerator {
 	
 	public static class InspectorStyles
 	{

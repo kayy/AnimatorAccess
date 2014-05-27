@@ -21,12 +21,12 @@
 // SOFTWARE.
 using UnityEngine;
 using System;
-using PlayerPrefs = PreviewLabs.AnimatorWrapper.PlayerPrefs;
+using PlayerPrefs = PreviewLabs.AnimatorAccessGenerator.PlayerPrefs;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
-	/// Wrapper class for PlayerPrefs. Note that PreviewLabs.AnimatorWrapper.PlayerPrefs writes a txt file to
+	/// Wrapper class for PlayerPrefs. Note that PreviewLabs.AnimatorAccess.PlayerPrefs writes a txt file to
 	/// Application.persistentDataPath
 	/// </summary>
 	public class Preferences
@@ -46,7 +46,7 @@ namespace Scio.AnimatorWrapper
 			ParameterPrefix,
 			DebugMode
 		}
-		const string Prefix = "Scio.AnimatorWrapper.";
+		const string Prefix = "Scio.AnimatorAccessGenerator.";
 
 		public static string GetString (Key key) {
 			return PlayerPrefs.GetString (Prefix + key);

@@ -28,7 +28,7 @@ using AnimatorAccess;
 
 using System.Reflection;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// Main façade for accessing all features of AnimatorAccessGenerator.
@@ -61,14 +61,14 @@ namespace Scio.AnimatorWrapper
 			}
 		}
 
-		public string InstallDir;
+		public string InstallDir { get; private set; }
 
 		MetaInfoRepository repository = new MetaInfoRepository ();
 
 		Manager () {}
 		
-		public void TestAnimatorWrapper (GameObject go) {
-			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
+		public void TestAnimatorAccessGenerator (GameObject go) {
+			ClassElementsBuilder a = new ClassElementsBuilder (go);
 			CodeGeneratorResult r = a.PrepareCodeGeneration (true);
 			if (!r.Error) {
 				r = a.GenerateCode ();
@@ -87,7 +87,7 @@ namespace Scio.AnimatorWrapper
 		/// <param name="go">Go.</param>
 		/// <param name="targetCodeFile">Target code file.</param>
 		public void Create (GameObject go, string targetCodeFile) {
-			AnimatorWrapperGenerator gen = new AnimatorWrapperGenerator (go, targetCodeFile);
+			ClassElementsBuilder gen = new ClassElementsBuilder (go, targetCodeFile);
 			CodeGeneratorResult result = gen.PrepareCodeGeneration (false);
 			if (result.NoSuccess) {
 				EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK");
@@ -109,7 +109,7 @@ namespace Scio.AnimatorWrapper
 			if (string.IsNullOrEmpty (file)) {
 				return;
 			}
-			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
+			ClassElementsBuilder a = new ClassElementsBuilder (go);
 			CodeGeneratorResult r = a.PrepareCodeGeneration (true);
 			if (!r.Error) {
 				r = a.GenerateCode ();
@@ -123,7 +123,7 @@ namespace Scio.AnimatorWrapper
 		}
 
 		public List<ClassMemberCompareElement> CheckForUpdates (GameObject go) {
-			AnimatorWrapperGenerator a = new AnimatorWrapperGenerator (go);
+			ClassElementsBuilder a = new ClassElementsBuilder (go);
 			return a.Compare (go);
 		}
 

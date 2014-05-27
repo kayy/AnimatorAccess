@@ -23,7 +23,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	public class ConfigInspector : EditorWindow
 	{
@@ -40,7 +40,7 @@ namespace Scio.AnimatorWrapper
 		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
 
 		public void OnGUI() {
-			Config config = AnimatorWrapperConfigFactory.DefaultConfig;
+			Config config = ConfigFactory.DefaultConfig;
 			config.AutoRefreshAssetDatabase = EditorGUILayout.Toggle (AutoRefreshAssetDatabase, config.AutoRefreshAssetDatabase);
 			config.KeepObsoleteMembers = EditorGUILayout.Toggle (KeepObsolete, config.KeepObsoleteMembers);
 			advancedSettingFoldoutState = EditorGUILayout.Foldout (advancedSettingFoldoutState, "Advanced Settings");

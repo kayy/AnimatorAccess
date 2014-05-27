@@ -23,14 +23,14 @@ using UnityEngine;
 using System.Collections;
 using Scio.CodeGeneration;
 
-namespace Scio.AnimatorWrapper {
+namespace Scio.AnimatorAccessGenerator {
 	/// <summary>
 	/// Contains all configuration parameters available for controlling the code generation. Most of the configuration 
-	/// data is made persistent via Perferences class in AnimatorWrapperConfig.txt.
+	/// data is made persistent via Perferences class in AnimatorAccessConfig.txt.
 	/// If you like to change something and you know what your doing, DO NOT EDIT THIS CLASS! 
-	/// See AnimatorWrapperConfigFactory for more instructions.
+	/// See ConfigFactory for more instructions.
 	/// </summary>
-	public partial class Config 
+	public class Config 
 	{
 		const string defaultMonoBehaviourTemplateFileName = "DefaultTemplate.txt";
 		protected virtual string DefaultMonoBehaviourTemplateFileName {
@@ -47,6 +47,7 @@ namespace Scio.AnimatorWrapper {
 			get { return defaultTemplateSubDirectory; }
 		}
 
+		// TODO_kay: change AnimatorWrapper -> AnimatorAccess
 		const string pathToTemplateDirectory = "AnimatorWrapper/Editor";
 		/// <summary>
 		/// If more than one file is found during the initial directory scan, use this as identifier

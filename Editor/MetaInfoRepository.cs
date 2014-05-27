@@ -26,7 +26,7 @@ using System.IO;
 using AnimatorAccess;
 
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	public class MetaInfoRepository
 	{

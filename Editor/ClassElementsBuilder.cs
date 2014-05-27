@@ -29,7 +29,7 @@ using System.Reflection;
 using Scio.CodeGeneration;
 
 
-namespace Scio.AnimatorWrapper
+namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
 	/// Code generator to create a class for convenient access to Animator states and parameters. 
@@ -48,7 +48,7 @@ namespace Scio.AnimatorWrapper
 	///         set { animator.SetFloat (-823668238, value); }
 	///     }
 	/// </summary>
-	public class AnimatorWrapperGenerator
+	public class ClassElementsBuilder
 	{
 		/// <summary>
 		/// Caches the last template directory location in order to prevent full directory scan on subsequent calls.
@@ -61,7 +61,7 @@ namespace Scio.AnimatorWrapper
 		ReflectionCodeElementsBuilder existingClassBuilder;
 		ClassCodeElement existingClass = null;
 	
-		CodeGenerator generator;
+		TemplateEngine generator;
 		Config config;
 	
 		string className = "";
@@ -80,16 +80,16 @@ namespace Scio.AnimatorWrapper
 	
 		/// <summary>
 		/// Contructor in case of the very first generation of an AnimatorAccess class. On subsequent generations 
-		/// AnimatorWrapperGenerator (GameObject go) is called.
+		/// ClassElementsBuilder (GameObject go) is called.
 		/// </summary>
 		/// <param name="go">GameObject to generate an AnimatorAccess class for.</param>
 		/// <param name="fileName">File name where to save the file. A subdirectory 'Generated' is recommended to 
 		/// emphasize that this code shouldn't be edited.</param>
-		public AnimatorWrapperGenerator (GameObject go, string fileName)
+		public ClassElementsBuilder (GameObject go, string fileName)
 		{
 			className = Path.GetFileNameWithoutExtension (fileName);
-			config = AnimatorWrapperConfigFactory.Get (className);
-			generator = new SmartFormatCodeGenerator ();
+			config = ConfigFactory.Get (className);
+			generator = new SmartFormatTemplateEngine ();
 			builder = new AnimatorCodeElementsBuilder (go, className, config);
 			existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", config.DefaultNamespace, className);
 		}
@@ -98,15 +98,15 @@ namespace Scio.AnimatorWrapper
 		/// Udpate contructor.
 		/// </summary>
 		/// <param name="go">GameObject to generate an AnimatorAccess class for.</param>
-		public AnimatorWrapperGenerator (GameObject go)
+		public ClassElementsBuilder (GameObject go)
 		{
 			AnimatorAccess.BaseAnimatorAccess animatorAccess = go.GetComponent<AnimatorAccess.BaseAnimatorAccess> ();
 			if (animatorAccess != null) {
 				existingClassBuilder = new ReflectionCodeElementsBuilder (animatorAccess);
 			}
 			className = existingClassBuilder.ClassName;
-			config = AnimatorWrapperConfigFactory.Get (className);
-			generator = new SmartFormatCodeGenerator ();
+			config = ConfigFactory.Get (className);
+			generator = new SmartFormatTemplateEngine ();
 			builder = new AnimatorCodeElementsBuilder (go, className, config);
 		}
 
@@ -131,7 +131,7 @@ namespace Scio.AnimatorWrapper
 		CodeGeneratorResult BuildClasses () {
 			CodeGeneratorResult result = GetPathToTemplate ();
 			if (result.Success) {
-				CodeGeneratorConfig codeGeneratorConfig = new CodeGeneratorConfig (pathToTemplate);
+				TemplateEngineConfig codeGeneratorConfig = new TemplateEngineConfig (pathToTemplate);
 				result = generator.Prepare (codeGeneratorConfig);
 				if (result.NoSuccess) {
 					return result;
@@ -244,6 +244,10 @@ namespace Scio.AnimatorWrapper
 			string searchRoot = Path.Combine (Application.dataPath, Manager.SharedInstance.InstallDir);
 			Logger.Debug ("Searching for default template in " + searchRoot);
 			string[] files = Directory.GetFiles (searchRoot, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
+			if (files.Length == 0) {
+				// fallback, scan all directories under Assets folder
+				files = Directory.GetFiles (Application.dataPath, config.GetDefaultTemplateFileName (), SearchOption.AllDirectories);
+			}
 			if (files.Length == 0) {
 				return result.SetError ("Template Directory Not Found", "The default template " + config.GetDefaultTemplateFileName () + "could not be found anywhere under your Assets directory.");
 			} else if (files.Length > 1) {

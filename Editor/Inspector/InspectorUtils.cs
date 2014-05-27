@@ -19,26 +19,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using System;
+using UnityEngine;
+using UnityEditor;
+using AnimatorAccess;
 
-namespace Scio.CodeGeneration
+namespace Scio.AnimatorAccessGenerator
 {
-	public interface CodeGenerator
+	public static class InspectorUtils
 	{
-		string Code {get;}
-
-		CodeGeneratorResult Prepare (CodeGeneratorConfig inputConfig);
-
-		CodeGeneratorResult GenerateCode (FileCodeElement classCodeElement);
-	}
-
-	public class CodeGeneratorConfig
-	{
-		public string Template;
-		public CodeGeneratorConfig (string template) {
-			this.Template = template;
+		public static BaseAnimatorAccess GetActiveAnimatorAccessComponent () {
+			BaseAnimatorAccess a = null;
+			if (Selection.activeGameObject != null) {
+				a = Selection.activeGameObject.GetComponent<BaseAnimatorAccess> ();
+			}
+			return a;
 		}
+		
+	
 	}
-
 }
 

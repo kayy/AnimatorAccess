@@ -26,36 +26,36 @@ using SmartFormat.Core;
 
 namespace Scio.CodeGeneration
 {
-	public class SmartFormatCodeGenerator : CodeGenerator
+	public class SmartFormatTemplateEngine : TemplateEngine
 	{
 		FileCodeElement fileCodeElement;
-		CodeGeneratorConfig config;
+		TemplateEngineConfig config;
 		CodeGeneratorResult result;
 
 		string template = "";
 		string code = "";
 		public string Code { get { return code; } }
 
-		public CodeGeneratorResult Prepare (CodeGeneratorConfig inputConfig) {
+		public CodeGeneratorResult Prepare (TemplateEngineConfig inputConfig) {
 			this.config = inputConfig;
 			result = new CodeGeneratorResult ();
 			if (config == null) {
-				return result.SetError ("No Config", "No config for SmartFormatCodeGenerator provided.");
+				return result.SetError ("No Config", "No config for SmartFormatTemplateEngine provided.");
 			}
 			try {
-				if (File.Exists (config.Template)) {
-					using (StreamReader fileReader = new StreamReader (config.Template)) {				
+				if (File.Exists (config.TemplatePath)) {
+					using (StreamReader fileReader = new StreamReader (config.TemplatePath)) {				
 						template = fileReader.ReadToEnd ();
 						fileReader.Close ();
 						if (string.IsNullOrEmpty (template)) {
-							result.SetError ("Template Empty", "Template file " + config.Template + " found but it seems to be empty.");
+							result.SetError ("Template Empty", "Template file " + config.TemplatePath + " found but it seems to be empty.");
 						}
 					}
 				} else {
-					result.SetError ("Template Not Found", "Template file " + config.Template + " does not exist.");
+					result.SetError ("Template Not Found", "Template file " + config.TemplatePath + " does not exist.");
 				}
 			} catch (System.Exception ex) {
-				result.SetError ("Error Loading Template", "I/O error while trying to load Template file " + config.Template + "\n" + ex.Message);
+				result.SetError ("Error Loading Template", "I/O error while trying to load Template file " + config.TemplatePath + "\n" + ex.Message);
 			}
 			return result;
 		}
