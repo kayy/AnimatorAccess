@@ -147,6 +147,7 @@ namespace Scio.AnimatorAccessGenerator
 					File.SetCreationTime (file, t);
 					File.SetLastWriteTime (file, t);
 					File.Delete (backupFile);
+					Logger.Debug ("Undo: " + file + " replaced by backup " + backupFile + " from " + t);
 					EditorStatusObserver.CheckForAutoRefresh ();
 				} catch (System.Exception ex) {
 					Logger.Warning (ex.Message);

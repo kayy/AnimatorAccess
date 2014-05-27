@@ -123,7 +123,11 @@ namespace Scio.AnimatorAccessGenerator
 				}
 			} else {
 				EditorGUILayout.BeginVertical ();
-				EditorGUILayout.LabelField ("Press 'Check' to get update information about " + myTarget.GetType().Name);
+				if (dirty) {
+					EditorGUILayout.LabelField ("Press 'Refresh' to load updated component " + myTarget.GetType().Name);
+				} else {
+					EditorGUILayout.LabelField ("Press 'Check' to get update information about " + myTarget.GetType().Name);
+				}
 				EditorGUILayout.EndVertical ();
 			}
 			EditorGUILayout.Separator ();
@@ -133,7 +137,7 @@ namespace Scio.AnimatorAccessGenerator
 				if (GUILayout.Button ("Undo")) {
 					Manager.SharedInstance.Undo (myTarget);
 					updateCheck = null;
-					dirty = false;
+					dirty = true;
 				}
 			} else {
 				EditorGUILayout.LabelField ("No backup available");

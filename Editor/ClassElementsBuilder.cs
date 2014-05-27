@@ -111,7 +111,8 @@ namespace Scio.AnimatorAccessGenerator
 			CodeGeneratorResult result = BuildClasses ();
 			if (result.Success) {
 				if (!existingClass.IsEmpty ()) {
-					List<ClassMemberCompareElement> comparisonResult = CodeElementUtils.CompareClasses (existingClass, newClass, config.KeepObsoleteMembers);
+					List<ClassMemberCompareElement> comparisonResult = CodeElementUtils.CompareClasses (existingClass, newClass, 
+						config.ForceOverwritingOldClass, config.KeepObsoleteMembers);
 					comparisonResult.RemoveAll ((element) => element.member == "Awake");
 					string message = "";
 					comparisonResult.ForEach ((s) => message += s + "\n");

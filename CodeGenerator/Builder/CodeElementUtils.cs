@@ -92,15 +92,16 @@ namespace Scio.CodeGeneration
 			return remaining;
 		}
 		
-		public static List<ClassMemberCompareElement> CompareClasses (ClassCodeElement existingClass, ClassCodeElement newClass, bool keepObsolete) {
-			List<ClassMemberCompareElement> l = CompareElements (existingClass.Fields, newClass.Fields, keepObsolete);
-			l.AddRange (CompareElements (existingClass.Properties, newClass.Properties, keepObsolete));
-			l.AddRange (CompareElements (existingClass.Methods, newClass.Methods, keepObsolete));
+		public static List<ClassMemberCompareElement> CompareClasses (ClassCodeElement existingClass, ClassCodeElement newClass, 
+				bool removeOldMembers, bool keepObsolete) {
+			List<ClassMemberCompareElement> l = CompareElements (existingClass.Fields, newClass.Fields, removeOldMembers, keepObsolete);
+			l.AddRange (CompareElements (existingClass.Properties, newClass.Properties, removeOldMembers, keepObsolete));
+			l.AddRange (CompareElements (existingClass.Methods, newClass.Methods, removeOldMembers, keepObsolete));
 			return l;
 		}
 
-		static List<ClassMemberCompareElement> CompareElements<T> (List<T> oldMembers, List<T> newMembers, bool keepObsolete) 
-				where T : MemberCodeElement {
+		static List<ClassMemberCompareElement> CompareElements<T> (List<T> oldMembers, List<T> newMembers, 
+				bool removeOldMembers, bool keepObsolete) where T : MemberCodeElement {
 			List<ClassMemberCompareElement> result = new List<ClassMemberCompareElement> ();
 			IEnumerable<T> newMinusOldList = newMembers.Except (oldMembers, new MemberNameComparer<T> ());
 			foreach (T newElement in newMinusOldList) {
@@ -108,7 +109,7 @@ namespace Scio.CodeGeneration
 			}
 			IEnumerable<T> oldMinusNewList = oldMembers.Except (newMembers, new MemberNameComparer<T> ());
 			foreach (T oldElement in oldMinusNewList) {
-				if (keepObsolete || !oldElement.Obsolete) {
+				if (!removeOldMembers && (keepObsolete || !oldElement.Obsolete)) {
 					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Obsolete));
 				} else {
 					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Remove));

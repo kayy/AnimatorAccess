@@ -38,17 +38,12 @@ namespace Scio.AnimatorAccessGenerator {
 		}
 
 		const string defaultPlainClassTemplateFileName = "PlainClassDefaultTemplate.txt";
+		[System.ObsoleteAttribute ("Plain class generation is not yet supported", true)]
 		protected virtual string DefaultPlainClassTemplateFileName {
 			get { return defaultPlainClassTemplateFileName; }
 		}
 
-		const string defaultTemplateSubDirectory = "Templates";
-		public virtual string DefaultTemplateSubDirectory {
-			get { return defaultTemplateSubDirectory; }
-		}
-
-		// TODO_kay: change AnimatorWrapper -> AnimatorAccess
-		const string pathToTemplateDirectory = "AnimatorWrapper/Editor";
+		const string pathToTemplateDirectory = "Editor/Templates";
 		/// <summary>
 		/// If more than one file is found during the initial directory scan, use this as identifier
 		/// </summary>
@@ -83,6 +78,7 @@ namespace Scio.AnimatorAccessGenerator {
 		
 		bool generateMonoBehaviourComponent = true;
 		/// <summary>
+		/// Plain class generation is not yet supported! 
 		/// If true, a MonoBehaviour will be generated, otherwise a plain class.
 		/// </summary>
 		public virtual bool GenerateMonoBehaviourComponent {
@@ -136,7 +132,7 @@ namespace Scio.AnimatorAccessGenerator {
 		/// Returns the appropriate default template file depending on flag GenerateMonoBehaviourComponent.
 		/// </summary>
 		public virtual string GetDefaultTemplateFileName () {
-			return (GenerateMonoBehaviourComponent ? DefaultMonoBehaviourTemplateFileName : DefaultPlainClassTemplateFileName);
+			return DefaultMonoBehaviourTemplateFileName;
 		}
 
 		/// <summary>

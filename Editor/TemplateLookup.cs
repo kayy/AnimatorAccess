@@ -66,8 +66,8 @@ namespace Scio.AnimatorAccessGenerator
 			if (files.Length == 0) {
 				return result.SetError ("Template Directory Not Found", "The default template " + config.GetDefaultTemplateFileName () + "could not be found anywhere under your Assets directory.");
 			} else if (files.Length > 1) {
-				Logger.Info ("More than one default template found. Searching the best match");
-				string rootDir = config.PathToTemplateDirectory;
+				string rootDir = Path.Combine (Manager.SharedInstance.InstallDir, config.PathToTemplateDirectory);
+				Logger.Debug ("More than one default template found. Searching the best match i.e. path contains [" + rootDir + "] ");
 				foreach (string item in files) {
 					if (item.Contains (rootDir)) {
 						TemplateConfig.TemplatePath = item;
@@ -76,12 +76,13 @@ namespace Scio.AnimatorAccessGenerator
 				}
 				if (string.IsNullOrEmpty (TemplateConfig.TemplatePath)) {
 					TemplateConfig.TemplatePath = files [0];
-					Logger.Debug ("More than one default template found but non of them matching the path " + rootDir);
+					Logger.Info ("More than one default template found but non of them matching the path " + rootDir);
 				}
 			} else {
 				TemplateConfig.TemplatePath = files [0];
 			}
 			templateDir = Path.GetDirectoryName (TemplateConfig.TemplatePath);
+			Logger.Info ("Template directory found, using " + templateDir);
 			Preferences.SetString (Preferences.Key.TemplateDir, templateDir);
 			return result;
 		}

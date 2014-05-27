@@ -21,7 +21,6 @@
 // SOFTWARE.
 using UnityEngine;
 using UnityEditor;
-using UnityEditorInternal;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -31,7 +30,8 @@ using Scio.CodeGeneration;
 namespace Scio.AnimatorAccessGenerator
 {
 	/// <summary>
-	/// Analyses Animator and AnimatorController components for building a new ClassCodeElement.
+	/// Analyses Animator and AnimatorController components for building a new ClassCodeElement. Note that calls to
+	/// Unity internals which are encapsulated in class InternalAPIAccess are triggered from here.
 	/// </summary>
 	public class AnimatorCodeElementsBuilder : CodeElementsBuilder
 	{
@@ -70,10 +70,6 @@ namespace Scio.AnimatorAccessGenerator
 			return classCodeElement;
 		}
 
-		AnimatorController GetInternalAnimatorController () {
-			return animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
-		}
-		
 		void PrepareFields () {
 			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Private);
 			classCodeElement.Fields.Add (animatorVar);
