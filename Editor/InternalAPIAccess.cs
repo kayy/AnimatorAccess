@@ -28,6 +28,14 @@ using Scio.CodeGeneration;
 
 namespace Scio.AnimatorAccessGenerator
 {
+	public enum AnimatorParameterType
+	{
+		Unknown = -1,
+		Int = 0,
+		Float = 1,
+		Bool = 2,
+		Trigger = 3,
+	}
 	/// <summary>
 	/// Encapsulates all critical access to UnityEditorInternal stuff. Methods within this class might be affected
 	/// by future changes of the Unity API. Thus preprocessor #if statements are expected to grow.
@@ -35,6 +43,9 @@ namespace Scio.AnimatorAccessGenerator
 	public static class InternalAPIAccess
 	{
 		public delegate void ProcessAnimatorState (int layer, string layerName, string item);
+
+		public delegate void ProcessAnimatorParameter (AnimatorParameterType t, string item, string defaultValue);
+
 		static AnimatorController GetInternalAnimatorController (Animator animator) {
 			return animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
 		}
@@ -62,44 +73,24 @@ namespace Scio.AnimatorAccessGenerator
 		/// Adds all Animator parameters as properties to the class code element. NOTE that this method relies on 
 		/// classes from namespace UnityEditorInternal which can be subject to changes in future releases.
 		/// </summary>
-		public static void ProcessAnimatorParameters (Animator animator, ClassCodeElement classCodeElement, string parameterPrefix)
+		public static void ProcessAnimatorParameters (Animator animator, ProcessAnimatorParameter callback)
 		{
 			AnimatorController controller = GetInternalAnimatorController (animator);
 			int countParameters = controller.parameterCount;
 			if (countParameters > 0) {
 				for (int i = 0; i < countParameters; i++) {
 					AnimatorControllerParameter parameter = controller.GetParameter (i);
-					int paramHash = Animator.StringToHash (parameter.name);
-					string propName = CodeGenerationUtils.GeneratePropertyName (parameterPrefix, parameter.name);
-					GenericPropertyCodeElement type = null;
+					string item = parameter.name;
 					if (parameter.type == AnimatorControllerParameterType.Bool) {
-						type = new PropertyCodeElement<bool> (propName);
-						type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultBool);
-						type.Getter.CodeLines.Add ("return animator.GetBool (" + paramHash + ");");
-						type.Setter.CodeLines.Add ("animator.SetBool (" + paramHash + ", value);");
-						classCodeElement.Properties.Add (type);
+						callback (AnimatorParameterType.Bool, item, "" + parameter.defaultBool);
 					} else if (parameter.type == AnimatorControllerParameterType.Float) {
-						type = new PropertyCodeElement<float> (propName);
-						type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultFloat);
-						type.Getter.CodeLines.Add ("return animator.GetFloat (" + paramHash + ");");
-						type.Setter.CodeLines.Add ("animator.SetFloat (" + paramHash + ", value);");
-						classCodeElement.Properties.Add (type);
+						callback (AnimatorParameterType.Float, item, "" + parameter.defaultFloat);
 					} else if (parameter.type == AnimatorControllerParameterType.Int) {
-						type = new PropertyCodeElement<int> (propName);
-						type.Summary.Add ("Access to parameter " + parameter.name + ", default: " + parameter.defaultInt);
-						type.Getter.CodeLines.Add ("return animator.GetInteger (" + paramHash + ");");
-						type.Setter.CodeLines.Add ("animator.SetInteger (" + paramHash + ", value);");
-						classCodeElement.Properties.Add (type);
+						callback (AnimatorParameterType.Int, item, "" + parameter.defaultInt);
 					} else if (parameter.type == AnimatorControllerParameterType.Trigger) {
-						type = new PropertyCodeElement<bool> (propName);
-						type.Summary.Add ("Access to parameter " + parameter.name);
-						type.Setter.CodeLines.Add ("animator.SetTrigger (" + paramHash + ");");
-						classCodeElement.Properties.Add (type);
+						callback (AnimatorParameterType.Trigger, item, "(not available)");
 					} else {
-						Logger.Warning ("Could not find type for param " + parameter + " as it seems to be no base type.");
-					}
-					if (type != null) {
-						type.Origin = "parameter " + parameter;
+						callback (AnimatorParameterType.Unknown, item, null);
 					}
 				}
 			}

@@ -26,6 +26,10 @@ namespace Scio.CodeGeneration
 {
 	public class GenericFieldCodeElement : MemberCodeElement
 	{
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.Field; }
+		}
+
 		public bool Const = false;
 		public bool ReadOnly = false;
 

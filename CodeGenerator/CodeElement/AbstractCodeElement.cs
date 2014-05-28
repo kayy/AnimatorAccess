@@ -31,6 +31,16 @@ namespace Scio.CodeGeneration
 		Private = 1,
 	}
 
+	public enum MemberTypeID
+	{
+		Undefined = 0,
+		Field = 1,
+		Property = 2,
+		Method = 3,
+		Constructor = 4,
+		Class = 10,
+	}
+
 	public abstract class AbstractCodeElement : CodeElement
 	{
 		protected AccessType accessType = AccessType.Public;
@@ -38,6 +48,7 @@ namespace Scio.CodeGeneration
 			get { return accessType.ToString ().ToLower ();}
 		}
 
+		public abstract MemberTypeID MemberType { get; }
 		public bool declaredStatic = false;
 		public string Static { get { return (declaredStatic ? "static" : ""); } }
 
@@ -46,7 +57,13 @@ namespace Scio.CodeGeneration
 		/// Should the code have the Obsolete atrribute set.
 		/// </summary>
 		public bool Obsolete {
-			get {return Attributes.FindIndex ((a) => a is ObsoleteAttributeCodeElement) >= 0; }
+			get { return Attributes.FindIndex ((a) => a is ObsoleteAttributeCodeElement) >= 0; }
+			// add default obsolete attribute if not there
+			set {
+				if (!Obsolete) {
+					AddAttribute (new ObsoleteAttributeCodeElement ("", false));
+				}
+			}
 		}
 
 		public string Name;
@@ -69,6 +86,18 @@ namespace Scio.CodeGeneration
 			Attributes.Add (attribute);
 		}
 
+		public virtual string GetSignature () {
+			return Name;
+		}
+
+		public override bool Equals (object obj) {
+			return obj is AbstractCodeElement && GetSignature () == ((AbstractCodeElement)(obj)).GetSignature ();
+		}
+		
+		public override int GetHashCode () {
+			return GetSignature ().GetHashCode ();
+		}
+		
 		public override string ToString () {
 			string summaryStr = Summary.ToString ();
 			string obs = "";

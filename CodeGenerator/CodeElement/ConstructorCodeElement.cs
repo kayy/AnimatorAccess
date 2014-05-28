@@ -26,6 +26,11 @@ namespace Scio.CodeGeneration
 {
 	public class ConstructorCodeElement : AbstractCodeElement, ICodeBlock
 	{
+		// TODO_kay: refactor to share code between methods and constructors
+
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.Constructor; }
+		}
 		public string Parameters = "";
 		public List<string> code = new List<string> ();
 		public List<string> Code {
@@ -36,6 +41,11 @@ namespace Scio.CodeGeneration
 			base (name, access)
 		{
 			this.Parameters = parameters;
+		}
+
+		public override string GetSignature () {
+			string s = Name + "(" + Parameters + ")";
+			return s;
 		}
 
 		public override string ToString () {

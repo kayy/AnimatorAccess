@@ -103,10 +103,7 @@ namespace Scio.AnimatorAccessGenerator
 		
 		public static string GeneratePropertyName (string prefix, string item) {
 			string varName = GenerateVariableName (prefix, item);
-			string propName = varName.Substring (0, 1).ToUpper ();
-			if (varName.Length > 1) {
-				propName += varName.Substring (1);
-			}
+			string propName = varName.FirstCharToUpper ();
 			return propName;
 		}
 	

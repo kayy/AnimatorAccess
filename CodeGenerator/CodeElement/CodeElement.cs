@@ -31,10 +31,14 @@ namespace Scio.CodeGeneration
 	{
 	}
 
+	/// <summary>
+	/// Code elements that contain a code block like methods or contructors.
+	/// </summary>
 	public interface ICodeBlock
 	{
 		List<string> Code { get; }
 	}
+
 	public abstract class GenericCodeElement : CodeElement
 	{
 		protected string content = "";

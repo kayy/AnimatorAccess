@@ -83,6 +83,10 @@ namespace Scio.CodeGeneration
 			}
 		}
 
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.Property; }
+		}
+
 		public List<string> Code {
 			get { 
 				List<string> l = Getter.CodeBlock;

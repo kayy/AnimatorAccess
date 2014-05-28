@@ -113,9 +113,10 @@ namespace Scio.AnimatorAccessGenerator
 				if (!existingClass.IsEmpty ()) {
 					List<ClassMemberCompareElement> comparisonResult = CodeElementUtils.CompareClasses (existingClass, newClass, 
 						config.ForceOverwritingOldClass, config.KeepObsoleteMembers);
-					comparisonResult.RemoveAll ((element) => element.member == "Awake");
+					comparisonResult.RemoveAll ((element) => element.Member == "Awake");
 					string message = "";
 					comparisonResult.ForEach ((s) => message += s + "\n");
+					Logger.Debug ("Comparison between new and existing class reveals " + comparisonResult.Count + " changes: " + message);
 					return comparisonResult;
 				}
 			}
@@ -139,7 +140,7 @@ namespace Scio.AnimatorAccessGenerator
 					Logger.Info ("Generating source for " + className + " the very first time");
 				}
 				try {
-					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is");
+					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is") || mi.Name.StartsWith ("Set");
 					existingClass = existingClassBuilder.Build ();
 				} catch (System.Exception ex) {
 					Logger.Warning (ex.Message + "\n" + ex.StackTrace);

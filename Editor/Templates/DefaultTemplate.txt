@@ -31,7 +31,8 @@
     \{
         {Fields:{Attributes:[{Name} ({Parameters:{}|, |, })]
 		|}{Summary:{Comments:/// {}
-		||}||}{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
+		||}||}{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};
+		|
         }
 		{Constructors:
 		{Attributes:[{Name} ({Parameters:{}|, |, })]

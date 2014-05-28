@@ -28,59 +28,49 @@ namespace Scio.CodeGeneration
 	{
 		public enum Result
 		{
+			Undefined = -1,
+			Error = 0,
 			New = 1,
 			Remove = 2,
 			Obsolete = 3,
 		}
-		public Result result;
+		public Result result { get; set; }
 	
-		public enum MemberType
-		{
-			Undefined = 0,
-			Field = 1,
-			Property = 2,
-			Method = 3,
-		}
-		public MemberType memberType;
+		public MemberTypeID memberType { get { return element.MemberType; } }
 	
-		public string member;
-	
+		public string Member { get { return element.Name; } }
+		
+		public string ElementType { get { return element.ElementType; } }
+		
+		public string Signature { get { return element.GetSignature (); } }
+
+		public MemberCodeElement element { get; private set; }
+
+		public string Message { get; set; }
+
 		public ClassMemberCompareElement (MemberCodeElement element, Result result) {
-			this.member = element.Name;
+			this.element = element;
 			this.result = result;
-			if (element is GenericPropertyCodeElement) {
-				memberType = MemberType.Property;
-			} else if (element is GenericMethodCodeElement) {
-				memberType = MemberType.Method;
-			} else if (element is GenericFieldCodeElement) {
-				memberType = MemberType.Field;
-			} else {
-				this.memberType = MemberType.Undefined;
-			}
 		}
 
-		public ClassMemberCompareElement (string member, Result result, MemberType memberType = MemberType.Undefined) {
-			this.member = member;
-			this.result = result;
-			this.memberType = memberType;
+		public ClassMemberCompareElement (MemberCodeElement element, string message) : this (element, Result.Error) {
+			this.Message = message;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[{0} {1}: {2}]", result, memberType, member);
+			return string.Format ("[{0} {1}: {2}]", result, memberType, Member);
 		}
 		
 	}
 	
 	public class MemberNameComparer<T> : IEqualityComparer <T> where T : MemberCodeElement
 	{
-		public bool Equals (T x, T y)
-		{
+		public bool Equals (T x, T y) {
 			return x.Name == y.Name;
 		}
 		
-		public int GetHashCode (T obj)
-		{
+		public int GetHashCode (T obj) {
 			return obj.Name.GetHashCode ();
 		}
 	}

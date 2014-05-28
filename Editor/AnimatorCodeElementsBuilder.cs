@@ -127,9 +127,47 @@ namespace Scio.AnimatorAccessGenerator
 		/// classes from namespace UnityEditorInternal which can be subject to changes in future releases.
 		/// </summary>
 		void ProcessAnimatorParameters () {
-			InternalAPIAccess.ProcessAnimatorParameters (animator, classCodeElement, config.ParameterPrefix);
+			InternalAPIAccess.ProcessAnimatorParameters (animator, ProcessAnimatorParameter);
 		}
-		
+
+		public void ProcessAnimatorParameter (AnimatorParameterType t, string item, string defaultValue) {
+			string propName = CodeGenerationUtils.GeneratePropertyName (config.ParameterPrefix, item);
+			string fieldName = CodeGenerationUtils.GeneratePropertyName (config.ParameterHashPrefix, item);
+			fieldName = fieldName.FirstCharToLower ();
+			GenericPropertyCodeElement type = null;
+			GenericFieldCodeElement field = new FieldCodeElement<int> (fieldName, "");
+			if (t == AnimatorParameterType.Bool) {
+				type = new PropertyCodeElement<bool> (propName);
+				type.Getter.CodeLines.Add ("return animator.GetBool (" + fieldName + ");");
+				type.Setter.CodeLines.Add ("animator.SetBool (" + fieldName + ", value);");
+			} else if (t == AnimatorParameterType.Float) {
+				type = new PropertyCodeElement<float> (propName);
+				type.Getter.CodeLines.Add ("return animator.GetFloat (" + fieldName + ");");
+				type.Setter.CodeLines.Add ("animator.SetFloat (" + fieldName + ", value);");
+				// special case for float: provide setter with dampTime and deltaTime
+				GenericMethodCodeElement method = new GenericMethodCodeElement ("void", "Set" + propName);
+				method.AddParameter (typeof (float), "newValue");
+				method.AddParameter (typeof (float), "dampTime");
+				method.AddParameter (typeof (float), "deltaTime");
+				method.Code.Add ("animator.SetFloat (" + fieldName + ", newValue, dampTime, deltaTime);");
+				classCodeElement.Methods.Add (method);
+			} else if (t == AnimatorParameterType.Int) {
+				type = new PropertyCodeElement<int> (propName);
+				type.Getter.CodeLines.Add ("return animator.GetInteger (" + fieldName + ");");
+				type.Setter.CodeLines.Add ("animator.SetInteger (" + fieldName + ", value);");
+			} else if (t == AnimatorParameterType.Trigger) {
+				type = new PropertyCodeElement<bool> (propName);
+				type.Setter.CodeLines.Add ("animator.SetTrigger (" + fieldName + ");");
+			} else {
+				Logger.Warning ("Could not find type for param " + item + " as it seems to be no base type.");
+				return;
+			}
+			type.Summary.Add ("Access to parameter " + item + ", default: " + defaultValue);
+			classCodeElement.Properties.Add (type);
+			field.Summary.Add ("Hash of parameter " + item);
+			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + item + "\");");
+			classCodeElement.Fields.Add (field);
+		}
 
 	}
 }

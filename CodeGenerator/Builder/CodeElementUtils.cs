@@ -93,21 +93,47 @@ namespace Scio.CodeGeneration
 		}
 		
 		public static List<ClassMemberCompareElement> CompareClasses (ClassCodeElement existingClass, ClassCodeElement newClass, 
-				bool removeOldMembers, bool keepObsolete) {
+				bool removeOldMembers, bool keepObsolete) 
+		{
 			List<ClassMemberCompareElement> l = CompareElements (existingClass.Fields, newClass.Fields, removeOldMembers, keepObsolete);
 			l.AddRange (CompareElements (existingClass.Properties, newClass.Properties, removeOldMembers, keepObsolete));
 			l.AddRange (CompareElements (existingClass.Methods, newClass.Methods, removeOldMembers, keepObsolete));
+			List<MemberCodeElement> allNew = new List<MemberCodeElement> ();
+			newClass.Fields.ForEach ((GenericFieldCodeElement element) => allNew.Add (element));
+			newClass.Properties.ForEach ((GenericPropertyCodeElement element) => allNew.Add (element));
+			newClass.Methods.ForEach ((GenericMethodCodeElement element) => allNew.Add (element));
+			l.ForEach ((ClassMemberCompareElement element) => {
+				if (element.result == ClassMemberCompareElement.Result.Obsolete) {
+					element.element.Obsolete = true;
+					allNew.Add (element.element);
+				}
+			});
+			int nextToLast = allNew.Count - 2;
+			for (int i = 0; i <= nextToLast; i++) {
+				MemberCodeElement element = allNew [i];
+				int duplicateIndex = allNew.FindIndex (i + 1, (MemberCodeElement m) => m.Equals (element));
+				if (duplicateIndex >= 0) {
+					MemberCodeElement duplicate = allNew [duplicateIndex];
+					Func<MemberCodeElement, string> formatter = (MemberCodeElement m) => {
+						return (m.Obsolete ? "obsolete " : "") + m.MemberType  + " " + m.ElementType + " " + m.GetSignature ();
+					};
+					string message = string.Format ("Possible naming conflict between [{0}] and [{1}]", formatter (element), formatter (duplicate));
+					l.Add (new ClassMemberCompareElement (element, message));
+					Logger.Debug (message);
+				}
+			}
 			return l;
 		}
 
 		static List<ClassMemberCompareElement> CompareElements<T> (List<T> oldMembers, List<T> newMembers, 
-				bool removeOldMembers, bool keepObsolete) where T : MemberCodeElement {
+				bool removeOldMembers, bool keepObsolete) where T : MemberCodeElement 
+		{
 			List<ClassMemberCompareElement> result = new List<ClassMemberCompareElement> ();
-			IEnumerable<T> newMinusOldList = newMembers.Except (oldMembers, new MemberNameComparer<T> ());
+			IEnumerable<T> newMinusOldList = newMembers.Except (oldMembers);
 			foreach (T newElement in newMinusOldList) {
 				result.Add (new ClassMemberCompareElement (newElement, ClassMemberCompareElement.Result.New));
 			}
-			IEnumerable<T> oldMinusNewList = oldMembers.Except (newMembers, new MemberNameComparer<T> ());
+			IEnumerable<T> oldMinusNewList = oldMembers.Except (newMembers);
 			foreach (T oldElement in oldMinusNewList) {
 				if (!removeOldMembers && (keepObsolete || !oldElement.Obsolete)) {
 					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Obsolete));

@@ -26,6 +26,10 @@ namespace Scio.CodeGeneration
 {
 	public class GenericMethodCodeElement : MemberCodeElement, ICodeBlock
 	{
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.Method; }
+		}
+
 		public List<ParameterCodeElement> Parameters = new List<ParameterCodeElement> ();
 		public List<string> code = new List<string> ();
 		public List<string> Code {
@@ -48,8 +52,26 @@ namespace Scio.CodeGeneration
 			Parameters.Add (new ParameterCodeElement (type, name, defaultValue));
 		}
 
-		public override string ToString ()
-		{
+		public override bool Equals (object obj) {
+			if (obj is GenericMethodCodeElement) {
+				return GetHashCode () == ((GenericMethodCodeElement)obj).GetHashCode ();
+			}
+			return false;
+		}
+
+		public override string GetSignature () {
+			string paramString = "";
+			Parameters.ForEach ( (ParameterCodeElement param) => paramString += (string.IsNullOrEmpty (paramString) ? "" : ",") + param.ParameterType );
+			string s = Name + "(" + paramString + ")";
+			return s;
+		}
+
+		public override int GetHashCode () {
+			string s = GetSignature ();
+			return s.GetHashCode ();
+		}
+		
+		public override string ToString () {
 			string str = "";
 			Code.ForEach ((string s) => str += s + "\n");
 			string pStr = "";

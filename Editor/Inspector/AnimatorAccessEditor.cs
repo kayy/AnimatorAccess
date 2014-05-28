@@ -72,7 +72,7 @@ namespace Scio.AnimatorAccessGenerator
 					if (x.result != y.result) {
 						return x.result - y.result;
 					}
-					return x.member.CompareTo (y.member);
+					return x.Member.CompareTo (y.Member);
 				});
 			}
 			if(GUILayout.Button("Update", (updateCheck != null && updateCheck.Count > 0 ? InspectorStyles.MidMiniButtonHighLighted : EditorStyles.miniButtonMid))) {
@@ -89,30 +89,38 @@ namespace Scio.AnimatorAccessGenerator
 			if (updateCheck != null) {
 				if (updateCheck.Count > 0) {
 					EditorGUILayout.BeginVertical ();
+					List<ClassMemberCompareElement> errors = updateCheck.FindAll ((element) => element.result == ClassMemberCompareElement.Result.Error);
+					List<ClassMemberCompareElement> infos = updateCheck.FindAll ((element) => element.result > ClassMemberCompareElement.Result.Error);
+					if (errors.Count > 0) {
+						EditorGUILayout.LabelField (new GUIContent (errors.Count + " Naming Conflict(s)"), InspectorStyles.LabelRed);
+						foreach (ClassMemberCompareElement error in errors) {
+							string errorTooltip = error.Message;
+							string errorLabel = string.Format ("{0} : {1}", error.Member, errorTooltip);
+							EditorGUILayout.LabelField (new GUIContent (errorLabel, errorTooltip), InspectorStyles.LabelHighLighted);
+						}
+						EditorGUILayout.Separator ();
+					}
 					updateCheckFoldOutState = EditorGUILayout.Foldout (updateCheckFoldOutState, updateCheck.Count + " class members to update");
 					if (updateCheckFoldOutState) {
-						foreach (ClassMemberCompareElement c in updateCheck) {
-							string label = string.Format ("{0}", c.member);
-							Texture icon = null;
+						foreach (ClassMemberCompareElement c in infos) {
+							string label = string.Format ("{0}", c.Signature);
 							string tooltip = "";
 							switch (c.result) {
 							case ClassMemberCompareElement.Result.New:
-								icon = iconAdd;
-								tooltip = string.Format ("{0} {1} will be added", c.memberType, c.member);
+								tooltip = string.Format ("{0} {1} {2} will be added", c.memberType, c.ElementType, c.Signature);
+								EditorGUILayout.LabelField (new GUIContent (label, iconAdd, tooltip));
 								break;
 							case ClassMemberCompareElement.Result.Obsolete:
-								icon = iconObsolete;
-								tooltip = string.Format ("{0} {1} will be marked as obsolete", c.memberType, c.member);
+								tooltip = string.Format ("{0} {1} {2} will be marked as obsolete", c.memberType, c.ElementType, c.Signature);
+								EditorGUILayout.LabelField (new GUIContent (label, iconObsolete, tooltip));
 								break;
 							case ClassMemberCompareElement.Result.Remove:
-								icon = iconRemove;
-								tooltip = string.Format ("{0} {1} will be removed", c.memberType, c.member);
+								tooltip = string.Format ("{0} {1} {2} will be removed", c.memberType, c.ElementType, c.Signature);
+								EditorGUILayout.LabelField (new GUIContent (label, iconRemove, tooltip));
 								break;
 							default:
 								break;
 							}
-							GUIContent content = new GUIContent (label, icon, tooltip);
-							EditorGUILayout.LabelField (content);
 						}
 					}
 					EditorGUILayout.EndVertical ();

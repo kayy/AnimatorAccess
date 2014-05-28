@@ -30,6 +30,9 @@ namespace Scio.AnimatorAccessGenerator {
 		public static GUIStyle MidMiniButtonHighLighted = null;
 		public static GUIStyle RightMiniButtonHighLighted = null;
 		public static GUIStyle ButtonRegular = null;
+		public static GUIStyle LabelRegular = null;
+		public static GUIStyle LabelRed = null;
+		public static GUIStyle LabelHighLighted = null;
 
 		static InspectorStyles () {
 			ButtonDisabled = new GUIStyle ("button");
@@ -42,6 +45,11 @@ namespace Scio.AnimatorAccessGenerator {
 			RightMiniButtonHighLighted.name = "RightMiniButtonHighLighted";
 			RightMiniButtonHighLighted.normal.textColor = Color.white;
 			ButtonRegular = new GUIStyle ("button");
+			LabelRegular = new GUIStyle ("label");
+			LabelRed = new GUIStyle ("label");
+			LabelRed.normal.textColor = Color.red;
+			LabelHighLighted = new GUIStyle ("label");
+			LabelHighLighted.normal.textColor = Color.white;
 		}
 	}
 }

@@ -27,6 +27,9 @@ namespace Scio.CodeGeneration
 {
 	public class ClassCodeElement : AbstractCodeElement
 	{
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.Class; }
+		}
 		public NameSpaceCodeElement NameSpace = new NameSpaceCodeElement ();
 
 		public bool PartialClass = false;
