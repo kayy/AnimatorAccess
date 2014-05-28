@@ -25,6 +25,10 @@ namespace Scio.CodeGeneration
 {
 	public class AttributeCodeElement : CodeElement
 	{
+		public MemberTypeID MemberType {
+			get { return MemberTypeID.Attribute; }
+		}
+		
 		public string Name;
 	
 		public List<string> Parameters = new List<string> ();

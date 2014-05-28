@@ -31,24 +31,21 @@ namespace Scio.CodeGeneration
 		Private = 1,
 	}
 
-	public enum MemberTypeID
-	{
-		Undefined = 0,
-		Field = 1,
-		Property = 2,
-		Method = 3,
-		Constructor = 4,
-		Class = 10,
-	}
-
+	/// <summary>
+	/// Base class for all those elements that have some basic coding features in common e.g. name, access type, 
+	/// attributes, ... Some other elements like files or attributes don't share these features and thus do not
+	/// inherit from this class.
+	/// TODO_kay: Renaming and restructuring to better fit individual elements.
+	/// </summary>
 	public abstract class AbstractCodeElement : CodeElement
 	{
+		public abstract MemberTypeID MemberType { get; }
+
 		protected AccessType accessType = AccessType.Public;
 		public string Access {
 			get { return accessType.ToString ().ToLower ();}
 		}
 
-		public abstract MemberTypeID MemberType { get; }
 		public bool declaredStatic = false;
 		public string Static { get { return (declaredStatic ? "static" : ""); } }
 
@@ -58,15 +55,20 @@ namespace Scio.CodeGeneration
 		/// </summary>
 		public bool Obsolete {
 			get { return Attributes.FindIndex ((a) => a is ObsoleteAttributeCodeElement) >= 0; }
-			// add default obsolete attribute if not there
 			set {
+				// add default obsolete attribute if it does not yet exist:
 				if (!Obsolete) {
 					AddAttribute (new ObsoleteAttributeCodeElement ("", false));
 				}
 			}
 		}
 
-		public string Name;
+		/// <summary>
+		/// Name of the element.
+		/// </summary>
+		/// <value>The name.</value>
+		public string Name { get; private set; }
+
 		/// <summary>
 		/// Comments to add to summary like this one. 
 		/// </summary>

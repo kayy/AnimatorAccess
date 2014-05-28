@@ -29,7 +29,7 @@ namespace Scio.CodeGeneration
 		/// <summary>
 		/// The original state or parameter name.
 		/// </summary>
-		public string Origin;
+		public string Origin { get; set; }
 
 		protected string elementType;
 		public string ElementType { get { return elementType;} }

@@ -69,6 +69,9 @@ namespace Scio.AnimatorAccessGenerator
 			if(GUILayout.Button("Check", EditorStyles.miniButtonLeft)) {
 				updateCheck = Manager.SharedInstance.CheckForUpdates (Selection.activeGameObject);
 				updateCheck.Sort ((x, y) => {
+					if (x.result == ClassMemberCompareElement.Result.Error) {
+						updateCheckFoldOutState = false;
+					}
 					if (x.result != y.result) {
 						return x.result - y.result;
 					}

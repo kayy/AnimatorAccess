@@ -29,6 +29,7 @@ namespace Scio.CodeGeneration
 	/// </summary>
 	public interface CodeElement
 	{
+		MemberTypeID MemberType { get; }
 	}
 
 	/// <summary>
@@ -39,8 +40,26 @@ namespace Scio.CodeGeneration
 		List<string> Code { get; }
 	}
 
+	public enum MemberTypeID
+	{
+		Undefined = 0,
+		Field = 1,
+		Property = 2,
+		Method = 3,
+		Constructor = 4,
+		Class = 10,
+		Parameter = 20,
+		Comment = 21,
+		Attribute = 22,
+		NamespaceDirective = 40,
+		UsingDirective = 41,
+		File = 100,
+	}
+	
 	public abstract class GenericCodeElement : CodeElement
 	{
+		public abstract MemberTypeID MemberType { get; }
+		
 		protected string content = "";
 
 		protected GenericCodeElement (string str) {

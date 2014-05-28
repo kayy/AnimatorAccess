@@ -25,6 +25,10 @@ namespace Scio.CodeGeneration
 {
 	public class FileCodeElement : CodeElement
 	{
+		public MemberTypeID MemberType {
+			get { return MemberTypeID.File; }
+		}
+		
 		public List<UsingCodeElement> Usings = new List<UsingCodeElement> ();
 
 		public List<ClassCodeElement> Classes = new List<ClassCodeElement> ();

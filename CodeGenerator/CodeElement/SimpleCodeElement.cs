@@ -24,11 +24,11 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public class SimpleCodeElement : GenericCodeElement
+	public abstract class SimpleCodeElement : GenericCodeElement
 	{
 		public string Content { get { return content; } }
 
-		public SimpleCodeElement (string str) : base (str) {
+		protected SimpleCodeElement (string str) : base (str) {
 			this.content = str;
 		}
 		public SimpleCodeElement () {}
@@ -37,12 +37,20 @@ namespace Scio.CodeGeneration
 
 	public class LineCommentCodeElement : SimpleCodeElement
 	{
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.Comment; }
+		}
+		
 		public LineCommentCodeElement (string comment) : base (comment) {
 		}
 	}
 	
 	public class SummaryCodeElement : CodeElement
 	{
+		public MemberTypeID MemberType {
+			get { return MemberTypeID.Comment; }
+		}
+		
 		List<string> comments = new List<string> ();
 		public List<string> Comments {
 			get {
@@ -81,6 +89,10 @@ namespace Scio.CodeGeneration
 	
 	public class UsingCodeElement : SimpleCodeElement
 	{
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.UsingDirective; }
+		}
+		
 		public string Name { get { return content; } }
 
 		public UsingCodeElement (string usingNamespace) : base (usingNamespace) {
@@ -89,6 +101,10 @@ namespace Scio.CodeGeneration
 
 	public class NameSpaceCodeElement : SimpleCodeElement
 	{
+		public override MemberTypeID MemberType {
+			get { return MemberTypeID.NamespaceDirective; }
+		}
+		
 		public bool UseDefault { get { return string.IsNullOrEmpty (content); } }
 
 		public string Name {
@@ -104,6 +120,10 @@ namespace Scio.CodeGeneration
 
 	public class ParameterCodeElement : CodeElement
 	{
+		public MemberTypeID MemberType {
+			get { return MemberTypeID.Parameter; }
+		}
+		
 		public string ParameterType;
 		public string Name;
 		public string DefaultValue = "";
