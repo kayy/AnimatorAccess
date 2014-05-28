@@ -29,7 +29,9 @@
 	|}{Summary:{Comments:/// {}
 	||}||}{Access} {Static:{} |}{Partial:{} |}class {Name}{HasBaseClassOrInterfaces: : |}{BaseClassAndInterfaces:{}|, }
     \{
-        {Fields:{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
+        {Fields:{Attributes:[{Name} ({Parameters:{}|, |, })]
+		|}{Summary:{Comments:/// {}
+		||}||}{Access} {Modifiers:{} |}{ElementType} {Name}{InitialiserCode: = {}|};|
         }
 		{Constructors:
 		{Attributes:[{Name} ({Parameters:{}|, |, })]

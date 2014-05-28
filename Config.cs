@@ -113,11 +113,19 @@ namespace Scio.AnimatorAccessGenerator {
 		}
 
 		/// <summary>
-		/// Optional prefix for all methods that check animation state e.g. Is<Prefix>Idle ()
+		/// Optional prefix for all methods that check animator state e.g. Is<AnimatorStatePrefix>Idle ()
 		/// </summary>
 		public virtual string AnimatorStatePrefix {
 			get { return Preferences.GetString (Preferences.Key.AnimatorStatePrefix, ""); }
 			set { Preferences.SetString (Preferences.Key.AnimatorStatePrefix, value); }
+		}
+		
+		/// <summary>
+		/// Optional prefix for all int fields representing an animator state e.g. <AnimatorStateHashPrefix>Idle
+		/// </summary>
+		public virtual string AnimatorStateHashPrefix {
+			get { return Preferences.GetString (Preferences.Key.AnimatorStateHashPrefix, ""); }
+			set { Preferences.SetString (Preferences.Key.AnimatorStateHashPrefix, value); }
 		}
 		
 		/// <summary>
@@ -126,6 +134,14 @@ namespace Scio.AnimatorAccessGenerator {
 		public virtual string ParameterPrefix {
 			get { return Preferences.GetString (Preferences.Key.ParameterPrefix, ""); }
 			set { Preferences.SetString (Preferences.Key.ParameterPrefix, value); }
+		}
+		
+		/// <summary>
+		/// Optional prefix for int fields representing a parameter, e.g. float <ParameterHashPrefix>Speed
+		/// </summary>
+		public virtual string ParameterHashPrefix {
+			get { return Preferences.GetString (Preferences.Key.ParameterHashPrefix, ""); }
+			set { Preferences.SetString (Preferences.Key.ParameterHashPrefix, value); }
 		}
 		
 		/// <summary>

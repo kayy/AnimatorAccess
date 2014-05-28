@@ -24,10 +24,13 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public class ConstructorCodeElement : AbstractCodeElement
+	public class ConstructorCodeElement : AbstractCodeElement, ICodeBlock
 	{
 		public string Parameters = "";
-		public List<string> Code = new List<string> ();
+		public List<string> code = new List<string> ();
+		public List<string> Code {
+			get { return code; }
+		}
 
 		public ConstructorCodeElement (string name, string parameters = "", AccessType access = AccessType.Public) :
 			base (name, access)

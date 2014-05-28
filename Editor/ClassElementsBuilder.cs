@@ -184,6 +184,7 @@ namespace Scio.AnimatorAccessGenerator
 					existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
 					newClass.MergeMethods (existingClass);
 					newClass.MergeProperties (existingClass);
+					newClass.MergeFields (existingClass);
 				}
 			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);

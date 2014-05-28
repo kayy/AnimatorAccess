@@ -24,6 +24,7 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Scio.CodeGeneration;
 
 namespace Scio.AnimatorAccessGenerator
 {
@@ -62,6 +63,42 @@ namespace Scio.AnimatorAccessGenerator
 				fullName += varName.Substring (1);
 			}
 			return fullName;
+		}
+		
+		public static string GenerateStateName (string prefix, string item, string layerPrefix)
+		{
+			string propName = item;
+			if (!string.IsNullOrEmpty (layerPrefix)) {
+				int i = propName.IndexOf (layerPrefix + ".");
+				if (i >= 0) {
+					propName = propName.Substring (layerPrefix.Length + 1);
+				} else {
+					Logger.Warning ("Item [" + item + "] does not contain [" + layerPrefix + "] as prefix");
+				}
+			}
+			return GeneratePropertyName (prefix, propName);
+		}
+
+		public static string FirstCharToLower (this string me) {
+			if (!string.IsNullOrEmpty(me)) {
+				string s = me.Substring (0, 1).ToLower ();
+				if (me.Length > 1) {
+					s += me.Substring (1);
+				}
+				me = s;
+			}
+			return me;
+		}
+		
+		public static string FirstCharToUpper (this string me) {
+			if (!string.IsNullOrEmpty(me)) {
+				string s = me.Substring (0, 1).ToUpper ();
+				if (me.Length > 1) {
+					s += me.Substring (1);
+				}
+				me = s;
+			}
+			return me;
 		}
 		
 		public static string GeneratePropertyName (string prefix, string item) {

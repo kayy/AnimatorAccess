@@ -84,7 +84,11 @@ namespace Scio.CodeGeneration
 		public void MergeProperties (ClassCodeElement other, Predicate<GenericPropertyCodeElement> filter = null) {
 			CodeElementUtils.MergeElements <GenericPropertyCodeElement> (Properties, other.Properties, filter);
 		}
-
+		
+		public void MergeFields (ClassCodeElement other, Predicate<GenericFieldCodeElement> filter = null) {
+			CodeElementUtils.MergeElements <GenericFieldCodeElement> (Fields, other.Fields, filter);
+		}
+		
 		public void AddAttributeToAllMembers (AttributeCodeElement attribute) {
 			Constructors.ForEach ((c) => c.AddAttribute (attribute));
 			Methods.ForEach ((c) => c.AddAttribute (attribute));

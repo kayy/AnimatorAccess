@@ -22,6 +22,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using System;
 using System.Collections.Generic;
 using Scio.CodeGeneration;
 
@@ -33,17 +34,17 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public static class InternalAPIAccess
 	{
+		public delegate void ProcessAnimatorState (int layer, string layerName, string item);
 		static AnimatorController GetInternalAnimatorController (Animator animator) {
 			return animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
 		}
-		
+
 		/// <summary>
 		/// Adds convenience methods to determine the current Animator state as boolean methods to the class code 
 		/// element (e.g. IsIdle ()). NOTE that this method relies on classes from namespace UnityEditorInternal 
 		/// which can be subject to changes in future releases.
 		/// </summary>
-		public static void PrepareMethods (Animator animator, ClassCodeElement classCodeElement, 
-		                                   string animatorStatePrefix, bool forceLayerPrefix) {
+		public static void ProcessAllAnimatorStates (Animator animator, ProcessAnimatorState callback) {
 			AnimatorController controller = GetInternalAnimatorController (animator);
 			int layerCount = controller.layerCount;
 			for (int layer = 0; layer < layerCount; layer++) {
@@ -52,16 +53,7 @@ namespace Scio.AnimatorAccessGenerator
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
 					string item = state.uniqueName;
-					int nameHash = Animator.StringToHash (item);
-					string layerPrefix = (layer > 0 || forceLayerPrefix ? null : layerName);
-					string propName = GenerateStateName (animatorStatePrefix, item, layerPrefix);
-					string methodName = "Is" + propName;
-					MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
-					method.Origin = "state " + item;
-					method.AddParameter (typeof(int), "nameHash");
-					method.Code.Add (" return nameHash == " + nameHash + ";");
-					method.Summary.Add ("true if nameHash equals Animator.StringToHash (" + item + ").");
-					classCodeElement.Methods.Add (method);
+					callback (layer, layerName, item);
 				}
 			}
 		}
@@ -70,7 +62,7 @@ namespace Scio.AnimatorAccessGenerator
 		/// Adds all Animator parameters as properties to the class code element. NOTE that this method relies on 
 		/// classes from namespace UnityEditorInternal which can be subject to changes in future releases.
 		/// </summary>
-		public static void PrepareProperties (Animator animator, ClassCodeElement classCodeElement, string parameterPrefix)
+		public static void ProcessAnimatorParameters (Animator animator, ClassCodeElement classCodeElement, string parameterPrefix)
 		{
 			AnimatorController controller = GetInternalAnimatorController (animator);
 			int countParameters = controller.parameterCount;
@@ -113,19 +105,6 @@ namespace Scio.AnimatorAccessGenerator
 			}
 		}
 
-		static string GenerateStateName (string prefix, string item, string layerPrefix)
-		{
-			string propName = item;
-			if (!string.IsNullOrEmpty (layerPrefix)) {
-				int i = propName.IndexOf (layerPrefix + ".");
-				if (i >= 0) {
-					propName = propName.Substring (layerPrefix.Length + 1);
-				} else {
-					Logger.Warning ("Item [" + item + "] does not contain [" + layerPrefix + "] as prefix");
-				}
-			}
-			return CodeGenerationUtils.GeneratePropertyName (prefix, propName);
-		}
 	}
 }
 

@@ -24,11 +24,14 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public class GenericMethodCodeElement : MemberCodeElement
+	public class GenericMethodCodeElement : MemberCodeElement, ICodeBlock
 	{
 		public List<ParameterCodeElement> Parameters = new List<ParameterCodeElement> ();
-		public List<string> Code = new List<string> ();
-		
+		public List<string> code = new List<string> ();
+		public List<string> Code {
+			get { return code; }
+		}
+
 		public GenericMethodCodeElement (Type type, string name, AccessType access = AccessType.Public) : 
 			base (type, name, access) {
 		}

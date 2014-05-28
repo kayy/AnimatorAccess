@@ -43,7 +43,9 @@ namespace Scio.AnimatorAccessGenerator
 			MonoBehaviourComponentBaseClass,
 			ForceLayerPrefix,
 			AnimatorStatePrefix,
+			AnimatorStateHashPrefix,
 			ParameterPrefix,
+			ParameterHashPrefix,
 			DebugMode
 		}
 		const string Prefix = "Scio.AnimatorAccessGenerator.";

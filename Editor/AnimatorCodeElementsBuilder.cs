@@ -41,6 +41,8 @@ namespace Scio.AnimatorAccessGenerator
 		Animator animator;
 		
 		ClassCodeElement classCodeElement;
+
+		ICodeBlock initialiserCode;
 		
 		public AnimatorCodeElementsBuilder (GameObject go, string className, Config c)
 		{
@@ -61,12 +63,12 @@ namespace Scio.AnimatorAccessGenerator
 			PrepareFields ();
 			if (config.GenerateMonoBehaviourComponent) {
 				classCodeElement.SetBaseClass (config.MonoBehaviourComponentBaseClass);
-				PrepareAwakeMethod ();
+				initialiserCode = PrepareAwakeMethod ();
 			} else {
-				PrepareConstructors ();
+				initialiserCode = PrepareConstructors ();
 			}
-			PrepareMethods ();
-			PrepareProperties ();
+			ProcessAnimatorStates ();
+			ProcessAnimatorParameters ();
 			return classCodeElement;
 		}
 
@@ -75,19 +77,21 @@ namespace Scio.AnimatorAccessGenerator
 			classCodeElement.Fields.Add (animatorVar);
 		}
 		
-		void PrepareConstructors () {
+		ICodeBlock PrepareConstructors () {
 			ConstructorCodeElement withAnimatorParam = new ConstructorCodeElement (targetClassName, "Animator animator");
 			withAnimatorParam.Code.Add ("this.animator = animator;");
 			classCodeElement.Constructors.Add (withAnimatorParam);
 			ConstructorCodeElement defaultConstructor = new ConstructorCodeElement (targetClassName);
 			defaultConstructor.Attributes.Add (new ObsoleteAttributeCodeElement ("Default constructor is provided only for internal use (reflection). Use " + targetClassName + " (Animator animator) instead", true));
 			classCodeElement.Constructors.Add (defaultConstructor);
+			return withAnimatorParam;
 		}
 
-		void PrepareAwakeMethod () {
+		ICodeBlock PrepareAwakeMethod () {
 			GenericMethodCodeElement method = new GenericMethodCodeElement ("void", "Awake");
 			method.Code.Add ("animator = GetComponent<Animator> ();");
 			classCodeElement.Methods.Add (method);
+			return method;
 		}
 
 		/// <summary>
@@ -95,16 +99,35 @@ namespace Scio.AnimatorAccessGenerator
 		/// element (e.g. IsIdle ()). NOTE that this method relies on classes from namespace UnityEditorInternal 
 		/// which can be subject to changes in future releases.
 		/// </summary>
-		void PrepareMethods () {
-			InternalAPIAccess.PrepareMethods (animator, classCodeElement, config.AnimatorStatePrefix, config.ForceLayerPrefix);
+		void ProcessAnimatorStates () {
+			InternalAPIAccess.ProcessAllAnimatorStates (animator, ProcessAnimatorState);
+		}
+
+		public void ProcessAnimatorState (int layer, string layerName, string item) {
+			string layerPrefix = (layer > 0 || config.ForceLayerPrefix ? null : layerName);
+			string name = CodeGenerationUtils.GenerateStateName (config.AnimatorStatePrefix, item, layerPrefix);
+			name = name.FirstCharToUpper ();
+			string fieldName = CodeGenerationUtils.GenerateStateName (config.AnimatorStateHashPrefix, item, layerPrefix);
+			fieldName = fieldName.FirstCharToLower ();
+			GenericFieldCodeElement field = new GenericFieldCodeElement (typeof(int), fieldName);
+			field.Summary.Add ("Hash of Animator state " + item);
+			classCodeElement.Fields.Add (field);
+			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + item + "\");");
+			string methodName = "Is" + name;
+			MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
+			method.Origin = "state " + item;
+			method.AddParameter (typeof(int), "nameHash");
+			method.Code.Add (" return nameHash == " + fieldName + ";");
+			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + item + "\").");
+			classCodeElement.Methods.Add (method);
 		}
 
 		/// <summary>
 		/// Adds all Animator parameters as properties to the class code element. NOTE that this method relies on 
 		/// classes from namespace UnityEditorInternal which can be subject to changes in future releases.
 		/// </summary>
-		void PrepareProperties () {
-			InternalAPIAccess.PrepareProperties (animator, classCodeElement, config.ParameterPrefix);
+		void ProcessAnimatorParameters () {
+			InternalAPIAccess.ProcessAnimatorParameters (animator, classCodeElement, config.ParameterPrefix);
 		}
 		
 

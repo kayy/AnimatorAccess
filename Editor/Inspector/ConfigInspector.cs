@@ -37,7 +37,9 @@ namespace Scio.AnimatorAccessGenerator
 			"Note that this option is not considered if 'Force Layer Prefix' is set.");
 		static GUIContent ForceLayerPrefix = new GUIContent ("Force Layer Prefix", "Check this if you want the layer name be prepended even for Animator states of layer 0.");
 		static GUIContent AnimatorStatePrefix = new GUIContent ("Animator State Prefix", "Optional prefix for all methods that check animation state e.g. Is<Prefix>Idle ().");
+		static GUIContent AnimatorStateHashPrefix = new GUIContent ("Animator State Hash Prefix", "Optional prefix for all int fields representing an animator state e.g. <AnimatorStateHashPrefix>Idle.");
 		static GUIContent ParameterPrefix = new GUIContent ("Parameter Prefix", "Optional prefix for parameter access properties, e.g. float <Prefix>Speed.");
+		static GUIContent ParameterHashPrefix = new GUIContent ("Parameter Hash Prefix", "Optional prefix for int fields representing a parameter, e.g. float <ParameterHashPrefix>Speed.");
 		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
 
 		public void OnGUI() {
@@ -48,8 +50,10 @@ namespace Scio.AnimatorAccessGenerator
 			config.ForceOverwritingOldClass = EditorGUILayout.Toggle (ForceOverwritingOldClass, config.ForceOverwritingOldClass);
 			EditorGUILayout.Separator ();
 			config.AnimatorStatePrefix = EditorGUILayout.TextField (AnimatorStatePrefix, config.AnimatorStatePrefix);
+			config.AnimatorStateHashPrefix = EditorGUILayout.TextField (AnimatorStateHashPrefix, config.AnimatorStateHashPrefix);
 			EditorGUILayout.Separator ();
 			config.ParameterPrefix = EditorGUILayout.TextField (ParameterPrefix, config.ParameterPrefix);
+			config.ParameterHashPrefix = EditorGUILayout.TextField (ParameterHashPrefix, config.ParameterHashPrefix);
 			config.ForceLayerPrefix = EditorGUILayout.Toggle (ForceLayerPrefix, config.ForceLayerPrefix);
 			EditorGUILayout.Separator ();
 			advancedSettingFoldoutState = EditorGUILayout.Foldout (advancedSettingFoldoutState, "Advanced Settings");

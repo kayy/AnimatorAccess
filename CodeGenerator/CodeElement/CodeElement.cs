@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
@@ -30,6 +31,10 @@ namespace Scio.CodeGeneration
 	{
 	}
 
+	public interface ICodeBlock
+	{
+		List<string> Code { get; }
+	}
 	public abstract class GenericCodeElement : CodeElement
 	{
 		protected string content = "";
