@@ -15,12 +15,7 @@ namespace AnimatorAccessExample
 		}
 		Direction direction = Direction.Staying;
 		
-		int jumpTrigger;
-		int yawnTrigger;
-		int speedFloat;
-		int idleState;
-		int yawnState;
-		int jumpState;
+		AnimatorAccess.ExamplePlayerAnimatorAccess access;
 
 		Animator animator;
 		int currentState0;
@@ -35,13 +30,7 @@ namespace AnimatorAccessExample
 		
 		void Awake () {
 			animator = GetComponent<Animator> ();
-
-			jumpTrigger = Animator.StringToHash ("JumpTrigger");
-			yawnTrigger = Animator.StringToHash ("yawnTrigger");
-			speedFloat = Animator.StringToHash ("Speed");
-			idleState = Animator.StringToHash ("Base Layer.Idle");
-			yawnState = Animator.StringToHash ("Base Layer.Yawn");
-			jumpState = Animator.StringToHash ("Base Layer.Jump");
+			access = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
 		}
 		
 		void Update () {
@@ -51,21 +40,21 @@ namespace AnimatorAccessExample
 		
 		void FixedUpdate () {
 			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
-			if (currentState0 == yawnState) {
+			if (access.IsYawn (currentState0)) {
 				// input is suppressed on yawning
 				speed = 0f;
 				return;
-			} else if (currentState0 == idleState) {
+			} else if (access.IsIdle (currentState0)) {
 				float random = Random.value;
 				if (random > YawnThreshold) {
-					animator.SetTrigger (yawnTrigger);
+					access.YawnTrigger = true;
 				}
-			} else if (currentState0 == jumpState) {
+			} else if (access.IsJump (currentState0)) {
 				// wait until the jump has finished
 				return;
 			}
 			if (jumpKeyPressed) {
-				animator.SetTrigger (jumpTrigger);
+				access.JumpTrigger = true;
 			}
 			float newSpeed = horizontalInput * maxSpeed;
 			Direction newDirection = ToDirection (newSpeed);
@@ -76,7 +65,7 @@ namespace AnimatorAccessExample
 			speed = newSpeed;
 			direction = newDirection;
 			rigidbody.MovePosition (transform.position + speed * Vector3.right * Time.deltaTime);
-			animator.SetFloat (speedFloat, Mathf.Abs (speed));
+			access.Speed = Mathf.Abs (speed);
 		}
 		
 		void OnTriggerstay (Collider other) {
