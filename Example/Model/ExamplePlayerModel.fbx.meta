@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: dbe147068675848f9b0dec8069f50111
+guid: fff722429a0ab48dd8edb55d995234bc
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
@@ -55,13 +55,12 @@ ModelImporter:
     400048: Thigh_R
     4300000: Mesh
     7400000: Default Take
-    7400002: T-Pose
-    7400004: Walk
-    7400006: Idle
-    7400008: Run
-    7400010: Backup
-    7400012: Hurrah
-    7400014: Yawn
+    7400002: Hurrah
+    7400004: Idle
+    7400006: T-Pose
+    7400008: Walk
+    7400010: Yawn
+    7400012: Jump
     9500000: //RootNode
     13700000: Mesh
   materials:
@@ -72,13 +71,241 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
     clipAnimations:
+    - serializedVersion: 16
+      name: Default Take
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 74
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: AAPlayer
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/RootBone
+        weight: 1
+      - path: Armature/RootBone/Hips_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L/Foot_L
+        weight: 1
+      - path: Armature/RootBone/Hips_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R/Foot_R
+        weight: 1
+      - path: Armature/RootBone/Spine
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Neck
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Neck/Head
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L/Hand_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R/Hand_R
+        weight: 1
+      - path: Mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Jump
+      takeName: Jump
+      firstFrame: 0
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: AAPlayer
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/RootBone
+        weight: 1
+      - path: Armature/RootBone/Hips_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L/Foot_L
+        weight: 1
+      - path: Armature/RootBone/Hips_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R/Foot_R
+        weight: 1
+      - path: Armature/RootBone/Spine
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Neck
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Neck/Head
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L/Hand_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R/Hand_R
+        weight: 1
+      - path: Mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle
+      takeName: Idle
+      firstFrame: 0
+      lastFrame: 65
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: AAPlayer
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/RootBone
+        weight: 1
+      - path: Armature/RootBone/Hips_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L
+        weight: 1
+      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L/Foot_L
+        weight: 1
+      - path: Armature/RootBone/Hips_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R
+        weight: 1
+      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R/Foot_R
+        weight: 1
+      - path: Armature/RootBone/Spine
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Neck
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Neck/Head
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L/Hand_L
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R
+        weight: 1
+      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R/Hand_R
+        weight: 1
+      - path: Mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
     - serializedVersion: 16
       name: T-Pose
       takeName: T-Pose
@@ -156,168 +383,16 @@ ModelImporter:
       maskType: 0
       maskSource: {instanceID: 0}
     - serializedVersion: 16
-      name: Idle
-      takeName: Idle
-      firstFrame: 0
-      lastFrame: 32
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: AAPlayer
-        weight: 1
-      - path: Armature
-        weight: 1
-      - path: Armature/RootBone
-        weight: 1
-      - path: Armature/RootBone/Hips_L
-        weight: 1
-      - path: Armature/RootBone/Hips_L/Thigh_L
-        weight: 1
-      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L
-        weight: 1
-      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L/Foot_L
-        weight: 1
-      - path: Armature/RootBone/Hips_R
-        weight: 1
-      - path: Armature/RootBone/Hips_R/Thigh_R
-        weight: 1
-      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R
-        weight: 1
-      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R/Foot_R
-        weight: 1
-      - path: Armature/RootBone/Spine
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Neck
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Neck/Head
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L/Hand_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R/Hand_R
-        weight: 1
-      - path: Mesh
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-    - serializedVersion: 16
       name: Walk
       takeName: Walk
       firstFrame: 0
-      lastFrame: 28
+      lastFrame: 29
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       loopTime: 1
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 1
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: AAPlayer
-        weight: 1
-      - path: Armature
-        weight: 1
-      - path: Armature/RootBone
-        weight: 1
-      - path: Armature/RootBone/Hips_L
-        weight: 1
-      - path: Armature/RootBone/Hips_L/Thigh_L
-        weight: 1
-      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L
-        weight: 1
-      - path: Armature/RootBone/Hips_L/Thigh_L/LowerLeg_L/Foot_L
-        weight: 1
-      - path: Armature/RootBone/Hips_R
-        weight: 1
-      - path: Armature/RootBone/Hips_R/Thigh_R
-        weight: 1
-      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R
-        weight: 1
-      - path: Armature/RootBone/Hips_R/Thigh_R/LowerLeg_R/Foot_R
-        weight: 1
-      - path: Armature/RootBone/Spine
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Neck
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Neck/Head
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_L/Arm_L/LowerArm_L/Hand_L
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R
-        weight: 1
-      - path: Armature/RootBone/Spine/Rips/Shoulder_R/Arm_R/LowerArm_R/Hand_R
-        weight: 1
-      - path: Mesh
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-    - serializedVersion: 16
-      name: Hurrah
-      takeName: Hurrah
-      firstFrame: 0
-      lastFrame: 19
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -492,7 +567,7 @@ ModelImporter:
     armStretch: .0500000007
     legStretch: .0500000007
     feetSpacing: 0
-    rootMotionBoneName: RootBone
+    rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   additionalBone: 0
