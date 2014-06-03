@@ -31,7 +31,7 @@ namespace Scio.CodeGeneration
 		}
 
 		public List<ParameterCodeElement> Parameters = new List<ParameterCodeElement> ();
-		public List<string> code = new List<string> ();
+		List<string> code = new List<string> ();
 		public List<string> Code {
 			get { return code; }
 		}
@@ -80,7 +80,7 @@ namespace Scio.CodeGeneration
 		}
 	}
 	
-	public class MethodCodeElement<T> : GenericMethodCodeElement where T : struct
+	public class MethodCodeElement<T> : GenericMethodCodeElement 
 	{
 		public MethodCodeElement (string name, AccessType access = AccessType.Public) : 
 			base (typeof (T), name, access)

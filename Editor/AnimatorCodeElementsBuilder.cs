@@ -100,6 +100,16 @@ namespace Scio.AnimatorAccessGenerator
 		/// which can be subject to changes in future releases.
 		/// </summary>
 		void ProcessAnimatorStates () {
+			if (config.GenerateStateDict) {
+				classCodeElement.Fields.Add (new GenericFieldCodeElement ("Hashtable", "stateDictionary", "new Hashtable ()"));
+				MethodCodeElement<string> method = new MethodCodeElement<string> ("StateIdToName");
+				method.AddParameter (typeof (int), "id");
+				method.Code.Add ("if (stateDictionary.ContainsKey (id)) {");
+				method.Code.Add ("\treturn (string)stateDictionary[id];");
+				method.Code.Add ("}");
+				method.Code.Add ("return \"\";");
+				classCodeElement.Methods.Add (method);
+			}
 			InternalAPIAccess.ProcessAllAnimatorStates (animator, ProcessAnimatorState);
 		}
 
@@ -120,6 +130,9 @@ namespace Scio.AnimatorAccessGenerator
 			method.Code.Add (" return nameHash == " + fieldName + ";");
 			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + item + "\").");
 			classCodeElement.Methods.Add (method);
+			if (config.GenerateStateDict) {
+				initialiserCode.Code.Add ("stateDictionary.Add (" + fieldName + ", \"" + item + "\");");
+			}
 		}
 
 		/// <summary>

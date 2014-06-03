@@ -41,6 +41,7 @@ namespace Scio.AnimatorAccessGenerator
 		static GUIContent ParameterPrefix = new GUIContent ("Parameter Prefix", "Optional prefix for parameter access properties, e.g. float <Prefix>Speed.");
 		static GUIContent ParameterHashPrefix = new GUIContent ("Parameter Hash Prefix", "Optional prefix for int fields representing a parameter, e.g. float <ParameterHashPrefix>Speed.");
 		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
+		static GUIContent GenerateStateDictionary = new GUIContent ("Generate State Dictionary", "Create an Animator state dictionary that can be queried by StateIdToName (int id).");
 
 		public void OnGUI() {
 			Config config = ConfigFactory.DefaultConfig;
@@ -55,6 +56,8 @@ namespace Scio.AnimatorAccessGenerator
 			config.ParameterPrefix = EditorGUILayout.TextField (ParameterPrefix, config.ParameterPrefix);
 			config.ParameterHashPrefix = EditorGUILayout.TextField (ParameterHashPrefix, config.ParameterHashPrefix);
 			config.ForceLayerPrefix = EditorGUILayout.Toggle (ForceLayerPrefix, config.ForceLayerPrefix);
+			EditorGUILayout.Separator ();
+			config.GenerateStateDict = EditorGUILayout.Toggle (GenerateStateDictionary, config.GenerateStateDict);
 			EditorGUILayout.Separator ();
 			advancedSettingFoldoutState = EditorGUILayout.Foldout (advancedSettingFoldoutState, "Advanced Settings");
 			if (advancedSettingFoldoutState) {

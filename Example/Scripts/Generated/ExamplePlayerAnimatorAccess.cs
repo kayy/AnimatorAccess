@@ -22,10 +22,11 @@
 //  THE SOFTWARE.
 
 using UnityEngine;
+using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/03/2014 23:03:28")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/04/2014 00:57:31")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// DON'T EDIT! Your changes will be lost when this class is regenerated.
@@ -33,6 +34,8 @@ namespace AnimatorAccess {
 	public class ExamplePlayerAnimatorAccess : BaseAnimatorAccess
     {
         private Animator animator;
+		
+        public Hashtable stateDictionary = new Hashtable ();
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Walk
@@ -75,12 +78,23 @@ namespace AnimatorAccess {
 		public void Awake () { 
 			animator = GetComponent<Animator> ();
 			walk = Animator.StringToHash ("Base Layer.Walk");
+			stateDictionary.Add (walk, "Base Layer.Walk");
 			idle = Animator.StringToHash ("Base Layer.Idle");
+			stateDictionary.Add (idle, "Base Layer.Idle");
 			yawn = Animator.StringToHash ("Base Layer.Yawn");
+			stateDictionary.Add (yawn, "Base Layer.Yawn");
 			jump = Animator.StringToHash ("Base Layer.Jump");
+			stateDictionary.Add (jump, "Base Layer.Jump");
 			speed = Animator.StringToHash ("Speed");
 			jumpTrigger = Animator.StringToHash ("JumpTrigger");
 			yawnTrigger = Animator.StringToHash ("yawnTrigger");
+		}
+		
+		public string StateIdToName (int id) { 
+			if (stateDictionary.ContainsKey (id)) {
+				return (string)stateDictionary[id];
+			}
+			return "";
 		}
 		
 		/// <summary>

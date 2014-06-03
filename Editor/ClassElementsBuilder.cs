@@ -140,7 +140,8 @@ namespace Scio.AnimatorAccessGenerator
 					Logger.Info ("Generating source for " + className + " the very first time");
 				}
 				try {
-					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is") || mi.Name.StartsWith ("Set") || mi.Name.StartsWith ("Get");
+					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is") || 
+						mi.Name.StartsWith ("Set") || mi.Name.StartsWith ("Get") || mi.Name == "StateIdToName";
 					existingClass = existingClassBuilder.Build ();
 				} catch (System.Exception ex) {
 					Logger.Warning (ex.Message + "\n" + ex.StackTrace);
@@ -190,6 +191,7 @@ namespace Scio.AnimatorAccessGenerator
 			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);
 			fileElement.Usings.Add (new UsingCodeElement ("UnityEngine"));
+			fileElement.Usings.Add (new UsingCodeElement ("System.Collections"));
 			CodeGeneratorResult result = generator.GenerateCode (fileElement);
 			if (result.Success) {
 				code = generator.Code;

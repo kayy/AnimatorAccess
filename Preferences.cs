@@ -46,8 +46,10 @@ namespace Scio.AnimatorAccessGenerator
 			AnimatorStateHashPrefix,
 			ParameterPrefix,
 			ParameterHashPrefix,
-			DebugMode
+			DebugMode,
+			GenerateStateDict
 		}
+
 		const string Prefix = "Scio.AnimatorAccessGenerator.";
 
 		public static string GetString (Key key) {
@@ -67,6 +69,10 @@ namespace Scio.AnimatorAccessGenerator
 		
 		public static bool GetBool (Key key) {
 			return PlayerPrefs.GetBool (Prefix + key);
+		}
+		
+		public static bool GetBool (Key key, bool defaultValue) {
+			return PlayerPrefs.GetBool (Prefix + key, defaultValue);
 		}
 		
 		public static void SetBool (Key key, bool s) {

@@ -103,7 +103,7 @@ namespace Scio.AnimatorAccessGenerator
 						}
 						EditorGUILayout.Separator ();
 					}
-					updateCheckFoldOutState = EditorGUILayout.Foldout (updateCheckFoldOutState, updateCheck.Count + " class members to update");
+					updateCheckFoldOutState = EditorGUILayout.Foldout (updateCheckFoldOutState, updateCheck.Count + " class member(s) to update");
 					if (updateCheckFoldOutState) {
 						foreach (ClassMemberCompareElement c in infos) {
 							string label = string.Format ("{0}", c.Signature);

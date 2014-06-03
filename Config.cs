@@ -152,6 +152,14 @@ namespace Scio.AnimatorAccessGenerator {
 		}
 
 		/// <summary>
+		/// If true, a <hash Id, state name> dictionary is created including method StateIdToName (int id).
+		/// </summary>
+		public virtual bool GenerateStateDict {
+			get { return Preferences.GetBool (Preferences.Key.GenerateStateDict, true); }
+			set { Preferences.SetBool (Preferences.Key.GenerateStateDict, value); }
+		}
+
+		/// <summary>
 		/// If true, more log messages are written to console view.
 		/// </summary>
 		public virtual bool DebugMode {
