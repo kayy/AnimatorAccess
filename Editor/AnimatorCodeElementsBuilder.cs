@@ -88,7 +88,7 @@ namespace Scio.AnimatorAccessGenerator
 		}
 
 		ICodeBlock PrepareAwakeMethod () {
-			GenericMethodCodeElement method = new GenericMethodCodeElement ("void", "Awake");
+			VoidMethodCodeElement method = new VoidMethodCodeElement ("Awake");
 			method.Code.Add ("animator = GetComponent<Animator> ();");
 			classCodeElement.Methods.Add (method);
 			return method;
@@ -130,40 +130,67 @@ namespace Scio.AnimatorAccessGenerator
 			InternalAPIAccess.ProcessAnimatorParameters (animator, ProcessAnimatorParameter);
 		}
 
+		/// <summary>
+		/// Callback from InternalAPIAccess to process a single parameter. Hopefully this remains stable on API changes.
+		/// </summary>
+		/// <param name="t">Type of parameter in our representation.</param>
+		/// <param name="item">Raw parameter name.</param>
+		/// <param name="defaultValue">Default value.</param>
 		public void ProcessAnimatorParameter (AnimatorParameterType t, string item, string defaultValue) {
 			string propName = CodeGenerationUtils.GeneratePropertyName (config.ParameterPrefix, item);
+			string getterName = "Get" + propName;
+			string setterName = "Set" + propName;
 			string fieldName = CodeGenerationUtils.GeneratePropertyName (config.ParameterHashPrefix, item);
 			fieldName = fieldName.FirstCharToLower ();
-			GenericPropertyCodeElement type = null;
+			VoidMethodCodeElement setterMethod = new VoidMethodCodeElement (setterName);
+			GenericMethodCodeElement getterMethod = null;
 			GenericFieldCodeElement field = new FieldCodeElement<int> (fieldName, "");
 			if (t == AnimatorParameterType.Bool) {
-				type = new PropertyCodeElement<bool> (propName);
-				type.Getter.CodeLines.Add ("return animator.GetBool (" + fieldName + ");");
-				type.Setter.CodeLines.Add ("animator.SetBool (" + fieldName + ", value);");
+				getterMethod = new MethodCodeElement<bool> (getterName);
+				getterMethod.Summary.Add ("Access to boolean parameter " + item + ", default is: " + defaultValue + ".");
+				getterMethod.Code.Add ("return animator.GetBool (" + fieldName + ");");
+				setterMethod.Summary.Add ("Set boolean value of parameter " + item + ".");
+				setterMethod.Summary.Add ("<param name=\"newValue\">New value for boolean parameter " + item + ".</param>");
+				setterMethod.AddParameter (typeof (bool), "newValue");
+				setterMethod.Code.Add ("animator.SetBool (" + fieldName + ", newValue);");
 			} else if (t == AnimatorParameterType.Float) {
-				type = new PropertyCodeElement<float> (propName);
-				type.Getter.CodeLines.Add ("return animator.GetFloat (" + fieldName + ");");
-				type.Setter.CodeLines.Add ("animator.SetFloat (" + fieldName + ", value);");
+				getterMethod = new MethodCodeElement<float> (getterName);
+				getterMethod.Summary.Add ("Access to float parameter " + item + ", default is: " + defaultValue + ".");
+				getterMethod.Code.Add ("return animator.GetFloat (" + fieldName + ");");
+				setterMethod.Summary.Add ("Set float value of parameter " + item + ".");
+				setterMethod.Summary.Add ("<param name=\"newValue\">New value for float parameter " + item + ".</param>");
+				setterMethod.AddParameter (typeof (float), "newValue");
+				setterMethod.Code.Add ("animator.SetFloat (" + fieldName + ", newValue);");
 				// special case for float: provide setter with dampTime and deltaTime
-				GenericMethodCodeElement method = new GenericMethodCodeElement ("void", "Set" + propName);
-				method.AddParameter (typeof (float), "newValue");
-				method.AddParameter (typeof (float), "dampTime");
-				method.AddParameter (typeof (float), "deltaTime");
-				method.Code.Add ("animator.SetFloat (" + fieldName + ", newValue, dampTime, deltaTime);");
-				classCodeElement.Methods.Add (method);
+				VoidMethodCodeElement methodExtended = new VoidMethodCodeElement (setterName);
+				methodExtended.AddParameter (typeof (float), "newValue");
+				methodExtended.AddParameter (typeof (float), "dampTime");
+				methodExtended.AddParameter (typeof (float), "deltaTime");
+				methodExtended.Summary.Add ("Set float parameter of " + item + " using damp and delta time .");
+				methodExtended.Summary.Add ("<param name=\"newValue\">New value for float parameter " + item + ".</param>");
+				methodExtended.Summary.Add ("<param name=\"dampTime\">The time allowed to parameter " + item + " to reach the value.</param>");
+				methodExtended.Summary.Add ("<param name=\"deltaTime\">The current frame deltaTime.</param>");
+				methodExtended.Code.Add ("animator.SetFloat (" + fieldName + ", newValue, dampTime, deltaTime);");
+				classCodeElement.Methods.Add (methodExtended);
 			} else if (t == AnimatorParameterType.Int) {
-				type = new PropertyCodeElement<int> (propName);
-				type.Getter.CodeLines.Add ("return animator.GetInteger (" + fieldName + ");");
-				type.Setter.CodeLines.Add ("animator.SetInteger (" + fieldName + ", value);");
+				getterMethod = new MethodCodeElement<int> (getterName);
+				getterMethod.Summary.Add ("Access to integer parameter " + item + ", default is: " + defaultValue + ".");
+				getterMethod.Code.Add ("return animator.GetInteger (" + fieldName + ");");
+				setterMethod.Summary.Add ("Set integer value of parameter " + item + ".");
+				setterMethod.Summary.Add ("<param name=\"newValue\">New value for integer parameter " + item + ".</param>");
+				setterMethod.AddParameter (typeof (int), "newValue");
+				setterMethod.Code.Add ("animator.SetInteger (" + fieldName + ", newValue);");
 			} else if (t == AnimatorParameterType.Trigger) {
-				type = new PropertyCodeElement<bool> (propName);
-				type.Setter.CodeLines.Add ("animator.SetTrigger (" + fieldName + ");");
+				setterMethod.Summary.Add ("Activate trigger of parameter " + item + ".");
+				setterMethod.Code.Add ("animator.SetTrigger (" + fieldName + ");");
 			} else {
 				Logger.Warning ("Could not find type for param " + item + " as it seems to be no base type.");
 				return;
 			}
-			type.Summary.Add ("Access to parameter " + item + ", default: " + defaultValue);
-			classCodeElement.Properties.Add (type);
+			classCodeElement.Methods.Add (setterMethod);
+			if (getterMethod != null) {
+				classCodeElement.Methods.Add (getterMethod);
+			}
 			field.Summary.Add ("Hash of parameter " + item);
 			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + item + "\");");
 			classCodeElement.Fields.Add (field);

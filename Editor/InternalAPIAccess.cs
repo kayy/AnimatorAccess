@@ -68,11 +68,13 @@ namespace Scio.AnimatorAccessGenerator
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Adds all Animator parameters as properties to the class code element. NOTE that this method relies on 
 		/// classes from namespace UnityEditorInternal which can be subject to changes in future releases.
 		/// </summary>
+		/// <param name="animator">Animator instance to inspect.</param>
+		/// <param name="callback">Callback delegate for processing each of the single paramters.</param>
 		public static void ProcessAnimatorParameters (Animator animator, ProcessAnimatorParameter callback)
 		{
 			AnimatorController controller = GetInternalAnimatorController (animator);

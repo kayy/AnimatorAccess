@@ -25,7 +25,7 @@ using UnityEngine;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/03/2014 21:05:22")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/03/2014 23:03:28")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// DON'T EDIT! Your changes will be lost when this class is regenerated.
@@ -71,28 +71,6 @@ namespace AnimatorAccess {
 		
 		
 		
-		/// <summary>
-		/// Access to parameter Speed, default: 0
-		/// </summary>
-		public float Speed { 
-			get{ return animator.GetFloat (speed); }
-			set{ animator.SetFloat (speed, value); }
-		}
-		
-		/// <summary>
-		/// Access to parameter JumpTrigger, default: (not available)
-		/// </summary>
-		public bool JumpTrigger { 
-			set{ animator.SetTrigger (jumpTrigger); }
-		}
-		
-		/// <summary>
-		/// Access to parameter yawnTrigger, default: (not available)
-		/// </summary>
-		public bool YawnTrigger { 
-			set{ animator.SetTrigger (yawnTrigger); }
-		}
-		
 		
 		public void Awake () { 
 			animator = GetComponent<Animator> ();
@@ -133,8 +111,43 @@ namespace AnimatorAccess {
 			 return nameHash == jump;
 		}
 		
+		/// <summary>
+		/// Set float parameter of Speed using damp and delta time .
+		/// <param name="newValue">New value for float parameter Speed.</param>
+		/// <param name="dampTime">The time allowed to parameter Speed to reach the value.</param>
+		/// <param name="deltaTime">The current frame deltaTime.</param>
+		/// </summary>
 		public void SetSpeed (float newValue, float dampTime, float deltaTime) { 
 			animator.SetFloat (speed, newValue, dampTime, deltaTime);
+		}
+		
+		/// <summary>
+		/// Set float value of parameter Speed.
+		/// <param name="newValue">New value for float parameter Speed.</param>
+		/// </summary>
+		public void SetSpeed (float newValue) { 
+			animator.SetFloat (speed, newValue);
+		}
+		
+		/// <summary>
+		/// Access to float parameter Speed, default is: 0.
+		/// </summary>
+		public float GetSpeed () { 
+			return animator.GetFloat (speed);
+		}
+		
+		/// <summary>
+		/// Activate trigger of parameter JumpTrigger.
+		/// </summary>
+		public void SetJumpTrigger () { 
+			animator.SetTrigger (jumpTrigger);
+		}
+		
+		/// <summary>
+		/// Activate trigger of parameter yawnTrigger.
+		/// </summary>
+		public void SetYawnTrigger () { 
+			animator.SetTrigger (yawnTrigger);
 		}
 		
         

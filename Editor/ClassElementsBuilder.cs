@@ -140,7 +140,7 @@ namespace Scio.AnimatorAccessGenerator
 					Logger.Info ("Generating source for " + className + " the very first time");
 				}
 				try {
-					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is") || mi.Name.StartsWith ("Set");
+					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is") || mi.Name.StartsWith ("Set") || mi.Name.StartsWith ("Get");
 					existingClass = existingClassBuilder.Build ();
 				} catch (System.Exception ex) {
 					Logger.Warning (ex.Message + "\n" + ex.StackTrace);

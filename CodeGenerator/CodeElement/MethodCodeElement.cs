@@ -87,4 +87,12 @@ namespace Scio.CodeGeneration
 		{
 		}
 	}
+
+	public class VoidMethodCodeElement : GenericMethodCodeElement
+	{
+		public VoidMethodCodeElement (string name, AccessType access = AccessType.Public) : 
+			base ("void", name, access)
+		{
+		}
+	}
 }

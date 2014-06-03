@@ -15,7 +15,7 @@ namespace AnimatorAccessExample
 		}
 		Direction direction = Direction.Staying;
 		
-		AnimatorAccess.ExamplePlayerAnimatorAccess access;
+		AnimatorAccess.ExamplePlayerAnimatorAccess animA;
 
 		Animator animator;
 		int currentState0;
@@ -30,7 +30,7 @@ namespace AnimatorAccessExample
 		
 		void Awake () {
 			animator = GetComponent<Animator> ();
-			access = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
+			animA = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
 		}
 		
 		void Update () {
@@ -40,21 +40,21 @@ namespace AnimatorAccessExample
 		
 		void FixedUpdate () {
 			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
-			if (access.IsYawn (currentState0)) {
+			if (animA.IsYawn (currentState0)) {
 				// input is suppressed on yawning
 				speed = 0f;
 				return;
-			} else if (access.IsIdle (currentState0)) {
+			} else if (animA.IsIdle (currentState0)) {
 				float random = Random.value;
 				if (random > YawnThreshold) {
-					access.YawnTrigger = true;
+					animA.SetYawnTrigger ();
 				}
-			} else if (access.IsJump (currentState0)) {
+			} else if (animA.IsJump (currentState0)) {
 				// wait until the jump has finished
 				return;
 			}
 			if (jumpKeyPressed) {
-				access.JumpTrigger = true;
+				animA.SetJumpTrigger ();
 			}
 			float newSpeed = horizontalInput * maxSpeed;
 			Direction newDirection = ToDirection (newSpeed);
@@ -65,7 +65,7 @@ namespace AnimatorAccessExample
 			speed = newSpeed;
 			direction = newDirection;
 			rigidbody.MovePosition (transform.position + speed * Vector3.right * Time.deltaTime);
-			access.Speed = Mathf.Abs (speed);
+			animA.SetSpeed (Mathf.Abs (speed));
 		}
 		
 		void OnTriggerstay (Collider other) {
