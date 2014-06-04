@@ -28,6 +28,8 @@ ModelImporter:
     100044: Spine
     100046: Thigh_L
     100048: Thigh_R
+    100050: Camera
+    100052: Lamp
     400000: //RootNode
     400002: AAPlayer
     400004: Arm_L
@@ -53,6 +55,8 @@ ModelImporter:
     400044: Spine
     400046: Thigh_L
     400048: Thigh_R
+    400050: Camera
+    400052: Lamp
     4300000: Mesh
     7400000: Default Take
     7400002: Hurrah
@@ -61,6 +65,7 @@ ModelImporter:
     7400008: Walk
     7400010: Yawn
     7400012: Jump
+    7400014: Rotate-Right
     9500000: //RootNode
     13700000: Mesh
   materials:

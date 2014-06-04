@@ -39,7 +39,7 @@ namespace Scio.AnimatorAccessGenerator
 		string targetClassName;
 		
 		Animator animator;
-		
+
 		ClassCodeElement classCodeElement;
 
 		ICodeBlock initialiserCode;
@@ -54,7 +54,11 @@ namespace Scio.AnimatorAccessGenerator
 		public ClassCodeElement Build () {
 			classCodeElement = new ClassCodeElement (targetClassName);
 			classCodeElement.Summary.Add ("Convenience class to access Animator states and parameters.");
-			classCodeElement.Summary.Add ("DON'T EDIT! Your changes will be lost when this class is regenerated.");
+			classCodeElement.Summary.Add ("Edits will be lost when this class is regenerated. ");
+			classCodeElement.Summary.Add ("Hint: Editing might be useful after renaming animator items in complex projects:");
+			classCodeElement.Summary.Add (" - Right click on an obsolete member and select Refactor/Rename. ");
+			classCodeElement.Summary.Add (" - Change it to the new name. ");
+			classCodeElement.Summary.Add (" - Delete this member to avoid comile error CS0102 ... already contains a definition ...''. ");
 			string versionString = "" + DateTime.Now;
 			classCodeElement.AddAttribute (new GeneratedClassAttributeCodeElement (versionString));
 			if (!string.IsNullOrEmpty (config.DefaultNamespace)) {

@@ -96,11 +96,13 @@ namespace Scio.AnimatorAccessGenerator
 			AnimatorAccess.BaseAnimatorAccess animatorAccess = go.GetComponent<AnimatorAccess.BaseAnimatorAccess> ();
 			if (animatorAccess != null) {
 				existingClassBuilder = new ReflectionCodeElementsBuilder (animatorAccess);
+				className = existingClassBuilder.ClassName;
+				config = ConfigFactory.Get (className);
+				generator = new SmartFormatTemplateEngine ();
+				builder = new AnimatorCodeElementsBuilder (go, className, config);
+			} else {
+				Logger.Error ("Cannot access component AnimatorAccess.BaseAnimatorAccess from object " + go.name);
 			}
-			className = existingClassBuilder.ClassName;
-			config = ConfigFactory.Get (className);
-			generator = new SmartFormatTemplateEngine ();
-			builder = new AnimatorCodeElementsBuilder (go, className, config);
 		}
 
 		/// <summary>
@@ -185,17 +187,9 @@ namespace Scio.AnimatorAccessGenerator
 					string msg = string.Format ("Animator state or parameter is no longer valid{0}. Refactor your code to not contain any references.", (config.KeepObsoleteMembers ? "" : " and will be removed in the next code generation"));
 					existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
 					List<MemberCodeElement> allMembers = newClass.GetAllMembers ();
-					newClass.MergeMethods (existingClass, (element) => {
-						return !allMembers.Contains (element);
-					});
-					newClass.MergeProperties (existingClass,(element) => {
-						return !allMembers.Contains (element);
-					});
-					newClass.MergeFields (existingClass, (element) => {
-						return !allMembers.Contains (element);
-					});
-//					newClass.MergeProperties (existingClass, (element) => !allMembers.Contains (element));
-//					newClass.MergeFields (existingClass, (element) => !allMembers.Contains (element));
+					newClass.MergeMethods (existingClass, (element) => !allMembers.Contains (element));
+					newClass.MergeProperties (existingClass,(element) => !allMembers.Contains (element));
+					newClass.MergeFields (existingClass, (element) => !allMembers.Contains (element));
 				}
 			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);

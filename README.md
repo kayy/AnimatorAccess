@@ -1,36 +1,43 @@
-AnimatorWrapper
-===============
+# AnimatorWrapper
 
-Code generator utility for Unity game engine. Creates a class for convenient access Animator states and parameters.
+Code generator utility for Unity game engine. Creates a class for convenient access to [Animator](http://docs.unity3d.com/ScriptReference/Animator.html) states and parameters.
 
-Installation:
-- Copy the Editor directory to some location under your Assets directory
+## Quick Start
+### Installation:
+-   Copy all files to some location under your Assets directory but NOT under an EDITOR DIRECTORY.
 
-Quick start code generation:
-- In the hierachy view select a game object that contains an Animator component having a valid controller
-- Go to the new menu item Tools/Generate Animator Wrapper
-- Select a file name and the output directory where to place the C# file
+### Generating Code:
+-  In the hierachy view select a game object that contains an Animator component having a valid controller
+-  Go to the new menu item Tools / Animator Access / Create Animator Access
+-  Select a file name and the output directory where to place the C# file (has to be under Assets directory)
+-  Say _Yes_ when the dialog appears about adding the component to the game object.
 
-Usage example:
-- Generated class is 'UfoAnimatorWrapper.cs'
-- Game object is 'Ufo'
-- Another component 'UfoController' should handle animation stuff in its Update method
-- Animator states are 'Idle' and 'Fly'
-- Animator parameters are 'HoverRandom' (trigger) and 'Speed' (float)
+### Usage example (related to provided ExampleScene.unity):
+-   Generated class is **ExamplePlayerAnimatorAccess.cs** in **_InstallDirectory_/AnimatorAccess/Example/Scripts/Generated/ExamplePlayerAnimatorAccess.cs**
+-   Game object is **ExamplePlayer**
+-   Another component **Player** controls animation related stuff in its FixedUpdate method
+-   Animator states are:
+  -   **Idle**, **Jumping**, **Walking** and **Yawning** in layer 0 (**Base Layer**)
+  -   **Centered**, **Rotate-Left** and **Rotate-Right** in layer 1 (**PlayerRotation**)
+-   Animator parameters are:
+ -   **JumpTrigger** (trigger) and 
+ -   **YawnTrigger** (trigger) and 
+ -   **Rotate** (int) and 
+ -   **Speed** (float)
 
-To use it define a member in UfoController:
-	UfoAnimatorWrapper animatorWrapper;	
-and initialise it in Awake () using the constructor taking an Animator instance:
-	animatorWrapper = new MyAnimatorWrapper (GetComponent<Animator> ());
+To use it define a member in **Player.cs**:
+	<pre><code>AnimatorAccess.ExamplePlayerAnimatorAccess anim;</code></pre>
+and assign a reference in Awake ():
+	<pre><code>anim = GetComponent < AnimatorAccess.ExamplePlayerAnimatorAccess > ();</code></pre>
+	
 		
-Now you have convenient access to all parameters and animator states:
-	void Update () {
-		animatorStateInfo = animator.GetCurrentAnimatorStateInfo (0);
-		int currentAnimationHash = animatorStateInfo.nameHash;
-		if (animatorWrapper.IsIdle (currentAnimationHash)) {
-			animatorWrapper.HoverRandom = true;
-			animatorWrapper.Speed = 5f;
-		}
+Now you have convenient access to all parameters and animator states:<pre><code>
+	void FixedUpdate () {
+		currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
+		if (anim.IsWalking (currentState0)) {
+		...
+		anim.SetSpeed (Mathf.Abs (speed));
+</code></pre>
 
 Advanced Topics
 ===============
