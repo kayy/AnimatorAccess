@@ -113,6 +113,12 @@ namespace Scio.AnimatorAccessGenerator
 			InternalAPIAccess.ProcessAllAnimatorStates (animator, ProcessAnimatorState);
 		}
 
+		/// <summary>
+		/// Callback from InternalAPIAccess to process a single Animator state.
+		/// </summary>
+		/// <param name="layer">Layer index.</param>
+		/// <param name="layerName">Layer name.</param>
+		/// <param name="item">State name.</param>
 		public void ProcessAnimatorState (int layer, string layerName, string item) {
 			string layerPrefix = (layer > 0 || config.ForceLayerPrefix ? null : layerName);
 			string name = CodeGenerationUtils.GenerateStateName (config.AnimatorStatePrefix, item, layerPrefix);

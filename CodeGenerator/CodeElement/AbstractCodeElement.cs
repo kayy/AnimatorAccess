@@ -93,7 +93,7 @@ namespace Scio.CodeGeneration
 		}
 
 		public override bool Equals (object obj) {
-			return obj is AbstractCodeElement && GetSignature () == ((AbstractCodeElement)(obj)).GetSignature ();
+			return obj is AbstractCodeElement && Name == ((AbstractCodeElement)(obj)).Name;
 		}
 		
 		public override int GetHashCode () {

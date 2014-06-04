@@ -31,24 +31,29 @@ namespace Scio.AnimatorAccessGenerator
 
 		static GUIContent AutoRefreshAssetDatabase = new GUIContent ("Auto Refresh AssetDatabase", "Automatically call an AssetDabase.Refresh () after updating an existing AnimatorAccess class.\n" +
 			"Note that the MonoDevelop project is reloaded too which can be annoying.");
-		static GUIContent ForceOverwritingOldClass = new GUIContent ("Ignore Existing Code", " Unchecked means that existing members are created once with the obsolete attribute set.\n" +
-			"Check this if existing members should be removed immediately. Note that this option overwrites 'Keep Obsolete Members'");
-		static GUIContent KeepObsolete = new GUIContent ("Keep Obsolete Members", "Obsolete properties and methods starting with 'Is' are not removed. This might lead to a lot of unnecessary code.\n" +
-			"Note that this option is not considered if 'Force Layer Prefix' is set.");
+		static GUIContent AutoRefreshInterval = new GUIContent ("Auto Refresh Interval", "Automatically check for updates after this interval (in seconds) has elapsed.\nSet this to 0 to suppress automatic checking.");
+		static GUIContent IgnoreExistingCode = new GUIContent ("Ignore Existing Code", " Unchecked (default) means that the current version of the class is analysed first. Existing members that are not valid any longer are created once but with the obsolete attribute set.\n\n" +
+			"So you can replace references to these outdated members in your code. Performing another generation will then remove all obsolete members.\n" +
+			"Check this if existing members should be removed immediately.\n\nNote that this option overwrites 'Keep Obsolete Members'");
+		static GUIContent KeepObsolete = new GUIContent ("Keep Obsolete Members", "Obsolete fields and methods are not removed. This might lead to a lot of unnecessary code.\n" +
+			"Note that this option is not considered if 'Ignore Existing Code' is set.");
 		static GUIContent ForceLayerPrefix = new GUIContent ("Force Layer Prefix", "Check this if you want the layer name be prepended even for Animator states of layer 0.");
-		static GUIContent AnimatorStatePrefix = new GUIContent ("Animator State Prefix", "Optional prefix for all methods that check animation state e.g. Is<Prefix>Idle ().");
-		static GUIContent AnimatorStateHashPrefix = new GUIContent ("Animator State Hash Prefix", "Optional prefix for all int fields representing an animator state e.g. <AnimatorStateHashPrefix>Idle.");
-		static GUIContent ParameterPrefix = new GUIContent ("Parameter Prefix", "Optional prefix for parameter access properties, e.g. float <Prefix>Speed.");
-		static GUIContent ParameterHashPrefix = new GUIContent ("Parameter Hash Prefix", "Optional prefix for int fields representing a parameter, e.g. float <ParameterHashPrefix>Speed.");
-		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
+		static GUIContent AnimatorStatePrefix = new GUIContent ("Animator State Prefix", "Optional prefix for all methods that check animation state. Prefix is set betwen 'Is' and the state name.\nExample:\n'State' will generate the method 'bool IsStateIdle ()' for state Idle.");
+		static GUIContent AnimatorStateHashPrefix = new GUIContent ("Animator State Hash Prefix", "Optional prefix for all int fields representing an animator state.\nExample:\n'stateHash' will generate the field 'int stateHashIdle' for state 'Idle'.");
+		static GUIContent ParameterPrefix = new GUIContent ("Parameter Prefix", "Optional prefix for parameter access methods. Prefix is set betwen 'Get'/'Set' and the parameter name.\nExample:\n'Param' will generate the method 'float SetParamSpeed ()' for parameter 'Speed'.");
+		static GUIContent ParameterHashPrefix = new GUIContent ("Parameter Hash Prefix", "Optional prefix for int fields representing a parameter.\nExample:\n'paramHash' will generate the field 'float paramHashSpeed' for parameter 'Speed'.");
 		static GUIContent GenerateStateDictionary = new GUIContent ("Generate State Dictionary", "Create an Animator state dictionary that can be queried by StateIdToName (int id).");
+
+		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
 
 		public void OnGUI() {
 			Config config = ConfigFactory.DefaultConfig;
 			config.AutoRefreshAssetDatabase = EditorGUILayout.Toggle (AutoRefreshAssetDatabase, config.AutoRefreshAssetDatabase);
 			EditorGUILayout.Separator ();
+			config.AutoRefreshInterval = EditorGUILayout.IntField (AutoRefreshInterval, config.AutoRefreshInterval);
+			EditorGUILayout.Separator ();
+			config.IgnoreExistingCode = EditorGUILayout.Toggle (IgnoreExistingCode, config.IgnoreExistingCode);
 			config.KeepObsoleteMembers = EditorGUILayout.Toggle (KeepObsolete, config.KeepObsoleteMembers);
-			config.ForceOverwritingOldClass = EditorGUILayout.Toggle (ForceOverwritingOldClass, config.ForceOverwritingOldClass);
 			EditorGUILayout.Separator ();
 			config.AnimatorStatePrefix = EditorGUILayout.TextField (AnimatorStatePrefix, config.AnimatorStatePrefix);
 			config.AnimatorStateHashPrefix = EditorGUILayout.TextField (AnimatorStateHashPrefix, config.AnimatorStateHashPrefix);

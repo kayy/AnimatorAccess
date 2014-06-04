@@ -112,7 +112,7 @@ namespace Scio.AnimatorAccessGenerator
 			if (result.Success) {
 				if (!existingClass.IsEmpty ()) {
 					List<ClassMemberCompareElement> comparisonResult = CodeElementUtils.CompareClasses (existingClass, newClass, 
-						config.ForceOverwritingOldClass, config.KeepObsoleteMembers);
+						config.IgnoreExistingCode, config.KeepObsoleteMembers);
 					comparisonResult.RemoveAll ((element) => element.Member == "Awake");
 					string message = "";
 					comparisonResult.ForEach ((s) => message += s + "\n");
@@ -156,7 +156,7 @@ namespace Scio.AnimatorAccessGenerator
 			if (result.Error) {
 				return result;
 			}
-			if (!existingClass.IsEmpty ()) {
+			if (!existingClass.IsEmpty () && !config.IgnoreExistingCode) {
 				int remaining = CodeElementUtils.CleanupExistingClass (existingClass, newClass, config.KeepObsoleteMembers);
 				if (remaining > 0 && !forceUpdate) {
 					string removedMembers = "";
@@ -180,13 +180,22 @@ namespace Scio.AnimatorAccessGenerator
 		}
 	
 		public CodeGeneratorResult GenerateCode () {
-			if (!config.ForceOverwritingOldClass) {
+			if (!config.IgnoreExistingCode) {
 				if (existingClass != null  && !existingClass.IsEmpty ()) {
 					string msg = string.Format ("Animator state or parameter is no longer valid{0}. Refactor your code to not contain any references.", (config.KeepObsoleteMembers ? "" : " and will be removed in the next code generation"));
 					existingClass.AddAttributeToAllMembers (new ObsoleteAttributeCodeElement (msg, false));
-					newClass.MergeMethods (existingClass);
-					newClass.MergeProperties (existingClass);
-					newClass.MergeFields (existingClass);
+					List<MemberCodeElement> allMembers = newClass.GetAllMembers ();
+					newClass.MergeMethods (existingClass, (element) => {
+						return !allMembers.Contains (element);
+					});
+					newClass.MergeProperties (existingClass,(element) => {
+						return !allMembers.Contains (element);
+					});
+					newClass.MergeFields (existingClass, (element) => {
+						return !allMembers.Contains (element);
+					});
+//					newClass.MergeProperties (existingClass, (element) => !allMembers.Contains (element));
+//					newClass.MergeFields (existingClass, (element) => !allMembers.Contains (element));
 				}
 			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);

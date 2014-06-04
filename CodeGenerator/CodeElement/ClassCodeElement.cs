@@ -80,6 +80,14 @@ namespace Scio.CodeGeneration
 			interfaces.Add (nextInterface);
 		}
 
+		public List<MemberCodeElement> GetAllMembers () {
+			List<MemberCodeElement> l = new List<MemberCodeElement> ();
+			Fields.ForEach ((item) => l.Add (item));
+			Methods.ForEach ((item) => l.Add (item));
+			Properties.ForEach ((item) => l.Add (item));
+			return l;
+		}
+
 		public void MergeMethods (ClassCodeElement other, Predicate<GenericMethodCodeElement> filter = null) {
 			CodeElementUtils.MergeElements <GenericMethodCodeElement> (Methods, other.Methods, filter);
 		}

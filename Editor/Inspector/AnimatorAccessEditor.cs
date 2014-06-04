@@ -28,6 +28,7 @@ using AnimatorAccess;
 
 namespace Scio.AnimatorAccessGenerator 
 {
+	[ExecuteInEditMode]
 	[CustomEditor(typeof(AnimatorAccess.BaseAnimatorAccess), true)]
 	public class AnimatorAccessEditor : Editor 
 	{
@@ -50,9 +51,12 @@ namespace Scio.AnimatorAccessGenerator
 
 		bool dirty = false;
 
+		static double lastCheckTimestamp = 0;
+
 		void OnEnable () {
+			CheckForUpdates (false);
 		}
-		
+
 		public override void OnInspectorGUI()
 		{
 			AnimatorAccess.BaseAnimatorAccess myTarget = (AnimatorAccess.BaseAnimatorAccess)target;
@@ -67,16 +71,7 @@ namespace Scio.AnimatorAccessGenerator
 			GUILayout.Label (version);
 			EditorGUILayout.BeginHorizontal ();
 			if(GUILayout.Button("Check", EditorStyles.miniButtonLeft)) {
-				updateCheck = Manager.SharedInstance.CheckForUpdates (Selection.activeGameObject);
-				updateCheck.Sort ((x, y) => {
-					if (x.result == ClassMemberCompareElement.Result.Error) {
-						updateCheckFoldOutState = false;
-					}
-					if (x.result != y.result) {
-						return x.result - y.result;
-					}
-					return x.Member.CompareTo (y.Member);
-				});
+				CheckForUpdates (true);
 			}
 			if(GUILayout.Button("Update", (updateCheck != null && updateCheck.Count > 0 ? InspectorStyles.MidMiniButtonHighLighted : EditorStyles.miniButtonMid))) {
 				Manager.SharedInstance.Update (Selection.activeGameObject);
@@ -90,12 +85,16 @@ namespace Scio.AnimatorAccessGenerator
 			EditorGUILayout.EndHorizontal();
 			EditorGUILayout.Separator ();
 			if (updateCheck != null) {
+				CheckForUpdates (false);
 				if (updateCheck.Count > 0) {
 					EditorGUILayout.BeginVertical ();
 					List<ClassMemberCompareElement> errors = updateCheck.FindAll ((element) => element.result == ClassMemberCompareElement.Result.Error);
 					List<ClassMemberCompareElement> infos = updateCheck.FindAll ((element) => element.result > ClassMemberCompareElement.Result.Error);
 					if (errors.Count > 0) {
-						EditorGUILayout.LabelField (new GUIContent (errors.Count + " Naming Conflict(s)"), InspectorStyles.LabelRed);
+						string errorHintTooltip = "If one of the members is marked as obsolete, it will be removed during generation to avoid compiler errrors.\n\n" +
+							"If this is not the case, you probably have used the same name for an Animator state and for a parameter too.\n\n" +
+							"To use identical names for Animator states and parameters, go to settings and define prefixes for states and/or parameters.";
+						EditorGUILayout.LabelField (new GUIContent (errors.Count + " Naming Conflict(s)", errorHintTooltip), InspectorStyles.LabelRed);
 						foreach (ClassMemberCompareElement error in errors) {
 							string errorTooltip = error.Message;
 							string errorLabel = string.Format ("{0} : {1}", error.Member, errorTooltip);
@@ -155,6 +154,27 @@ namespace Scio.AnimatorAccessGenerator
 				GUILayout.Button ("Undo", InspectorStyles.ButtonDisabled);
 			}
 			EditorGUILayout.EndHorizontal ();
+		}
+
+		void CheckForUpdates (bool forceCheck) {
+			if (!forceCheck) {
+				int checkInterval = Preferences.GetInt (Preferences.Key.AutoRefreshInterval);
+				if (checkInterval <= 0 || EditorApplication.timeSinceStartup - lastCheckTimestamp < checkInterval) {
+					return;
+				}
+			}
+			updateCheck = Manager.SharedInstance.CheckForUpdates (Selection.activeGameObject);
+			updateCheck.Sort ((x, y) =>  {
+				if (!forceCheck && x.result == ClassMemberCompareElement.Result.Error) {
+					// unfold results if there are errors but not if this is an automatic check
+					updateCheckFoldOutState = false;
+				}
+				if (x.result != y.result) {
+					return x.result - y.result;
+				}
+				return x.Member.CompareTo (y.Member);
+			});
+			lastCheckTimestamp = EditorApplication.timeSinceStartup;
 		}
 	}
 }

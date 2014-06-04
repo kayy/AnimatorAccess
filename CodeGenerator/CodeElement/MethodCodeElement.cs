@@ -52,13 +52,6 @@ namespace Scio.CodeGeneration
 			Parameters.Add (new ParameterCodeElement (type, name, defaultValue));
 		}
 
-		public override bool Equals (object obj) {
-			if (obj is GenericMethodCodeElement) {
-				return GetHashCode () == ((GenericMethodCodeElement)obj).GetHashCode ();
-			}
-			return false;
-		}
-
 		public override string GetSignature () {
 			string paramString = "";
 			Parameters.ForEach ( (ParameterCodeElement param) => paramString += (string.IsNullOrEmpty (paramString) ? "" : ",") + param.ParameterType );
@@ -66,9 +59,16 @@ namespace Scio.CodeGeneration
 			return s;
 		}
 
+		public override bool Equals (object obj) {
+			if (obj is GenericMethodCodeElement) {
+				return GetSignature () == ((GenericMethodCodeElement)obj).GetSignature ();
+			} else {
+				return base.Equals (obj);
+			}
+		}
+		
 		public override int GetHashCode () {
-			string s = GetSignature ();
-			return s.GetHashCode ();
+			return GetSignature ().GetHashCode ();
 		}
 		
 		public override string ToString () {

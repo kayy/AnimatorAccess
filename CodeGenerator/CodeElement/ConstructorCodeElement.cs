@@ -48,6 +48,18 @@ namespace Scio.CodeGeneration
 			return s;
 		}
 
+		public override bool Equals (object obj) {
+			if (obj is ConstructorCodeElement) {
+				return GetSignature () == ((ConstructorCodeElement)obj).GetSignature ();
+			} else {
+				return base.Equals (obj);
+			}
+		}
+
+		public override int GetHashCode () {
+			return GetSignature ().GetHashCode ();
+		}
+		
 		public override string ToString () {
 			string str = "";
 			Code.ForEach ((string s) => str += s + "\n");

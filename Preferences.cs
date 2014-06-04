@@ -37,7 +37,8 @@ namespace Scio.AnimatorAccessGenerator
 			BackupDir,
 			PostProcessingFile,
 			AutoRefreshAssetDatabase,
-			ForceOverwritingOldClass,
+			AutoRefreshInterval,
+			IgnoreExistingCode,
 			KeepObsoleteMembers,
 			DefaultNamespace,
 			MonoBehaviourComponentBaseClass,
@@ -84,6 +85,10 @@ namespace Scio.AnimatorAccessGenerator
 		
 		public static int GetInt (Key key) {
 			return PlayerPrefs.GetInt (Prefix + key);
+		}
+		
+		public static int GetInt (Key key, int defaultValue) {
+			return PlayerPrefs.GetInt (Prefix + key, defaultValue);
 		}
 		
 		public static void SetInt (Key key, int s) {

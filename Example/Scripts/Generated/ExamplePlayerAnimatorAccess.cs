@@ -26,7 +26,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/04/2014 00:57:31")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/04/2014 17:13:14")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// DON'T EDIT! Your changes will be lost when this class is regenerated.
@@ -40,54 +40,54 @@ namespace AnimatorAccess {
         /// <summary>
 		/// Hash of Animator state Base Layer.Walk
 		/// </summary>
-		public int walk;
+		public int stateIdWalk;
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Idle
 		/// </summary>
-		public int idle;
+		public int stateIdIdle;
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Yawn
 		/// </summary>
-		public int yawn;
+		public int stateIdYawn;
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Jump
 		/// </summary>
-		public int jump;
+		public int stateIdJump;
 		
         /// <summary>
 		/// Hash of parameter Speed
 		/// </summary>
-		public int speed;
+		public int paramIdSpeed;
 		
         /// <summary>
 		/// Hash of parameter JumpTrigger
 		/// </summary>
-		public int jumpTrigger;
+		public int paramIdJumpTrigger;
 		
         /// <summary>
 		/// Hash of parameter yawnTrigger
 		/// </summary>
-		public int yawnTrigger;
+		public int paramIdYawnTrigger;
 		
-		
+
 		
 		
 		public void Awake () { 
 			animator = GetComponent<Animator> ();
-			walk = Animator.StringToHash ("Base Layer.Walk");
-			stateDictionary.Add (walk, "Base Layer.Walk");
-			idle = Animator.StringToHash ("Base Layer.Idle");
-			stateDictionary.Add (idle, "Base Layer.Idle");
-			yawn = Animator.StringToHash ("Base Layer.Yawn");
-			stateDictionary.Add (yawn, "Base Layer.Yawn");
-			jump = Animator.StringToHash ("Base Layer.Jump");
-			stateDictionary.Add (jump, "Base Layer.Jump");
-			speed = Animator.StringToHash ("Speed");
-			jumpTrigger = Animator.StringToHash ("JumpTrigger");
-			yawnTrigger = Animator.StringToHash ("yawnTrigger");
+			stateIdWalk = Animator.StringToHash ("Base Layer.Walk");
+			stateDictionary.Add (stateIdWalk, "Base Layer.Walk");
+			stateIdIdle = Animator.StringToHash ("Base Layer.Idle");
+			stateDictionary.Add (stateIdIdle, "Base Layer.Idle");
+			stateIdYawn = Animator.StringToHash ("Base Layer.Yawn");
+			stateDictionary.Add (stateIdYawn, "Base Layer.Yawn");
+			stateIdJump = Animator.StringToHash ("Base Layer.Jump");
+			stateDictionary.Add (stateIdJump, "Base Layer.Jump");
+			paramIdSpeed = Animator.StringToHash ("Speed");
+			paramIdJumpTrigger = Animator.StringToHash ("JumpTrigger");
+			paramIdYawnTrigger = Animator.StringToHash ("yawnTrigger");
 		}
 		
 		public string StateIdToName (int id) { 
@@ -101,28 +101,28 @@ namespace AnimatorAccess {
 		/// true if nameHash equals Animator.StringToHash ("Base Layer.Walk").
 		/// </summary>
 		public bool IsWalk (int nameHash) { 
-			 return nameHash == walk;
+			 return nameHash == stateIdWalk;
 		}
 		
 		/// <summary>
 		/// true if nameHash equals Animator.StringToHash ("Base Layer.Idle").
 		/// </summary>
 		public bool IsIdle (int nameHash) { 
-			 return nameHash == idle;
+			 return nameHash == stateIdIdle;
 		}
 		
 		/// <summary>
 		/// true if nameHash equals Animator.StringToHash ("Base Layer.Yawn").
 		/// </summary>
 		public bool IsYawn (int nameHash) { 
-			 return nameHash == yawn;
+			 return nameHash == stateIdYawn;
 		}
 		
 		/// <summary>
 		/// true if nameHash equals Animator.StringToHash ("Base Layer.Jump").
 		/// </summary>
 		public bool IsJump (int nameHash) { 
-			 return nameHash == jump;
+			 return nameHash == stateIdJump;
 		}
 		
 		/// <summary>
@@ -132,7 +132,7 @@ namespace AnimatorAccess {
 		/// <param name="deltaTime">The current frame deltaTime.</param>
 		/// </summary>
 		public void SetSpeed (float newValue, float dampTime, float deltaTime) { 
-			animator.SetFloat (speed, newValue, dampTime, deltaTime);
+			animator.SetFloat (paramIdSpeed, newValue, dampTime, deltaTime);
 		}
 		
 		/// <summary>
@@ -140,28 +140,28 @@ namespace AnimatorAccess {
 		/// <param name="newValue">New value for float parameter Speed.</param>
 		/// </summary>
 		public void SetSpeed (float newValue) { 
-			animator.SetFloat (speed, newValue);
+			animator.SetFloat (paramIdSpeed, newValue);
 		}
 		
 		/// <summary>
 		/// Access to float parameter Speed, default is: 0.
 		/// </summary>
 		public float GetSpeed () { 
-			return animator.GetFloat (speed);
+			return animator.GetFloat (paramIdSpeed);
 		}
 		
 		/// <summary>
 		/// Activate trigger of parameter JumpTrigger.
 		/// </summary>
 		public void SetJumpTrigger () { 
-			animator.SetTrigger (jumpTrigger);
+			animator.SetTrigger (paramIdJumpTrigger);
 		}
 		
 		/// <summary>
 		/// Activate trigger of parameter yawnTrigger.
 		/// </summary>
 		public void SetYawnTrigger () { 
-			animator.SetTrigger (yawnTrigger);
+			animator.SetTrigger (paramIdYawnTrigger);
 		}
 		
         

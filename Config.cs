@@ -62,9 +62,9 @@ namespace Scio.AnimatorAccessGenerator {
 		/// at the next creation, these deprecated members will be removed if keepDeprecatedMembers is false which is
 		/// the default.
 		/// </summary>
-		public virtual bool ForceOverwritingOldClass {
-			get { return Preferences.GetBool (Preferences.Key.ForceOverwritingOldClass); }
-			set { Preferences.SetBool (Preferences.Key.ForceOverwritingOldClass, value); }
+		public virtual bool IgnoreExistingCode {
+			get { return Preferences.GetBool (Preferences.Key.IgnoreExistingCode); }
+			set { Preferences.SetBool (Preferences.Key.IgnoreExistingCode, value); }
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace Scio.AnimatorAccessGenerator {
 		/// Optional prefix for all int fields representing an animator state e.g. <AnimatorStateHashPrefix>Idle
 		/// </summary>
 		public virtual string AnimatorStateHashPrefix {
-			get { return Preferences.GetString (Preferences.Key.AnimatorStateHashPrefix, ""); }
+			get { return Preferences.GetString (Preferences.Key.AnimatorStateHashPrefix, "stateId"); }
 			set { Preferences.SetString (Preferences.Key.AnimatorStateHashPrefix, value); }
 		}
 		
@@ -140,7 +140,7 @@ namespace Scio.AnimatorAccessGenerator {
 		/// Optional prefix for int fields representing a parameter, e.g. float <ParameterHashPrefix>Speed
 		/// </summary>
 		public virtual string ParameterHashPrefix {
-			get { return Preferences.GetString (Preferences.Key.ParameterHashPrefix, ""); }
+			get { return Preferences.GetString (Preferences.Key.ParameterHashPrefix, "paramId"); }
 			set { Preferences.SetString (Preferences.Key.ParameterHashPrefix, value); }
 		}
 		
@@ -159,6 +159,14 @@ namespace Scio.AnimatorAccessGenerator {
 			set { Preferences.SetBool (Preferences.Key.GenerateStateDict, value); }
 		}
 
+		/// <summary>
+		/// If true, a <hash Id, state name> dictionary is created including method StateIdToName (int id).
+		/// </summary>
+		public virtual int AutoRefreshInterval {
+			get { return Preferences.GetInt (Preferences.Key.AutoRefreshInterval, 30); }
+			set { Preferences.SetInt (Preferences.Key.AutoRefreshInterval, value); }
+		}
+		
 		/// <summary>
 		/// If true, more log messages are written to console view.
 		/// </summary>

@@ -40,6 +40,8 @@ namespace Scio.CodeGeneration
 				return "double";
 			} else if (elementType == typeof(string)) {
 				return "string";
+			} else if (elementType == typeof(void)) {
+				return "void";
 			}
 			return elementType.Name;
 		}
@@ -117,7 +119,12 @@ namespace Scio.CodeGeneration
 					Func<MemberCodeElement, string> formatter = (MemberCodeElement m) => {
 						return (m.Obsolete ? "obsolete " : "") + m.MemberType  + " " + m.ElementType + " " + m.GetSignature ();
 					};
-					string message = string.Format ("Possible naming conflict between [{0}] and [{1}]", formatter (element), formatter (duplicate));
+					string message = string.Format ("Possible naming conflict between [{0}] and [{1}].", formatter (element), formatter (duplicate));
+					if (duplicate.Obsolete) {
+						message += " Previous element " + formatter (duplicate) + " will be removed.";
+					} else {
+						message += " Avoid using the same name for an Animator state and a parameter.";
+					}
 					l.Add (new ClassMemberCompareElement (element, message));
 					Logger.Debug (message);
 				}
@@ -150,8 +157,8 @@ namespace Scio.CodeGeneration
 				oldMembers.RemoveAll ((element) => element.Obsolete );
 			}
 			oldMembers.RemoveAll ((oldElement) => {
-				string name = oldElement.Name;
-				return newMembers.FindIndex ( (newElement) => newElement.Name == name) != -1;
+				string oldSignature = oldElement.GetSignature ();
+				return newMembers.FindIndex ( (newElement) => newElement.GetSignature () == oldSignature) != -1;
 			});
 			return oldMembers.Count;
 		}
