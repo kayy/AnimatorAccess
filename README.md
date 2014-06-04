@@ -1,6 +1,7 @@
 # AnimatorWrapper
 
-Code generator utility for Unity game engine. Creates a class for convenient access to [Animator](http://docs.unity3d.com/ScriptReference/Animator.html) states and parameters.
+Code generator utility for Unity game engine. Creates a class to conveniently access [Animator](http://docs.unity3d.com/ScriptReference/Animator.html) 
+states and parameters and detect inconsistencies at compile time. 
 
 ## Quick Start
 ### Installation:
@@ -38,6 +39,28 @@ Now you have convenient access to all parameters and animator states:<pre><code>
 		...
 		anim.SetSpeed (Mathf.Abs (speed));
 </code></pre>
+
+## Workflow
+Whenever you have made any changes in the Animator window like adding, renaming or deleting states or parameters, 
+you should update the animator access component. Animator Access Generator analyses the existing version of the
+component to be generated and works with a **two-step** procedure to handle changes:
+
+-   Previously valid members (i.e. Animator parameters and states) are detected and marked with the _Obsolete_ attribute
+-   Those members in the previous version that are already marked as _Obsolete_ will be renmoved
+
+The basic idea is to give you the chance to refactor your code without having uncompileable code. If there are any 
+refrences to members that are not valid any longer, obsolete warnings guide you where you have to make changes:
+ 
+(_CS0168: Animator state or parameter is no longer valid and will be removed in the next code generation..._) .
+
+### Custom Editor
+The generated component has a custom inspector window:
+![Custom Editor](./Misc/AnimatorAccess_CustomEditor_Example.png)
+
+The status is updated every 30 seconds automatically. Use the _Check_ button to force a status update. _Check_ will 
+not perform any changes but is meant to preview what will happen on an update. 
+
+The _Update_ button will regenerate the component's source code. 
 
 Advanced Topics
 ===============
