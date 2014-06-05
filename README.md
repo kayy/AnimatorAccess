@@ -1,33 +1,37 @@
 # Animator Access Generator
 
 Code generator utility for Unity game engine. Creates a class to conveniently access [Animator](http://docs.unity3d.com/ScriptReference/Animator.html) 
-states and parameters and detect inconsistencies at compile time. 
+states and parameters. The goal is to facilitate access to Animator states and parameters. Further on encapsulting 
+access through dedicated methods makes it possible to detect potential problems and inconsistencies already at compile time. 
 
 ## Quick Start
 ### Installation:
+-  Unity 4.3 is needed
 -  Download the current stable release [AnimatorAccess.zip](https://github.com/kayy/AnimatorAccess/archive/Current.zip) from GitHub
 -  Unzip and copy all files to some location under your Assets directory but **NOT under any editor directory**.
 
 ### Generating Code:
 -  In the hierachy view select a game object that contains an Animator component having a valid controller
--  Go to the new menu item Tools / Animator Access / Create Animator Access
--  Select a file name and the output directory where to place the C# file (has to be under Assets directory)
+-  Go to the new menu item **Animator Access** / **Create Animator Access**
+-  Choose a file name and the output directory where to place the C# file (has to be under Assets directory)
 -  Say _Yes_ when the dialog appears about adding the component to the game object.
 
-### Usage example (related to provided ExampleScene.unity):
+### Usage example (related to provided ExampleScene.unity)
+Setup:
+
 -   Generated class is **ExamplePlayerAnimatorAccess.cs** in **_InstallDirectory_/AnimatorAccess/Example/Scripts/Generated/ExamplePlayerAnimatorAccess.cs**
 -   Game object is **ExamplePlayer**
 -   Another component **Player** controls animation related stuff in its FixedUpdate method
 -   Animator states are:
   -   **Idle**, **Jumping**, **Walking** and **Yawning** in layer 0 (**Base Layer**)
-  -   **Centered**, **Rotate-Left** and **Rotate-Right** in layer 1 (**PlayerRotation**)
+  -   **Centered**, **Rotate-Left** and **Rotate-Right** in layer 1 (**Rot**)
 -   Animator parameters are:
  -   **JumpTrigger** (trigger) and 
  -   **YawnTrigger** (trigger) and 
  -   **Rotate** (int) and 
  -   **Speed** (float)
 
-To use it define a member in **Player.cs** and assign a reference in Awake ():
+To use **ExamplePlayerAnimatorAccess** define a member in **Player.cs** and assign a reference in Awake ():
 <pre><code>AnimatorAccess.ExamplePlayerAnimatorAccess anim;
 void Awake () {
     anim = GetComponent < AnimatorAccess.ExamplePlayerAnimatorAccess > ();
@@ -52,10 +56,10 @@ you should update the animator access component. Animator Access Generator analy
 component to be generated and works with a **two-step** procedure to handle changes:
 
 -   Previously valid members (i.e. Animator parameters and states) are detected and marked with the _Obsolete_ attribute
--   Those members in the previous version that were already marked as _Obsolete_ will be renmoved
+-   Those members in the previous version that were already marked as _Obsolete_ will be removed
 
 The basic idea is to give you the chance to refactor your code without having uncompileable code. If there are any 
-refrences to members that are not valid any longer, obsolete warnings guide you where you have to make changes:
+references to members that are not valid any longer, obsolete warnings guide you where you have to make changes:
  
 (_CS0168: Animator state or parameter is no longer valid and will be removed in the next code generation..._) .
 
@@ -104,8 +108,8 @@ about using obsolete members. While single occurrences are easy to maintain, ren
 would be painful to replace in code.
 
 To do this more efficiently use refactoring and rename the **obsolete** member to the new name. Suppose there are
-several calls to **SetRotate** in the example above. We want to replace at once all calls to it by the new method 
-**SetRotateTo**:
+several calls to **SetRotate** in the example above. We want to change all these calls at once to point to the new 
+method **SetRotateTo**:
 
 Go to the **obsolete** method **SetRotate (int newValue)** in the newly generated file **ExamplePlayerAnimatorAccess.cs**
 and rename it to **SetRotateTo**.

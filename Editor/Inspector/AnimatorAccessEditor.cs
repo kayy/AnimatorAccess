@@ -84,61 +84,67 @@ namespace Scio.AnimatorAccessGenerator
 			}
 			EditorGUILayout.EndHorizontal();
 			EditorGUILayout.Separator ();
-			if (updateCheck != null) {
-				CheckForUpdates (false);
-				if (updateCheck.Count > 0) {
-					EditorGUILayout.BeginVertical ();
-					List<ClassMemberCompareElement> errors = updateCheck.FindAll ((element) => element.result == ClassMemberCompareElement.Result.Error);
-					List<ClassMemberCompareElement> infos = updateCheck.FindAll ((element) => element.result > ClassMemberCompareElement.Result.Error);
-					if (errors.Count > 0) {
-						string errorHintTooltip = "If one of the members is marked as obsolete, it will be removed during generation to avoid compiler errrors.\n\n" +
-							"If this is not the case, you probably have used the same name for an Animator state and for a parameter too.\n\n" +
-							"To use identical names for Animator states and parameters, go to settings and define prefixes for states and/or parameters.";
-						EditorGUILayout.LabelField (new GUIContent (errors.Count + " Naming Conflict(s)", errorHintTooltip), InspectorStyles.LabelRed);
-						foreach (ClassMemberCompareElement error in errors) {
-							string errorTooltip = error.Message;
-							string errorLabel = string.Format ("{0} : {1}", error.Member, errorTooltip);
-							EditorGUILayout.LabelField (new GUIContent (errorLabel, errorTooltip), InspectorStyles.LabelHighLighted);
+			if (EditorApplication.isCompiling || EditorApplication.isUpdating) {
+				EditorGUILayout.BeginVertical ();
+				EditorGUILayout.LabelField ("Loading, please wait ...");
+				EditorGUILayout.EndVertical ();
+			} else {
+				if (updateCheck != null) {
+					CheckForUpdates (false);
+					if (updateCheck.Count > 0) {
+						EditorGUILayout.BeginVertical ();
+						List<ClassMemberCompareElement> errors = updateCheck.FindAll ((element) => element.result == ClassMemberCompareElement.Result.Error);
+						List<ClassMemberCompareElement> infos = updateCheck.FindAll ((element) => element.result > ClassMemberCompareElement.Result.Error);
+						if (errors.Count > 0) {
+							string errorHintTooltip = "If one of the members is marked as obsolete, it will be removed during generation to avoid compiler errrors.\n\n" +
+								"If this is not the case, you probably have used the same name for an Animator state and for a parameter too.\n\n" +
+								"To use identical names for Animator states and parameters, go to settings and define prefixes for states and/or parameters.";
+							EditorGUILayout.LabelField (new GUIContent (errors.Count + " Naming Conflict(s)", errorHintTooltip), InspectorStyles.LabelRed);
+							foreach (ClassMemberCompareElement error in errors) {
+								string errorTooltip = error.Message;
+								string errorLabel = string.Format ("{0} : {1}", error.Member, errorTooltip);
+								EditorGUILayout.LabelField (new GUIContent (errorLabel, errorTooltip), InspectorStyles.LabelHighLighted);
+							}
+							EditorGUILayout.Separator ();
 						}
-						EditorGUILayout.Separator ();
-					}
-					updateCheckFoldOutState = EditorGUILayout.Foldout (updateCheckFoldOutState, updateCheck.Count + " class member(s) to update");
-					if (updateCheckFoldOutState) {
-						foreach (ClassMemberCompareElement c in infos) {
-							string label = string.Format ("{0}", c.Signature);
-							string tooltip = "";
-							switch (c.result) {
-							case ClassMemberCompareElement.Result.New:
-								tooltip = string.Format ("{0} {1} {2} will be added", c.memberType, c.ElementType, c.Signature);
-								EditorGUILayout.LabelField (new GUIContent (label, iconAdd, tooltip));
-								break;
-							case ClassMemberCompareElement.Result.Obsolete:
-								tooltip = string.Format ("{0} {1} {2} will be marked as obsolete", c.memberType, c.ElementType, c.Signature);
-								EditorGUILayout.LabelField (new GUIContent (label, iconObsolete, tooltip));
-								break;
-							case ClassMemberCompareElement.Result.Remove:
-								tooltip = string.Format ("{0} {1} {2} will be removed", c.memberType, c.ElementType, c.Signature);
-								EditorGUILayout.LabelField (new GUIContent (label, iconRemove, tooltip));
-								break;
-							default:
-								break;
+						updateCheckFoldOutState = EditorGUILayout.Foldout (updateCheckFoldOutState, updateCheck.Count + " class member(s) to update");
+						if (updateCheckFoldOutState) {
+							foreach (ClassMemberCompareElement c in infos) {
+								string label = string.Format ("{0}", c.Signature);
+								string tooltip = "";
+								switch (c.result) {
+								case ClassMemberCompareElement.Result.New:
+									tooltip = string.Format ("{0} {1} {2} will be added", c.memberType, c.ElementType, c.Signature);
+									EditorGUILayout.LabelField (new GUIContent (label, iconAdd, tooltip));
+									break;
+								case ClassMemberCompareElement.Result.Obsolete:
+									tooltip = string.Format ("{0} {1} {2} will be marked as obsolete", c.memberType, c.ElementType, c.Signature);
+									EditorGUILayout.LabelField (new GUIContent (label, iconObsolete, tooltip));
+									break;
+								case ClassMemberCompareElement.Result.Remove:
+									tooltip = string.Format ("{0} {1} {2} will be removed", c.memberType, c.ElementType, c.Signature);
+									EditorGUILayout.LabelField (new GUIContent (label, iconRemove, tooltip));
+									break;
+								default:
+									break;
+								}
 							}
 						}
+						EditorGUILayout.EndVertical ();
+					} else {
+						EditorGUILayout.BeginVertical ();
+						EditorGUILayout.LabelField (myTarget.GetType ().Name + " is up to date");
+						EditorGUILayout.EndVertical ();
 					}
-					EditorGUILayout.EndVertical ();
 				} else {
 					EditorGUILayout.BeginVertical ();
-					EditorGUILayout.LabelField (myTarget.GetType().Name + " is up to date");
+					if (dirty) {
+						EditorGUILayout.LabelField ("Press 'Refresh' to load updated component " + myTarget.GetType ().Name);
+					} else {
+						EditorGUILayout.LabelField ("Press 'Check' to get update information about " + myTarget.GetType ().Name);
+					}
 					EditorGUILayout.EndVertical ();
 				}
-			} else {
-				EditorGUILayout.BeginVertical ();
-				if (dirty) {
-					EditorGUILayout.LabelField ("Press 'Refresh' to load updated component " + myTarget.GetType().Name);
-				} else {
-					EditorGUILayout.LabelField ("Press 'Check' to get update information about " + myTarget.GetType().Name);
-				}
-				EditorGUILayout.EndVertical ();
 			}
 			EditorGUILayout.Separator ();
 			EditorGUILayout.BeginHorizontal ();
