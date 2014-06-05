@@ -5,7 +5,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/05/2014 09:23:01")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/05/2014 19:30:53")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -41,34 +41,19 @@ namespace AnimatorAccess {
 		public int stateIdJumping;
 		
         /// <summary>
-		/// Hash of Animator state Base Layer.Rotate
+		/// Hash of Animator state Rot.Rotate-Left
 		/// </summary>
-		public int stateIdRotate;
+		public int stateIdRot_Rotate_Left;
 		
         /// <summary>
-		/// Hash of Animator state Base Layer.Rotate-Left
+		/// Hash of Animator state Rot.Rotate-Right
 		/// </summary>
-		public int stateIdRotate_Left;
+		public int stateIdRot_Rotate_Right;
 		
         /// <summary>
-		/// Hash of Animator state Base Layer.Centered
+		/// Hash of Animator state Rot.Centered
 		/// </summary>
-		public int stateIdCentered;
-		
-        /// <summary>
-		/// Hash of Animator state PlayerRotation.Rotate-Left
-		/// </summary>
-		public int stateIdPlayerRotation_Rotate_Left;
-		
-        /// <summary>
-		/// Hash of Animator state PlayerRotation.Rotate-Right
-		/// </summary>
-		public int stateIdPlayerRotation_Rotate_Right;
-		
-        /// <summary>
-		/// Hash of Animator state PlayerRotation.Centered
-		/// </summary>
-		public int stateIdPlayerRotation_Centered;
+		public int stateIdRot_Centered;
 		
         /// <summary>
 		/// Hash of parameter Speed
@@ -103,18 +88,12 @@ namespace AnimatorAccess {
 			stateDictionary.Add (stateIdYawning, "Base Layer.Yawning");
 			stateIdJumping = Animator.StringToHash ("Base Layer.Jumping");
 			stateDictionary.Add (stateIdJumping, "Base Layer.Jumping");
-			stateIdRotate = Animator.StringToHash ("Base Layer.Rotate");
-			stateDictionary.Add (stateIdRotate, "Base Layer.Rotate");
-			stateIdRotate_Left = Animator.StringToHash ("Base Layer.Rotate-Left");
-			stateDictionary.Add (stateIdRotate_Left, "Base Layer.Rotate-Left");
-			stateIdCentered = Animator.StringToHash ("Base Layer.Centered");
-			stateDictionary.Add (stateIdCentered, "Base Layer.Centered");
-			stateIdPlayerRotation_Rotate_Left = Animator.StringToHash ("PlayerRotation.Rotate-Left");
-			stateDictionary.Add (stateIdPlayerRotation_Rotate_Left, "PlayerRotation.Rotate-Left");
-			stateIdPlayerRotation_Rotate_Right = Animator.StringToHash ("PlayerRotation.Rotate-Right");
-			stateDictionary.Add (stateIdPlayerRotation_Rotate_Right, "PlayerRotation.Rotate-Right");
-			stateIdPlayerRotation_Centered = Animator.StringToHash ("PlayerRotation.Centered");
-			stateDictionary.Add (stateIdPlayerRotation_Centered, "PlayerRotation.Centered");
+			stateIdRot_Rotate_Left = Animator.StringToHash ("Rot.Rotate-Left");
+			stateDictionary.Add (stateIdRot_Rotate_Left, "Rot.Rotate-Left");
+			stateIdRot_Rotate_Right = Animator.StringToHash ("Rot.Rotate-Right");
+			stateDictionary.Add (stateIdRot_Rotate_Right, "Rot.Rotate-Right");
+			stateIdRot_Centered = Animator.StringToHash ("Rot.Centered");
+			stateDictionary.Add (stateIdRot_Centered, "Rot.Centered");
 			paramIdSpeed = Animator.StringToHash ("Speed");
 			paramIdJumpTrigger = Animator.StringToHash ("JumpTrigger");
 			paramIdYawnTrigger = Animator.StringToHash ("YawnTrigger");
@@ -157,45 +136,24 @@ namespace AnimatorAccess {
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Rotate").
+		/// true if nameHash equals Animator.StringToHash ("Rot.Rotate-Left").
 		/// </summary>
-		public bool IsRotate (int nameHash) { 
-			 return nameHash == stateIdRotate;
+		public bool IsRot_Rotate_Left (int nameHash) { 
+			 return nameHash == stateIdRot_Rotate_Left;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Rotate-Left").
+		/// true if nameHash equals Animator.StringToHash ("Rot.Rotate-Right").
 		/// </summary>
-		public bool IsRotate_Left (int nameHash) { 
-			 return nameHash == stateIdRotate_Left;
+		public bool IsRot_Rotate_Right (int nameHash) { 
+			 return nameHash == stateIdRot_Rotate_Right;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Centered").
+		/// true if nameHash equals Animator.StringToHash ("Rot.Centered").
 		/// </summary>
-		public bool IsCentered (int nameHash) { 
-			 return nameHash == stateIdCentered;
-		}
-		
-		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("PlayerRotation.Rotate-Left").
-		/// </summary>
-		public bool IsPlayerRotation_Rotate_Left (int nameHash) { 
-			 return nameHash == stateIdPlayerRotation_Rotate_Left;
-		}
-		
-		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("PlayerRotation.Rotate-Right").
-		/// </summary>
-		public bool IsPlayerRotation_Rotate_Right (int nameHash) { 
-			 return nameHash == stateIdPlayerRotation_Rotate_Right;
-		}
-		
-		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("PlayerRotation.Centered").
-		/// </summary>
-		public bool IsPlayerRotation_Centered (int nameHash) { 
-			 return nameHash == stateIdPlayerRotation_Centered;
+		public bool IsRot_Centered (int nameHash) { 
+			 return nameHash == stateIdRot_Centered;
 		}
 		
 		/// <summary>

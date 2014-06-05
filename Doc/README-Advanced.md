@@ -48,6 +48,11 @@ The _Undo Files_ are stored using Unity's [Application.temporaryCachePath](http:
 code. The template can be found under:  
 _InstallationDir_/Editor/Templates/DefaultTemplate.txt
 
+## Moving Animator Access Menu
+If you want to move the menu for Animator Access from top menu to a different location:
+
+Edit the constant **RootMenu** in file **Editor/MenuLocation.cs**.
+
 ## File Specific Configuration
 This is currently not supported via GUI but can be done easily in code. The responsible Config factory class is 
 designed as partial class so that it can be extended in a separate file. In order to register your own 

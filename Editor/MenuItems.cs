@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#define TEST_ANIMATOR_WRAPPER
+//#define TEST_ANIMATOR_WRAPPER
 
 using UnityEngine;
 using UnityEditor;
@@ -30,17 +30,11 @@ namespace Scio.AnimatorAccessGenerator
 {
 	public static class MenuItems
 	{
-		/// <summary>
-		/// The root menu where Animator Access menus are located. Change this if you wish another location.
-		/// To put the items as submenu under Windows for example set "Window/Animator Access/".
-		/// This doesn't work for the Component menu.
-		/// </summary>
-		const string RootMenu = "Animator Access/";
 
-		const string MenuTest = RootMenu + "Test Animator Wrapper %#t";
-		const string MenuCreate = RootMenu + "Create Animator Access";
-		const string MenuUpdate = RootMenu + "Update Animator Access";
-		const string MenuSettings = RootMenu + "Settings";
+		const string MenuTest = MenuLocation.RootMenu + "Test Animator Wrapper %#t";
+		const string MenuCreate = MenuLocation.RootMenu + "Create Animator Access";
+		const string MenuUpdate = MenuLocation.RootMenu + "Update Animator Access";
+		const string MenuSettings = MenuLocation.RootMenu + "Settings";
 		
 		/// <summary>
 		/// Default name for Save As dialog.
