@@ -5,7 +5,7 @@ states and parameters and detect inconsistencies at compile time.
 
 ## Quick Start
 ### Installation:
--  Download the current stable release [AnimatorAccess.zip](https://github.com/kayy/AnimatorAccess/archive/AnimatorAccess.zip) from GitHub
+-  Download the current stable release [AnimatorAccess.zip](https://github.com/kayy/AnimatorAccess/archive/Current.zip) from GitHub
 -  Unzip and copy all files to some location under your Assets directory but **NOT under any editor directory**.
 
 ### Generating Code:
