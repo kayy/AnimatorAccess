@@ -93,6 +93,8 @@ namespace AnimatorAccessExample
 			rigidbody.MovePosition (transform.position + speed * Vector3.right * Time.deltaTime);
 			// if speed != 0, walking animation is triggered
 			anim.SetSpeed (Mathf.Abs (speed));
+			// alternative (not recommended) way of accessing hash IDs directly:
+			// animator.SetFloat (anim.paramIdSpeed, Mathf.Abs (speed));
 		}
 		
 		void OnTriggerstay (Collider other) {

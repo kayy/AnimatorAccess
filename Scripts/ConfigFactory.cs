@@ -38,12 +38,24 @@ namespace Scio.AnimatorAccessGenerator
 	/// -----------------------
 	/// namespace Scio.AnimatorAccessGenerator {
 	///     public partial class ConfigFactory {
-	///         static ConfigFactory () {
-	///             instance = new ConfigFactory ();
-	///             instance.defaultConfig = new MyConfig ();
+	/// 		static ConfigFactory () {
+    ///				ConfigFactory myFactory = new ConfigFactory ();
+    ///				instance = myFactory;
+    ///				myFactory.defaultConfig = new Config ();
+    ///				Config specialConfig = new SpecialConfig ();
+    ///				specialConfig.AnimatorStatePrefix = "MyAnim";
+    ///				myFactory.configs ["ExamplePlayerAnimatorAccess"] = specialConfig;
 	///         }
-	///     }
-	/// }
+    ///		}
+	///     public class SpecialConfig : Config {
+	///     	public override string AnimatorStatePrefix {
+	///     		get {
+	///     			return "MyAnim";
+	///     		}
+	///     		// provide an empty setter to avoid that "MyAnim" is written back to the default config.
+	///     		set {}
+	///     	}
+	///     }    
 	/// -----------------------
 	/// But you should really know what you are doing !
 	/// If you want even more control, just create your own factory class and register it the way shown above.
