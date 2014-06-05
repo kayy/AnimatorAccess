@@ -5,7 +5,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/05/2014 00:10:16")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/05/2014 09:23:01")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 

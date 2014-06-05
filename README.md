@@ -32,12 +32,14 @@ and assign a reference in Awake ():
 	<pre><code>anim = GetComponent < AnimatorAccess.ExamplePlayerAnimatorAccess > ();</code></pre>
 	
 		
-Now you have convenient access to all parameters and animator states:<pre><code>
+Now you have convenient access to all parameters and animator states. Aside from using parameter and state hash IDs 
+directly, there are predefined methods for querying the state (prefix **Is**) and **Get** and **Set** methods to access 
+parameters in a type safe way:<pre><code>
 	void FixedUpdate () {
 		currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
-		if (anim.IsWalking (currentState0)) {
+		if (anim.**IsWalking** (currentState0)) {
 		...
-		anim.SetSpeed (Mathf.Abs (speed));
+		anim.**SetSpeed** (Mathf.Abs (speed));
 </code></pre>
 
 ## Workflow
@@ -55,6 +57,7 @@ refrences to members that are not valid any longer, obsolete warnings guide you 
 
 ### Custom Editor
 The generated component has a custom inspector window:
+
 ![Custom Editor](./Misc/AnimatorAccess_CustomEditor_Example.png)
 
 The status is updated every 30 seconds automatically. Use the _Check_ button to force a status update. _Check_ will 

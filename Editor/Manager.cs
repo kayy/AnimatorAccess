@@ -45,17 +45,23 @@ namespace Scio.AnimatorAccessGenerator
 				if (instance == null) {
 					instance = new Manager ();
 					instance.repository.Prepare ();
-					string[] files = Directory.GetFiles (Application.dataPath, BaseAnimatorAccessCS, SearchOption.AllDirectories);
-					if (files.Length != 1) {
-						Debug.LogError ("Install directory not found! File " + BaseAnimatorAccessCS + " could not be found anywhere under your Assets directory.");
-						instance.InstallDir = Application.dataPath;
-					} else {
-						string s = Path.GetDirectoryName (files[0]);
-						string appDataPath = Application.dataPath;
-						instance.InstallDir = s.Substring (appDataPath.Length + 1);
+					try {
+						string[] files = Directory.GetFiles (Application.dataPath, BaseAnimatorAccessCS, SearchOption.AllDirectories);
+						if (files.Length != 1) {
+							Debug.LogError ("Install directory not found! File " + BaseAnimatorAccessCS + " could not be found anywhere under your Assets directory.");
+							instance.InstallDir = Application.dataPath;
+						} else {
+							string pathToScripts = Path.GetDirectoryName (files[0]);
+							string pathToInstallDir = Directory.GetParent (pathToScripts).FullName;
+							string appDataPath = Application.dataPath;
+							instance.InstallDir = pathToInstallDir.Substring (appDataPath.Length + 1);
+						}
+					} catch (System.Exception ex) {
+						Debug.LogWarning (ex.Message);
 					}
 					bool logLevel = Preferences.GetBool (Preferences.Key.DebugMode);
 					Logger.Set = new UnityLogger (logLevel);
+					Logger.Debug ("Install directory is: " + instance.InstallDir);
 				}
 				return instance;
 			}
