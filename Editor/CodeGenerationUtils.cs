@@ -30,13 +30,17 @@ namespace Scio.AnimatorAccessGenerator
 {
 	public static class CodeGenerationUtils
 	{
+		public static bool IsLetter (Char c) {
+			return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
+		}
+
 		public static string GenerateVariableName (string prefix, string item) {
 			string varName = "";
 			bool firstChar = true;
 			foreach (Char c in item) {
 				if (firstChar) {
 					firstChar = false;
-					if (Char.IsLetter (c)) {
+					if (IsLetter (c)) {
 						varName += c;
 					} else {
 						varName += "_";
@@ -45,7 +49,7 @@ namespace Scio.AnimatorAccessGenerator
 						}
 					}
 				} else {
-					if (Char.IsLetterOrDigit (c)) {
+					if (Char.IsDigit (c) || IsLetter (c)) {
 						varName += c;
 					} else {
 						varName += "_";

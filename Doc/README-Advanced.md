@@ -31,7 +31,7 @@ Configuration is done via the Settings window.
 1. **Generate State Dictionary:** Create an Animator state dictionary that can be queried by StateIdToName (int id).
 1. **Debug Mode:** Extended logging to console view.
 
-## Persistent Storage
+## Persistent Storage Location
 All settings are saved in directory at:
 <pre><code>Application.persistentDataPath + "/AnimatorAccessConfig.txt"</pre></code>
 See the [Unity documentation](http://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)
@@ -51,7 +51,8 @@ _InstallationDir_/Editor/Templates/DefaultTemplate.txt
 ## Moving Animator Access Menu
 If you want to move the menu for Animator Access from top menu to a different location:
 
-Edit the constant **RootMenu** in file **Editor/MenuLocation.cs**.
+Edit the constant **RootMenu** in file **Editor/MenuLocation.cs**. Note that you have to repeat this step after 
+every update of Animator Access.
 
 ## File Specific Configuration
 This is currently not supported via GUI but can be done easily in code. The responsible Config factory class is 

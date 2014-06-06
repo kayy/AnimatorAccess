@@ -16,12 +16,13 @@ access through dedicated methods makes it possible to detect potential problems 
 -  Choose a file name and the output directory where to place the C# file (has to be under Assets directory)
 -  Say _Yes_ when the dialog appears about adding the component to the game object.
 
-### Usage example (related to provided ExampleScene.unity)
-Setup:
+### Usage example
+Setup (related to provided ExampleScene.unity):
 
--   Generated class is **ExamplePlayerAnimatorAccess.cs** in **_InstallDirectory_/AnimatorAccess/Example/Scripts/Generated/ExamplePlayerAnimatorAccess.cs**
--   Game object is **ExamplePlayer**
--   Another component **Player** controls animation related stuff in its FixedUpdate method
+-   Game object **ExamplePlayer** contains an Animator component
+-   Generated class is **ExamplePlayerAnimatorAccess.cs**
+-   Another component **Player** is attached to this game object too. It uses ExamplePlayerAnimatorAccess in its 
+FixedUpdate method to control animations 
 -   Animator states are:
   -   **Idle**, **Jumping**, **Walking** and **Yawning** in layer 0 (**Base Layer**)
   -   **Centered**, **Rotate-Left** and **Rotate-Right** in layer 1 (**Rot**)
@@ -33,6 +34,7 @@ Setup:
 
 To use **ExamplePlayerAnimatorAccess** define a member in **Player.cs** and assign a reference in Awake ():
 <pre><code>AnimatorAccess.ExamplePlayerAnimatorAccess anim;
+
 void Awake () {
     anim = GetComponent < AnimatorAccess.ExamplePlayerAnimatorAccess > ();
 </code></pre>
@@ -44,7 +46,7 @@ parameters in a type safe way like **IsWalking ()** **SetSpeed ()**:
 	if (anim.IsWalking (currentState0)) {
 		// set speed 
 		anim.SetSpeed (speed);
-		// alternatively use hash IDs directly (not recommended):
+		// alternatively you can use hash IDs directly but this is more cumbersome:
 		// animator.SetFloat (anim.paramIdSpeed, speed);
 </code></pre>
 
@@ -124,17 +126,39 @@ to the correct method.
 ### Errors in MonoDevelop
 There are three known situations when you may get errors:  
 
-1. You ignored obsolete warnings and pressed _Update_ again. Then all obsolete members are removed and references
-to these will fail
+1. Obsolete warnings were ignored and the next _Update_ was triggered. Then all obsolete members are removed and 
+references to these will fail
 2. You changed state and parameter hash prefix settings to contain the same string, removed a parameter and 
 create a state with the same name
 3. Generated code was edited so that a naming conflict arose.
 
-If _Undo_ can't help most problems can be solved pretty similar the way we handled warnings. Do single changes 
+If _Undo_ does not help, most problems can be solved pretty similar the way we handled warnings. Do single changes 
 manually and a bunch of changes with the refactoring strategy. If there are many places referring to a missing 
 member, manually introduce it as dummy and then use refactoring. 
 
+## Naming Convention And Customising
+
+You can customise the way how to generate parameter and method names in the _Settings_ window. All access methods
+start with **Is**, **Get** or **Set**. This cannot be changed but the pattern for the appended item name can be 
+modified. You can for example define that all animator state query methods (Is...) contain the prefix _State_ 
+before the name e.g. IsStateIdle ().
+
+Be careful with changes for the hash ID member variables prefixes. States and parameters should have **different 
+prefixes** to avoid naming conflicts.
+
+By default the **Layer name** is ignored for layer 0 and prepended for all other layers.
+
+**Avoid non-ANSI characters**. Field names are converted to match the pattern [a-z\_][a-zA-Z0-9\_]. Non-matching 
+characters are changed to an underscore.
+
+Look at the tooltips in the _Settings_ windows or go to [README-Advanced.md](./Doc/README-Advanced.md) for a complete 
+description.
 
 ## Advanced Topics
+See [README-Advanced.md](./Doc/README-Advanced.md) for more about:
 
-Configuration via Settings window and other advanced topics are handled in [README-Advanced.md](./Doc/README-Advanced.md)
+- Configuration via Settings window
+- Persistent Storage Location
+- SmartFormat Template
+- Moving Animator Access Menu
+- File Specific Configuration
