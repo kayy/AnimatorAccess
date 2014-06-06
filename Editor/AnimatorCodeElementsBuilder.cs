@@ -77,7 +77,7 @@ namespace Scio.AnimatorAccessGenerator
 		}
 
 		void PrepareFields () {
-			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Private);
+			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Public);
 			classCodeElement.Fields.Add (animatorVar);
 		}
 		
