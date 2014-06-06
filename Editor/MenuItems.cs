@@ -33,7 +33,6 @@ namespace Scio.AnimatorAccessGenerator
 
 		const string MenuTest = MenuLocation.RootMenu + "Test Animator Wrapper %#t";
 		const string MenuCreate = MenuLocation.RootMenu + "Create Animator Access";
-		const string MenuUpdate = MenuLocation.RootMenu + "Update Animator Access";
 		const string MenuSettings = MenuLocation.RootMenu + "Settings";
 		
 		/// <summary>
@@ -61,16 +60,6 @@ namespace Scio.AnimatorAccessGenerator
 		[MenuItem(MenuCreate, true)]
 		public static bool ValidateCreateAnimatorAccess () {
 			return InspectorUtils.GetActiveAnimatorAccessComponent () == null;
-		}
-
-		[MenuItem(MenuUpdate)]
-		public static void UpdateAnimatorAccess () {
-			Manager.SharedInstance.Update (Selection.activeGameObject);
-		}
-
-		[MenuItem(MenuUpdate, true)]
-		public static bool ValidateUpdateAnimatorAccess () {
-			return InspectorUtils.GetActiveAnimatorAccessComponent () != null;
 		}
 
 		[MenuItem(MenuSettings)]

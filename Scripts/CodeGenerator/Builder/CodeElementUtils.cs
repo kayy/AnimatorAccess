@@ -163,14 +163,6 @@ namespace Scio.CodeGeneration
 			return oldMembers.Count;
 		}
 
-		public static List<string> GetCriticalNames (ClassCodeElement existingClass)
-		{
-			List<string> names = new List<string> ();
-			existingClass.Properties.ForEach ((item) => names.Add (item.Name));
-			existingClass.Methods.ForEach ((item) => names.Add (item.Name));
-			return names;
-		}
-
 		public static void MergeElements<T> (List<T> target, List<T> other, Predicate<T> filter = null) {
 			if (filter == null) {
 				filter = new System.Predicate<T> ((t) => true );

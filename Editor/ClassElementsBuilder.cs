@@ -161,21 +161,13 @@ namespace Scio.AnimatorAccessGenerator
 			if (!existingClass.IsEmpty () && !config.IgnoreExistingCode) {
 				int remaining = CodeElementUtils.CleanupExistingClass (existingClass, newClass, config.KeepObsoleteMembers);
 				if (remaining > 0 && !forceUpdate) {
-					string removedMembers = "";
 					string consoleMessage = "";
-					List<string> previousMembers = CodeElementUtils.GetCriticalNames (existingClass);
-					for (int i = 0; i < remaining; i++) {
-						consoleMessage += previousMembers [i] + "\n";
-						if (i < 3) {
-							removedMembers += previousMembers [i] + "\n";
-						} else
-						if (i >= remaining - 1) {
-							removedMembers += "... (" + (remaining - 3) + " more)\n";
-						}
+					List<MemberCodeElement> previousMembers = existingClass.GetAllMembers ();
+					int previousMembersCount = previousMembers.Count;
+					for (int i = 0; i < previousMembersCount; i++) {
+						consoleMessage += previousMembers [i].GetSignature () + "\n";
 					}
-					Logger.Debug ("Members found in previous version that disappeared now: " + consoleMessage);
-					string s = string.Format ("The following members are found in the previous version of {0} but will not be " + "created again:\n{1}\n(See console for details)\nClick 'OK' to generate new version. Click 'Cancel' if you want" + " to refactor your code first if other classes refer to these members.", className, removedMembers);
-					result.SetWarning (remaining + " Removed Members", s);
+					Logger.Info ("Members found in previous version that will be marked as obsolete: " + consoleMessage);
 				}
 			}
 			return result;

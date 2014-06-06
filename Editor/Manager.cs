@@ -95,7 +95,7 @@ namespace Scio.AnimatorAccessGenerator
 		public void Create (GameObject go, string targetCodeFile) {
 			ClassElementsBuilder gen = new ClassElementsBuilder (go, targetCodeFile);
 			CodeGeneratorResult result = gen.PrepareCodeGeneration (false);
-			if (result.NoSuccess) {
+			if (result.Error) {
 				EditorUtility.DisplayDialog (result.ErrorTitle, result.ErrorText, "OK");
 				return;
 			}
