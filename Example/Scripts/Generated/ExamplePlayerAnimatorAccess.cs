@@ -1,11 +1,12 @@
-//  GENERATED CODE ==> EDITS WILL BE LOST AFTER NEXT GENERATION!
+// GENERATED CODE ==> EDITS WILL BE LOST AFTER NEXT GENERATION!
+// Version for Mac / UNIX 
 
 using UnityEngine;
 using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/06/2014 09:58:53")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/10/2014 20:05:19")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 

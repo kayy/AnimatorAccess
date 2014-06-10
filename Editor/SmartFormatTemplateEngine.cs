@@ -44,6 +44,7 @@ namespace Scio.CodeGeneration
 			}
 			try {
 				if (File.Exists (config.TemplatePath)) {
+					Logger.Debug ("Reading template file " + config.TemplatePath);
 					using (StreamReader fileReader = new StreamReader (config.TemplatePath)) {				
 						template = fileReader.ReadToEnd ();
 						fileReader.Close ();

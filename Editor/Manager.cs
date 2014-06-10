@@ -82,7 +82,7 @@ namespace Scio.AnimatorAccessGenerator
 					WriteToFile (a.Code, "/Users/kay/tmp/TimeMachine.ignore/Trash/New.cs");
 				}
 			} else {
-				Logger.Debug (r);
+				Logger.Warning (r);
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace Scio.AnimatorAccessGenerator
 					EditorStatusObserver.CheckForAutoRefresh ();
 				}
 			} else {
-				Logger.Debug (r);
+				Logger.Warning (r);
 				EditorUtility.DisplayDialog (r.ErrorTitle, r.ErrorText, "OK");
 			}
 		}

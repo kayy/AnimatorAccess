@@ -32,7 +32,7 @@ namespace Scio.AnimatorAccessGenerator {
 	/// </summary>
 	public class Config 
 	{
-		const string defaultMonoBehaviourTemplateFileName = "DefaultTemplate.txt";
+		const string defaultMonoBehaviourTemplateFileName = "DefaultTemplate";
 		protected virtual string DefaultMonoBehaviourTemplateFileName {
 			get { return defaultMonoBehaviourTemplateFileName; }
 		}
@@ -148,7 +148,14 @@ namespace Scio.AnimatorAccessGenerator {
 		/// Returns the appropriate default template file depending on flag GenerateMonoBehaviourComponent.
 		/// </summary>
 		public virtual string GetDefaultTemplateFileName () {
-			return DefaultMonoBehaviourTemplateFileName;
+			string osFullName = SystemInfo.operatingSystem;
+			string template = DefaultMonoBehaviourTemplateFileName;
+			if (osFullName.StartsWith ("Win")) {
+				template += "-Win.txt";
+			} else {
+				template += "-UNIX.txt"; 
+			}
+			return template;
 		}
 
 		/// <summary>
