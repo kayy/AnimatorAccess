@@ -155,7 +155,7 @@ Look at the tooltips in the _Settings_ windows or go to [README-Advanced.md](./D
 description.
 
 ## Advanced Topics
-See [README-Advanced.md](./Doc/README-Advanced.md) for more about:
+See [README-Advanced.md](./Doc/README-Advanced.md#animator-access-generator-advanced-topics) for more about:
 
 - Configuration via Settings window
 - Persistent Storage Location

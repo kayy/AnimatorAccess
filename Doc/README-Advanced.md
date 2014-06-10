@@ -1,6 +1,6 @@
 # Animator Access Generator Advanced Topics
 
-See the basic [README.md](../README-Advanced.md) for an introduction to Animator Access Generator
+See the basic [README.md](../README.md) for an introduction to Animator Access Generator
 
 ## Settings
 Configuration is done via the Settings window. 
@@ -45,8 +45,10 @@ The _Undo Files_ are stored using Unity's [Application.temporaryCachePath](http:
 ## SmartFormat Template
 
 [SmartFormat](https://github.com/scottrippey/SmartFormat.NET) is currently used as template enginge to generate the 
-code. The template can be found under:  
-_InstallationDir_/Editor/Templates/DefaultTemplate.txt
+code. There are OS dependent template files due to different line endings on UNIX and Windows. The templates can be 
+found under:
+_InstallationDir_/Editor/Templates/DefaultTemplate-UNIX.txt
+_InstallationDir_/Editor/Templates/DefaultTemplate-Win.txt
 
 ## Moving Animator Access Menu
 If you want to move the menu for Animator Access from top menu to a different location:
