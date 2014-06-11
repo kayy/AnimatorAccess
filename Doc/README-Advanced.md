@@ -56,6 +56,24 @@ If you want to move the menu for Animator Access from top menu to a different lo
 Edit the constant **RootMenu** in file **Editor/MenuLocation.cs**. Note that you have to repeat this step after 
 every update of Animator Access.
 
+## Git Subtree Integration / Contributing
+If you are using Git in your project, a _git subtree_ for AnimatorAccess might be the easiest way to integrate it.
+Especially when you plan changes or like to contribute to AnimatorAccess there are some conventions about the 
+**.meta files**. Basically .meta files should not be commited except for the _Example_ folder. To integrate this
+smoothly the following best practice is recommended:
+
+Given a subtree in Assets/ThirdParty/AnimatorAccess set up the following .gitignore structure:
+
+- Assets/ThirdParty/.gitignore contains  
+_AnimatorAccess/.gitignore_
+- Assets/ThirdParty/AnimatorAccess/.gitignore contains  
+_*.meta  
+Example/.gitignore_
+- Assets/ThirdParty/AnimatorAccess/Example/.gitignore contains  
+_!*.meta_
+
+This ensures that only .meta files under Example are committed and .gitignore files are held locally
+
 ## File Specific Configuration
 This is currently not supported via GUI but can be done easily in code. The responsible Config factory class is 
 designed as partial class so that it can be extended in a separate file. In order to register your own 

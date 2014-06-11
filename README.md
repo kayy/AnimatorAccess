@@ -162,3 +162,4 @@ See [README-Advanced.md](./Doc/README-Advanced.md#animator-access-generator-adva
 - SmartFormat Template
 - Moving Animator Access Menu
 - File Specific Configuration
+- Git Subtree Integration / Contributing
