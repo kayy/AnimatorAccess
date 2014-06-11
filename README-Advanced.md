@@ -1,11 +1,11 @@
 # Animator Access Generator Advanced Topics
 
-See the basic [README.md](../README.md) for an introduction to Animator Access Generator
+See the basic [README.md](./README.md) for an introduction to Animator Access Generator
 
 ## Settings
 Configuration is done via the Settings window. 
 
-![Setting Editor Window](./AnimatorAccess_Settings.png)
+![Setting Editor Window](./Doc/AnimatorAccess_Settings.png)
 
 1. **Auto Refresh AssetDatabase:** Automatically call an AssetDabase.Refresh () after updating an existing AnimatorAccess class.  
    Note that the MonoDevelop project is reloaded too which can be annoying.

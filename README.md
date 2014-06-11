@@ -151,11 +151,11 @@ By default the **Layer name** is ignored for layer 0 and prepended for all other
 **Avoid non-ANSI characters**. Field names are converted to match the pattern [a-z\_][a-zA-Z0-9\_]. Non-matching 
 characters are changed to an underscore.
 
-Look at the tooltips in the _Settings_ windows or go to [README-Advanced.md](./Doc/README-Advanced.md) for a complete 
+Look at the tooltips in the _Settings_ windows or go to [README-Advanced.md](./README-Advanced.md) for a complete 
 description.
 
 ## Advanced Topics
-See [README-Advanced.md](./Doc/README-Advanced.md#animator-access-generator-advanced-topics) for more about:
+See [README-Advanced.md](./README-Advanced.md#animator-access-generator-advanced-topics) for more about:
 
 - Configuration via Settings window
 - Persistent Storage Location
