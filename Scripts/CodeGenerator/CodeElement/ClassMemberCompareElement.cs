@@ -24,6 +24,11 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// One item in a list of results when comparing two classes. Most often two different version of a class. 
+	/// Provides information about if this element will be inserted, marked as obsolete or removed. Some strings
+	/// can be used to display details.
+	/// </summary>
 	public class ClassMemberCompareElement
 	{
 		public enum Result
@@ -64,15 +69,5 @@ namespace Scio.CodeGeneration
 		
 	}
 	
-	public class MemberNameComparer<T> : IEqualityComparer <T> where T : MemberCodeElement
-	{
-		public bool Equals (T x, T y) {
-			return x.Name == y.Name;
-		}
-		
-		public int GetHashCode (T obj) {
-			return obj.Name.GetHashCode ();
-		}
-	}
 }
 

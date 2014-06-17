@@ -23,6 +23,10 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// The outermost code element containing using directives and oen or more class code elements. This is what the 
+	/// template engine will get as input.
+	/// </summary>
 	public class FileCodeElement : CodeElement
 	{
 		public MemberTypeID MemberType {

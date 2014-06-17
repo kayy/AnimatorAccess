@@ -64,6 +64,12 @@ namespace Scio.AnimatorAccessGenerator
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
 					string item = state.uniqueName;
+//					string s = item + " :";
+//					Transition[] transitions = sm.GetTransitionsFromState(state);
+//					foreach (var t in transitions) {
+//						s += t.uniqueName;
+//					}
+//					Debug.Log (s);
 					callback (layer, layerName, item);
 				}
 			}

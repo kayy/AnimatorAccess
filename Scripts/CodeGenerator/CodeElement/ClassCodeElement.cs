@@ -25,6 +25,10 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Contains all elements needed to generate a class including namespace but without using directives. One or 
+	/// more class code elements are the most important parts of the FileCodeElement supplied to the template engine.
+	/// </summary>
 	public class ClassCodeElement : AbstractCodeElement
 	{
 		public override MemberTypeID MemberType {
@@ -40,6 +44,9 @@ namespace Scio.CodeGeneration
 
 		protected List<string> interfaces = new List<string> ();
 		protected string baseClass = "";
+		/// <summary>
+		/// Provides the base class and interfaces as list of strings sorted to be used after the colon (:).
+		/// </summary>
 		public List<string> BaseClassAndInterfaces {
 			get {
 				List<string> l = new List<string> ();
@@ -54,14 +61,25 @@ namespace Scio.CodeGeneration
 		}
 		public bool HasBaseClassOrInterfaces { get { return !string.IsNullOrEmpty (baseClass) || interfaces.Count > 0; } }
 
+		/// <summary>
+		/// List of delegate definitions.
+		/// </summary>
 		public List<DelegateDefinitionCodeElement> Delegates = new List<DelegateDefinitionCodeElement> ();
-		
+		/// <summary>
+		/// Private, protected and publich fields, each one might contain initialisation code e.g. "bool b = true".
+		/// </summary>
 		public List<GenericFieldCodeElement> Fields = new List<GenericFieldCodeElement> ();
-		
+		/// <summary>
+		/// All methods but no delegates (s. member Delegates).
+		/// </summary>
 		public List<GenericMethodCodeElement> Methods = new List<GenericMethodCodeElement> ();
-		
+		/// <summary>
+		/// The properties. Note that auto porperties are not supported.
+		/// </summary>
 		public List<GenericPropertyCodeElement> Properties = new List<GenericPropertyCodeElement> ();
-
+		/// <summary>
+		/// Constructors of this class.
+		/// </summary>
 		public List<ConstructorCodeElement> Constructors = new List<ConstructorCodeElement> ();
 		
 		public ClassCodeElement (string name, AccessType access = AccessType.Public) :
@@ -82,6 +100,10 @@ namespace Scio.CodeGeneration
 			interfaces.Add (nextInterface);
 		}
 
+		/// <summary>
+		/// Gets all fields, properties and methods of this class.
+		/// </summary>
+		/// <returns>The all members.</returns>
 		public List<MemberCodeElement> GetAllMembers () {
 			List<MemberCodeElement> l = new List<MemberCodeElement> ();
 			Fields.ForEach ((item) => l.Add (item));
@@ -90,18 +112,37 @@ namespace Scio.CodeGeneration
 			return l;
 		}
 
+		/// <summary>
+		/// Merges all those methods of other class into this one, that meet the filter condition.
+		/// </summary>
+		/// <param name="other">Other class whose methods will be merged into this class.</param>
+		/// <param name="filter">Filter (optional), defines a subset of other's methods.</param>
 		public void MergeMethods (ClassCodeElement other, Predicate<GenericMethodCodeElement> filter = null) {
 			CodeElementUtils.MergeElements <GenericMethodCodeElement> (Methods, other.Methods, filter);
 		}
 		
+		/// <summary>
+		/// Merges all those properties of other class into this one, that meet the filter condition.
+		/// </summary>
+		/// <param name="other">Other class whose properties will be merged into this class.</param>
+		/// <param name="filter">Filter (optional), defines a subset of other's properties.</param>
 		public void MergeProperties (ClassCodeElement other, Predicate<GenericPropertyCodeElement> filter = null) {
 			CodeElementUtils.MergeElements <GenericPropertyCodeElement> (Properties, other.Properties, filter);
 		}
 		
+		/// <summary>
+		/// Merges all those fields of other class into this one, that meet the filter condition.
+		/// </summary>
+		/// <param name="other">Other class whose fields will be merged into this class.</param>
+		/// <param name="filter">Filter (optional), defines a subset of other's fields.</param>
 		public void MergeFields (ClassCodeElement other, Predicate<GenericFieldCodeElement> filter = null) {
 			CodeElementUtils.MergeElements <GenericFieldCodeElement> (Fields, other.Fields, filter);
 		}
-		
+
+		/// <summary>
+		/// Adds the given attribute to all methods, fields, constructors and properties.
+		/// </summary>
+		/// <param name="attribute">Attribute.</param>
 		public void AddAttributeToAllMembers (AttributeCodeElement attribute) {
 			Constructors.ForEach ((c) => c.AddAttribute (attribute));
 			Methods.ForEach ((c) => c.AddAttribute (attribute));

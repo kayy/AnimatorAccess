@@ -24,6 +24,10 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Base class for members containing active code like methods, fields, properties, delegates. Note that 
+	/// constructors are not derived from this class, might change in the future.
+	/// </summary>
 	public abstract class MemberCodeElement : AbstractCodeElement
 	{
 		/// <summary>

@@ -24,6 +24,10 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Field of arbitrary type containing modifiers and optional initialisation code e.g. "public const bool b = true".
+	/// s. FieldCodeElement<T> for template based fields.
+	/// </summary>
 	public class GenericFieldCodeElement : MemberCodeElement
 	{
 		public override MemberTypeID MemberType {

@@ -23,12 +23,30 @@ using System;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Template engine implementors have to provide a 3 step procedure for generating the code:
+	/// - Prepare to check if all preconditions are met.
+	/// - GenerateCode to generate the code and store it internally.
+	/// - Code property to provide the result
+	/// </summary>
 	public interface TemplateEngine
 	{
+		/// <summary>
+		/// Provides the result after GenerateCode has finished.
+		/// </summary>
+		/// <value>The code.</value>
 		string Code {get;}
-
+		/// <summary>
+		/// Check if all preconditions are met e.g. template found and loaded, file system access, ...
+		/// </summary>
+		/// <returns>CodeGeneratorResult.Success or warnings otherwise.</returns>
+		/// <param name="inputConfig">Input config.</param>
 		CodeGeneratorResult Prepare (TemplateEngineConfig inputConfig);
-
+		/// <summary>
+		/// Generates the code and stores it internally to be retrieved later by property Code.
+		/// </summary>
+		/// <returns>CodeGeneratorResult.Success or warnings otherwise.</returns>
+		/// <param name="classCodeElement">Class code element.</param>
 		CodeGeneratorResult GenerateCode (FileCodeElement classCodeElement);
 	}
 

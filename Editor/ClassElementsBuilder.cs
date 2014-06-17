@@ -50,13 +50,24 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public class ClassElementsBuilder
 	{
+		/// <summary>
+		/// The builder for the new class to generate.
+		/// </summary>
 		AnimatorCodeElementsBuilder builder;
 		ClassCodeElement newClass = null;
-	
+		/// <summary>
+		/// Reflection based builder for previous class version.
+		/// </summary>
 		ReflectionCodeElementsBuilder existingClassBuilder;
 		ClassCodeElement existingClass = null;
-	
-		TemplateEngine generator;
+
+		/// <summary>
+		/// The generating template engine to finally generate the code.
+		/// </summary>
+		TemplateEngine templateEngine;
+		/// <summary>
+		/// The config load from ConfigFactory, depends on class name.
+		/// </summary>
 		Config config;
 	
 		string className = "";
@@ -82,7 +93,7 @@ namespace Scio.AnimatorAccessGenerator
 		{
 			className = Path.GetFileNameWithoutExtension (fileName);
 			config = ConfigFactory.Get (className);
-			generator = new SmartFormatTemplateEngine ();
+			templateEngine = new SmartFormatTemplateEngine ();
 			builder = new AnimatorCodeElementsBuilder (go, className, config);
 			existingClassBuilder = new ReflectionCodeElementsBuilder ("Assembly-CSharp", config.DefaultNamespace, className);
 		}
@@ -98,7 +109,7 @@ namespace Scio.AnimatorAccessGenerator
 				existingClassBuilder = new ReflectionCodeElementsBuilder (animatorAccess);
 				className = existingClassBuilder.ClassName;
 				config = ConfigFactory.Get (className);
-				generator = new SmartFormatTemplateEngine ();
+				templateEngine = new SmartFormatTemplateEngine ();
 				builder = new AnimatorCodeElementsBuilder (go, className, config);
 			} else {
 				Logger.Error ("Cannot access component AnimatorAccess.BaseAnimatorAccess from object " + go.name);
@@ -125,11 +136,15 @@ namespace Scio.AnimatorAccessGenerator
 			return new List<ClassMemberCompareElement> ();
 		}
 
+		/// <summary>
+		/// Initialises templateEngine and builds newClass and existingClass.
+		/// </summary>
+		/// <returns>The classes.</returns>
 		CodeGeneratorResult BuildClasses () {
 			TemplateLookup templateLookup = new TemplateLookup (config);
 			CodeGeneratorResult result = templateLookup.GetPathToTemplate (className);
 			if (result.Success) {
-				result = generator.Prepare (templateLookup.TemplateConfig);
+				result = templateEngine.Prepare (templateLookup.TemplateConfig);
 				if (result.NoSuccess) {
 					return result;
 				}
@@ -162,14 +177,19 @@ namespace Scio.AnimatorAccessGenerator
 			return result;
 		}
 
-		public CodeGeneratorResult PrepareCodeGeneration (bool forceUpdate) {
+		/// <summary>
+		/// Checks all preconditions and builds both class code elements.
+		/// </summary>
+		/// <returns>Result to check if there were errors or user input is required.</returns>
+		/// <param name="suppressLoggingOfChanges">If set to <c>true</c> changes will not be printed to console.</param>
+		public CodeGeneratorResult PrepareCodeGeneration (bool suppressLoggingOfChanges) {
 			CodeGeneratorResult result = BuildClasses ();
 			if (result.Error) {
 				return result;
 			}
 			if (!existingClass.IsEmpty () && !config.IgnoreExistingCode) {
 				int remaining = CodeElementUtils.CleanupExistingClass (existingClass, newClass, config.KeepObsoleteMembers);
-				if (remaining > 0 && !forceUpdate) {
+				if (remaining > 0 && !suppressLoggingOfChanges) {
 					string consoleMessage = "";
 					List<MemberCodeElement> previousMembers = existingClass.GetAllMembers ();
 					int previousMembersCount = previousMembers.Count;
@@ -182,6 +202,10 @@ namespace Scio.AnimatorAccessGenerator
 			return result;
 		}
 	
+		/// <summary>
+		/// Performs final merging of old and new class, then triggers template engine to generate the code.
+		/// </summary>
+		/// <returns>Result to check for errors.</returns>
 		public CodeGeneratorResult GenerateCode () {
 			if (!config.IgnoreExistingCode) {
 				if (existingClass != null  && !existingClass.IsEmpty ()) {
@@ -196,9 +220,9 @@ namespace Scio.AnimatorAccessGenerator
 			FileCodeElement fileElement = new FileCodeElement (newClass);
 			fileElement.Usings.Add (new UsingCodeElement ("UnityEngine"));
 			fileElement.Usings.Add (new UsingCodeElement ("System.Collections"));
-			CodeGeneratorResult result = generator.GenerateCode (fileElement);
+			CodeGeneratorResult result = templateEngine.GenerateCode (fileElement);
 			if (result.Success) {
-				code = generator.Code;
+				code = templateEngine.Code;
 			}
 			return result;
 		}

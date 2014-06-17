@@ -67,6 +67,10 @@ namespace Scio.AnimatorAccessGenerator
 			}
 		}
 
+		/// <summary>
+		/// Relative installation directory of Animator Access Generator under the Assets folder.
+		/// </summary>
+		/// <value>The install dir.</value>
 		public string InstallDir { get; private set; }
 
 		MetaInfoRepository repository = new MetaInfoRepository ();
@@ -129,6 +133,11 @@ namespace Scio.AnimatorAccessGenerator
 			}
 		}
 
+		/// <summary>
+		/// Compares the current version of class with a potential new version.
+		/// </summary>
+		/// <returns>The for updates.</returns>
+		/// <param name="go">GameOject whose attached BaseAnimatorAccess component should be used.</param>
 		public List<ClassMemberCompareElement> CheckForUpdates (GameObject go) {
 			ClassElementsBuilder a = new ClassElementsBuilder (go);
 			return a.Compare (go);
@@ -205,6 +214,11 @@ namespace Scio.AnimatorAccessGenerator
 			repository.MakeBackup (className, file);
 		}
 
+		/// <summary>
+		/// Show the File save dialog to determine the file name to write to.
+		/// </summary>
+		/// <returns>The target file or "" if user has cancelled the file chooser.</returns>
+		/// <param name="go">Game object to build reasonable preset file name.</param>
 		string GetTargetFile (GameObject go) {
 			BaseAnimatorAccess a = go.GetComponent<BaseAnimatorAccess> ();
 			string targetCodeFile = a.GetType ().Name + ".cs";

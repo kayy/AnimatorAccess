@@ -25,10 +25,22 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Property definition supporting get, set or both. Access is defined for the property and can be overwritten for 
+	/// each element. Note that auto properties are hard to handle on reflection so that they are not recommended.
+	/// s. FieldCodeElement<T> for template version.
+	/// </summary>
 	public class GenericPropertyCodeElement : MemberCodeElement
 	{
+		/// <summary>
+		/// A member is either a get or a set method and can have code lines. To support one-line getters or setters
+		/// the formatted code should be retrieved from CodeBlock. This takes care to omitting a member as well.
+		/// </summary>
 		public class Member
 		{
+			/// <summary>
+			/// Distinguish between get and set.
+			/// </summary>
 			string getOrSet = "";
 			GenericPropertyCodeElement parent;
 			public List<string> CodeLines = new List<string> ();
@@ -44,6 +56,12 @@ namespace Scio.CodeGeneration
 					}
 				}
 			}
+
+			/// <summary>
+			/// Gets this members code output as list of strings. If there is one line of code only, one line formatting
+			/// is applied. If there is no code the list is empty to indicate that this member must not be generated.
+			/// </summary>
+			/// <value>The code block or an empty list if this member is not defined.</value>
 			public List<string> CodeBlock {
 				get { 
 					List<string> code = new List<string> ();

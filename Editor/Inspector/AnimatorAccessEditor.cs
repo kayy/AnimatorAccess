@@ -28,6 +28,9 @@ using AnimatorAccess;
 
 namespace Scio.AnimatorAccessGenerator 
 {
+	/// <summary>
+	/// Custom inspector for all generated AnimatorAccess classes i.e. that are derived from BaseAnimatorAccess.
+	/// </summary>
 	[ExecuteInEditMode]
 	[CustomEditor(typeof(AnimatorAccess.BaseAnimatorAccess), true)]
 	public class AnimatorAccessEditor : Editor 
@@ -40,17 +43,28 @@ namespace Scio.AnimatorAccessGenerator
 		static Texture iconAdd = null;
 		static Texture iconObsolete = null;
 
+		/// <summary>
+		/// Class constructor is called after every AssetDatabase.Refresh as the whole assembly is reloaded.
+		/// </summary>
 		static AnimatorAccessEditor () {
 			string dir = "Assets/" + Manager.SharedInstance.InstallDir + InspectorIconsDir;
 			iconRemove = AssetDatabase.LoadAssetAtPath (dir + "icon_remove.png", typeof(Texture)) as Texture;
 			iconObsolete = AssetDatabase.LoadAssetAtPath (dir + "icon_obsolete.png", typeof(Texture)) as Texture;
 			iconAdd = AssetDatabase.LoadAssetAtPath (dir + "icon_add.png", typeof(Texture)) as Texture;
 		}
-		
+
+		/// <summary>
+		/// The result of the last update check i.e. a class comparison between current class version and the one that
+		/// will be generated next. This will be updated every Preferences.Key.AutoRefreshInterval seconds.
+		/// </summary>
 		List<ClassMemberCompareElement> updateCheck = null;
-
+		/// <summary>
+		/// Set after button Update or Undo was pressed to highlight the Refresh button.
+		/// </summary>
 		bool dirty = false;
-
+		/// <summary>
+		/// The last check timestamp to calculate the next update time according to Preferences.Key.AutoRefreshInterval.
+		/// </summary>
 		static double lastCheckTimestamp = 0;
 
 		void OnEnable () {
@@ -95,6 +109,7 @@ namespace Scio.AnimatorAccessGenerator
 						EditorGUILayout.BeginVertical ();
 						List<ClassMemberCompareElement> errors = updateCheck.FindAll ((element) => element.result == ClassMemberCompareElement.Result.Error);
 						List<ClassMemberCompareElement> infos = updateCheck.FindAll ((element) => element.result > ClassMemberCompareElement.Result.Error);
+						// if there are severe errors, show them first above the foldout GUI element
 						if (errors.Count > 0) {
 							string errorHintTooltip = "If one of the members is marked as obsolete, it will be removed during generation to avoid compiler errrors.\n\n" +
 								"If this is not the case, you probably have used the same name for an Animator state and for a parameter too.\n\n" +
@@ -109,6 +124,7 @@ namespace Scio.AnimatorAccessGenerator
 						}
 						updateCheckFoldOutState = EditorGUILayout.Foldout (updateCheckFoldOutState, updateCheck.Count + " class member(s) to update");
 						if (updateCheckFoldOutState) {
+							// compare elements are sorted already: new, obsolete, removed members
 							foreach (ClassMemberCompareElement c in infos) {
 								string label = string.Format ("{0}", c.Signature);
 								string tooltip = "";
@@ -162,6 +178,10 @@ namespace Scio.AnimatorAccessGenerator
 			EditorGUILayout.EndHorizontal ();
 		}
 
+		/// <summary>
+		/// Updates are performed every Preferences.Key.AutoRefreshInterval seconds to avoid heavy processing load.
+		/// </summary>
+		/// <param name="forceCheck">If set to <c>true</c> force check.</param>
 		void CheckForUpdates (bool forceCheck) {
 			if (!forceCheck) {
 				int checkInterval = Preferences.GetInt (Preferences.Key.AutoRefreshInterval);

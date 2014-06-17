@@ -24,15 +24,21 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public abstract class SimpleCodeElement : GenericCodeElement
+	public abstract class SimpleCodeElement
 	{
+		public abstract MemberTypeID MemberType { get; }
+		
+		protected string content = "";
 		public string Content { get { return content; } }
 
-		protected SimpleCodeElement (string str) : base (str) {
+		protected SimpleCodeElement (string str) {
 			this.content = str;
 		}
 		public SimpleCodeElement () {}
 
+		public override string ToString () {
+			return string.Format ("{0}", content);
+		}
 	}
 
 	public class LineCommentCodeElement : SimpleCodeElement

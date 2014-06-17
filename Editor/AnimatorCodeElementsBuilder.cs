@@ -41,7 +41,10 @@ namespace Scio.AnimatorAccessGenerator
 		Animator animator;
 
 		ClassCodeElement classCodeElement;
-
+		/// <summary>
+		/// The initialiser code i.e. Awake method. Future releases might contain an option to generate a plain class 
+		/// version.
+		/// </summary>
 		ICodeBlock initialiserCode;
 		
 		public AnimatorCodeElementsBuilder (GameObject go, string className, Config c)
@@ -64,7 +67,7 @@ namespace Scio.AnimatorAccessGenerator
 			if (!string.IsNullOrEmpty (config.DefaultNamespace)) {
 				classCodeElement.NameSpace = new NameSpaceCodeElement (config.DefaultNamespace);
 			}
-			PrepareFields ();
+			PrepareInternalFields ();
 			if (config.GenerateMonoBehaviourComponent) {
 				classCodeElement.SetBaseClass (config.MonoBehaviourComponentBaseClass);
 				initialiserCode = PrepareAwakeMethod ();
@@ -77,6 +80,9 @@ namespace Scio.AnimatorAccessGenerator
 			return classCodeElement;
 		}
 
+		/// <summary>
+		/// Depending on config setting a FixedUpdate or Update method will be generated. None will omit this step.
+		/// </summary>
 		void PrepareStateEventHandling () {
 			StateEventHandlingMethod stateEventMethod = config.GenerateStateEventHandler;
 //			StateEventHandlingMethod stateEventMethod = StateEventHandlingMethod.FixedUpdate;
@@ -95,11 +101,19 @@ namespace Scio.AnimatorAccessGenerator
 				break;
 			}
 		}
-		void PrepareFields () {
+
+		/// <summary>
+		/// Prepares the internal fields like Animator animator.
+		/// </summary>
+		void PrepareInternalFields () {
 			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Public);
 			classCodeElement.Fields.Add (animatorVar);
 		}
-		
+
+		/// <summary>
+		/// Alpha code for feature to generate a plain class version that does initialisation in constructors.
+		/// </summary>
+		/// <returns>The constructors.</returns>
 		ICodeBlock PrepareConstructors () {
 			ConstructorCodeElement withAnimatorParam = new ConstructorCodeElement (targetClassName, "Animator animator");
 			withAnimatorParam.Code.Add ("this.animator = animator;");
@@ -110,6 +124,10 @@ namespace Scio.AnimatorAccessGenerator
 			return withAnimatorParam;
 		}
 
+		/// <summary>
+		/// Prepares the awake method but does not add code to it. This will be done in the ProcessAnimatorXXX methods.
+		/// </summary>
+		/// <returns>The awake method.</returns>
 		ICodeBlock PrepareAwakeMethod () {
 			VoidMethodCodeElement method = new VoidMethodCodeElement ("Awake");
 			method.Code.Add ("animator = GetComponent<Animator> ();");

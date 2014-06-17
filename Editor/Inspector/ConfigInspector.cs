@@ -25,6 +25,9 @@ using System.Collections;
 
 namespace Scio.AnimatorAccessGenerator
 {
+	/// <summary>
+	/// Config inspector for Settings window.
+	/// </summary>
 	public class ConfigInspector : EditorWindow
 	{
 		static bool advancedSettingFoldoutState = false;
@@ -32,7 +35,10 @@ namespace Scio.AnimatorAccessGenerator
 		static GUIContent AutoRefreshAssetDatabase = new GUIContent ("Auto Refresh AssetDatabase", "Automatically call an AssetDabase.Refresh () after updating an existing AnimatorAccess class.\n" +
 			"Note that the MonoDevelop project is reloaded too which can be annoying.");
 		static GUIContent AutoRefreshInterval = new GUIContent ("Auto Refresh Interval", "Automatically check for updates after this interval (in seconds) has elapsed.\nSet this to 0 to suppress automatic checking.");
-		static GUIContent GenerateStateEventHandler = new GUIContent ("State Event Handler", "Select if and where to generate the code for automatic event handling, i.e. callbacks on state changes.\n If None is selected, you have to manually invoke method CheckForAnimatorStateChanges () of the generated class.");
+		static GUIContent GenerateStateEventHandler = new GUIContent ("State Event Handler", "Select if and where to generate the code for automatic event handling and invoking of callbacks on state changes:\n" +
+			"FixedUpdate: Check for state changes and transitions is performed in FixedUpdate\n" +
+			"Update: Same for Update method\n" +
+			"None: you have to manually invoke method CheckForAnimatorStateChanges () of the generated class.");
 		static GUIContent IgnoreExistingCode = new GUIContent ("Ignore Existing Code", " Unchecked (default) means that the current version of the class is analysed first. Existing members that are not valid any longer are created once but with the obsolete attribute set.\n\n" +
 			"So you can replace references to these outdated members in your code. Performing another generation will then remove all obsolete members.\n" +
 			"Check this if existing members should be removed immediately.\n\nNote that this option overwrites 'Keep Obsolete Members'");

@@ -28,12 +28,27 @@ using Scio.CodeGeneration;
 
 namespace Scio.AnimatorAccessGenerator
 {
+	/// <summary>
+	/// Maintains a dictionary of MetaInfo items and handles backup management.
+	/// </summary>
 	public class MetaInfoRepository
 	{
+		/// <summary>
+		/// Value class for backup information.
+		/// </summary>
 		public class MetaInfo
 		{
+			/// <summary>
+			/// Path to original file.
+			/// </summary>
 			public string file;
+			/// <summary>
+			/// Path to backup file.
+			/// </summary>
 			public string backupFile;
+			/// <summary>
+			/// The timestamp in file system, has to be preserved when copying.
+			/// </summary>
 			public string timestamp;
 
 			public MetaInfo (string file, string backupFile, string timestamp) {
@@ -45,7 +60,10 @@ namespace Scio.AnimatorAccessGenerator
 		Dictionary<string, MetaInfo> entries = new Dictionary<string, MetaInfo> (); 
 
 		string backupDir;
-		
+
+		/// <summary>
+		/// Constructor like initialisation, prepares backup directory.
+		/// </summary>
 		public void Prepare () {
 			backupDir = Preferences.GetString (Preferences.Key.BackupDir);
 			if (string.IsNullOrEmpty (backupDir) || !Directory.Exists (backupDir)) {
@@ -59,7 +77,12 @@ namespace Scio.AnimatorAccessGenerator
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Makes the backup to backupDir and updates the corresponding MetaInfo.
+		/// </summary>
+		/// <param name="className">Class name.</param>
+		/// <param name="file">File.</param>
 		public void MakeBackup (string className, string file) {
 			string backupFile = MakeBackup (file);
 			string timestamp = "" + File.GetCreationTime (backupFile);
@@ -123,6 +146,7 @@ namespace Scio.AnimatorAccessGenerator
 					FileInfo sourceInfo = new FileInfo (inputFile);
 					DateTime t = sourceInfo.CreationTime;
 					File.Copy (inputFile, backupFile, true);
+					// preserve original timestamp
 					File.SetCreationTime (backupFile, t);
 					File.SetLastWriteTime (backupFile, t);
 					return backupFile;

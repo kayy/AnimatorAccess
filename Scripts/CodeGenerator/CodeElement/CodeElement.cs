@@ -25,10 +25,15 @@ using System.Collections.Generic;
 namespace Scio.CodeGeneration
 {
 	/// <summary>
-	/// Marker interface for all code elements.
+	/// Marker interface for all code elements. Code elements can be of very different types like line comments,
+	/// class, file, constructor, using directives, ...
 	/// </summary>
 	public interface CodeElement
 	{
+		/// <summary>
+		/// Gets the type of the CodeElement.
+		/// </summary>
+		/// <value>The type of the member.</value>
 		MemberTypeID MemberType { get; }
 	}
 
@@ -40,6 +45,9 @@ namespace Scio.CodeGeneration
 		List<string> Code { get; }
 	}
 
+	/// <summary>
+	/// Member type needed for every CodeElement implementor.
+	/// </summary>
 	public enum MemberTypeID
 	{
 		Undefined = 0,
@@ -55,22 +63,6 @@ namespace Scio.CodeGeneration
 		NamespaceDirective = 40,
 		UsingDirective = 41,
 		File = 100,
-	}
-	
-	public abstract class GenericCodeElement : CodeElement
-	{
-		public abstract MemberTypeID MemberType { get; }
-		
-		protected string content = "";
-
-		protected GenericCodeElement (string str) {
-			this.content = str;
-		}
-		protected GenericCodeElement () {}
-
-		public override string ToString () {
-			return string.Format ("{0}", content);
-		}
 	}
 	
 }
