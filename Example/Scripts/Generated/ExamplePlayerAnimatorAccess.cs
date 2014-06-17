@@ -6,7 +6,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/10/2014 20:05:19")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/17/2014 13:03:24")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -101,7 +101,11 @@ namespace AnimatorAccess {
 			paramIdRotate = Animator.StringToHash ("Rotate");
 		}
 		
-		public string StateIdToName (int id) { 
+		private void FixedUpdate () { 
+			CheckForAnimatorStateChanges (animator);
+		}
+		
+		public string IdToName (int id) { 
 			if (stateDictionary.ContainsKey (id)) {
 				return (string)stateDictionary[id];
 			}

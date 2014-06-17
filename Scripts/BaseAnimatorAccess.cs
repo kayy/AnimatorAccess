@@ -27,5 +27,42 @@ namespace AnimatorAccess {
 	/// </summary>
 	public class BaseAnimatorAccess : MonoBehaviour 
 	{
+		/// <summary>
+		/// Callback method for animator state changes.
+		/// <param name="layer">Layer in which the state has changed.</param>
+		/// <param name="newState">New state just entered.</param>
+		/// <param name="previousState">Previous state.</param>
+		/// </summary>
+		public delegate void OnStateChangeHandler (int layer, int newState, int previousState);
+
+		/// <summary>
+		/// Occurs once for every change of an animator state. If there are more than one changes at a time in different
+		/// layers, the listeners are called once for every single change.
+		/// </summary>
+		public event OnStateChangeHandler OnStateChange;
+
+		int [] _internalPreviousLayerStates;
+		int _internalLayerCount = -1;
+
+		/// <summary>
+		/// Checks for animator state changes if there are listeners registered in OnStateChange.
+		/// </summary>
+		/// <param name="animator">Animator instance for reading states of all layers.</param>
+		public void CheckForAnimatorStateChanges (Animator animator) {
+			if (OnStateChange != null) {
+				if (_internalLayerCount < 0) {
+					_internalLayerCount = animator.layerCount;
+					_internalPreviousLayerStates = new int[animator.layerCount];
+				}
+				for (int layer = 0; layer < _internalLayerCount; layer++) {
+					int current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
+					if (current != _internalPreviousLayerStates [layer]) {
+						OnStateChange (layer, current, _internalPreviousLayerStates [layer]);
+						_internalPreviousLayerStates [layer] = current;
+					}
+					
+				}
+			}
+		}
 	}
 }

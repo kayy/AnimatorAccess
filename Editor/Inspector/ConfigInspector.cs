@@ -32,6 +32,7 @@ namespace Scio.AnimatorAccessGenerator
 		static GUIContent AutoRefreshAssetDatabase = new GUIContent ("Auto Refresh AssetDatabase", "Automatically call an AssetDabase.Refresh () after updating an existing AnimatorAccess class.\n" +
 			"Note that the MonoDevelop project is reloaded too which can be annoying.");
 		static GUIContent AutoRefreshInterval = new GUIContent ("Auto Refresh Interval", "Automatically check for updates after this interval (in seconds) has elapsed.\nSet this to 0 to suppress automatic checking.");
+		static GUIContent GenerateStateEventHandler = new GUIContent ("State Event Handler", "Select if and where to generate the code for automatic event handling, i.e. callbacks on state changes.\n If None is selected, you have to manually invoke method CheckForAnimatorStateChanges () of the generated class.");
 		static GUIContent IgnoreExistingCode = new GUIContent ("Ignore Existing Code", " Unchecked (default) means that the current version of the class is analysed first. Existing members that are not valid any longer are created once but with the obsolete attribute set.\n\n" +
 			"So you can replace references to these outdated members in your code. Performing another generation will then remove all obsolete members.\n" +
 			"Check this if existing members should be removed immediately.\n\nNote that this option overwrites 'Keep Obsolete Members'");
@@ -42,7 +43,7 @@ namespace Scio.AnimatorAccessGenerator
 		static GUIContent AnimatorStateHashPrefix = new GUIContent ("Animator State Hash Prefix", "Optional prefix for all int fields representing an animator state.\nExample:\n'stateHash' will generate the field 'int stateHashIdle' for state 'Idle'.");
 		static GUIContent ParameterPrefix = new GUIContent ("Parameter Prefix", "Optional prefix for parameter access methods. Prefix is set betwen 'Get'/'Set' and the parameter name.\nExample:\n'Param' will generate the method 'float SetParamSpeed ()' for parameter 'Speed'.");
 		static GUIContent ParameterHashPrefix = new GUIContent ("Parameter Hash Prefix", "Optional prefix for int fields representing a parameter.\nExample:\n'paramHash' will generate the field 'float paramHashSpeed' for parameter 'Speed'.");
-		static GUIContent GenerateStateDictionary = new GUIContent ("Generate State Dictionary", "Create an Animator state dictionary that can be queried by StateIdToName (int id).");
+		static GUIContent GenerateNameDictionary = new GUIContent ("Generate Name Dictionary", "Create an hash ID to plain name dictionary. If true, a method IdToName (int id) is added to look up the full name of Animator states, ... by their hash IDs.");
 
 		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
 
@@ -51,6 +52,8 @@ namespace Scio.AnimatorAccessGenerator
 			config.AutoRefreshAssetDatabase = EditorGUILayout.Toggle (AutoRefreshAssetDatabase, config.AutoRefreshAssetDatabase);
 			EditorGUILayout.Separator ();
 			config.AutoRefreshInterval = EditorGUILayout.IntField (AutoRefreshInterval, config.AutoRefreshInterval);
+			EditorGUILayout.Separator ();
+			config.GenerateStateEventHandler = (StateEventHandlingMethod)EditorGUILayout.EnumPopup (GenerateStateEventHandler, config.GenerateStateEventHandler);
 			EditorGUILayout.Separator ();
 			config.IgnoreExistingCode = EditorGUILayout.Toggle (IgnoreExistingCode, config.IgnoreExistingCode);
 			config.KeepObsoleteMembers = EditorGUILayout.Toggle (KeepObsolete, config.KeepObsoleteMembers);
@@ -62,7 +65,7 @@ namespace Scio.AnimatorAccessGenerator
 			config.ParameterHashPrefix = EditorGUILayout.TextField (ParameterHashPrefix, config.ParameterHashPrefix);
 			config.ForceLayerPrefix = EditorGUILayout.Toggle (ForceLayerPrefix, config.ForceLayerPrefix);
 			EditorGUILayout.Separator ();
-			config.GenerateStateDict = EditorGUILayout.Toggle (GenerateStateDictionary, config.GenerateStateDict);
+			config.GenerateNameDictionary = EditorGUILayout.Toggle (GenerateNameDictionary, config.GenerateNameDictionary);
 			EditorGUILayout.Separator ();
 			advancedSettingFoldoutState = EditorGUILayout.Foldout (advancedSettingFoldoutState, "Advanced Settings");
 			if (advancedSettingFoldoutState) {

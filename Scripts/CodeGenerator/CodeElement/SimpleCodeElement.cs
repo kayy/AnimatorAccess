@@ -120,6 +120,22 @@ namespace Scio.CodeGeneration
 
 	public class ParameterCodeElement : CodeElement
 	{
+		/// <summary>
+		/// toString for parameter list e.g. "int i, bool b = false".
+		/// </summary>
+		/// <returns>Comma sparated parameters or empty string.</returns>
+		/// <param name="list">List.</param>
+		public static string ListToString (List<ParameterCodeElement> list) {
+			string str = "";
+			foreach (ParameterCodeElement item in list) {
+				if (!string.IsNullOrEmpty (str)) {
+					str += ", ";
+				}
+				str += item;
+			}
+			return str;
+		}
+
 		public MemberTypeID MemberType {
 			get { return MemberTypeID.Parameter; }
 		}

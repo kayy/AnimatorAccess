@@ -54,6 +54,8 @@ namespace Scio.CodeGeneration
 		}
 		public bool HasBaseClassOrInterfaces { get { return !string.IsNullOrEmpty (baseClass) || interfaces.Count > 0; } }
 
+		public List<DelegateDefinitionCodeElement> Delegates = new List<DelegateDefinitionCodeElement> ();
+		
 		public List<GenericFieldCodeElement> Fields = new List<GenericFieldCodeElement> ();
 		
 		public List<GenericMethodCodeElement> Methods = new List<GenericMethodCodeElement> ();

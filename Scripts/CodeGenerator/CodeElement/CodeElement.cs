@@ -47,6 +47,7 @@ namespace Scio.CodeGeneration
 		Property = 2,
 		Method = 3,
 		Constructor = 4,
+		Delegate = 5,
 		Class = 10,
 		Parameter = 20,
 		Comment = 21,

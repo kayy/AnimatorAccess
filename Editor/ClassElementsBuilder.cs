@@ -142,9 +142,18 @@ namespace Scio.AnimatorAccessGenerator
 					Logger.Info ("Generating source for " + className + " the very first time");
 				}
 				try {
+					existingClassBuilder.MethodBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
+						BindingFlags.InvokeMethod | BindingFlags.NonPublic;
 					existingClassBuilder.MethodInfoFilter = (MethodInfo mi) => mi.Name.StartsWith ("Is") || 
-						mi.Name.StartsWith ("Set") || mi.Name.StartsWith ("Get") || mi.Name == "StateIdToName";
+						mi.Name.StartsWith ("Set") || mi.Name.StartsWith ("Get") || mi.Name == "IdToName" 
+							|| mi.Name == "Update" || mi.Name == "FixedUpdate";
 					existingClass = existingClassBuilder.Build ();
+					// little bit dirty hack: we don't want special methods like Update to participate in the regular
+					// workflow i.e. mark as obsolete to be regenerated once with code throwing NotImplementedException.
+					// So if settings have changed, mark them as obsolete to force their removal
+					List<GenericMethodCodeElement> updateMethods = existingClass.Methods.FindAll (
+						(GenericMethodCodeElement m) => m.Name == "Update" || m.Name == "FixedUpdate");
+					updateMethods.ForEach ((GenericMethodCodeElement m) => m.Obsolete = true);
 				} catch (System.Exception ex) {
 					Logger.Warning (ex.Message + "\n" + ex.StackTrace);
 					result.SetError ("Error", "Oops. An unexpected error occurred. Details" + ex.Message + "\n" + ex.StackTrace);

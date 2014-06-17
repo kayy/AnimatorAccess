@@ -34,12 +34,24 @@ namespace Scio.CodeGeneration
 
 		BindingFlags fieldBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
 			BindingFlags.NonPublic;
+		public BindingFlags FieldBinding {
+			get { return fieldBinding; }
+			set { fieldBinding = value; }
+		}
 		
 		BindingFlags propertiesBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
 			BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.SetProperty;
+		public BindingFlags PropertiesBinding {
+			get { return propertiesBinding; }
+			set { propertiesBinding = value; }
+		}
 
 		BindingFlags methodBinding = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | 
 			BindingFlags.InvokeMethod;
+		public BindingFlags MethodBinding {
+			get { return methodBinding; }
+			set { methodBinding = value; }
+		}
 
 		Predicate<FieldInfo> fieldInfoFilter = null;
 		public Predicate<FieldInfo> FieldInfoFilter {

@@ -48,7 +48,8 @@ namespace Scio.AnimatorAccessGenerator
 			ParameterPrefix,
 			ParameterHashPrefix,
 			DebugMode,
-			GenerateStateDict
+			GenerateNameDictionary,
+			GenerateStateEventHandler
 		}
 
 		const string Prefix = "Scio.AnimatorAccessGenerator.";

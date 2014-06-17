@@ -22,10 +22,16 @@
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Implementing classes are able provide a ClassCodeElement from a source. This can be an existing class via
+	/// reflection, JSON, ...
+	/// </summary>
 	public interface CodeElementsBuilder
 	{
+		/// <summary>
+		/// Builds an instance ready to use afterwards or empty but not null.
+		/// </summary>
 		ClassCodeElement Build ();
-	
 	}
 }
 

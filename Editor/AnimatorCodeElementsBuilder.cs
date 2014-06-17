@@ -71,11 +71,30 @@ namespace Scio.AnimatorAccessGenerator
 			} else {
 				initialiserCode = PrepareConstructors ();
 			}
+			PrepareStateEventHandling ();
 			ProcessAnimatorStates ();
 			ProcessAnimatorParameters ();
 			return classCodeElement;
 		}
 
+		void PrepareStateEventHandling () {
+			StateEventHandlingMethod stateEventMethod = config.GenerateStateEventHandler;
+//			StateEventHandlingMethod stateEventMethod = StateEventHandlingMethod.FixedUpdate;
+			switch (stateEventMethod) {
+			case StateEventHandlingMethod.FixedUpdate:
+				GenericMethodCodeElement methodFixedUpdate = new GenericMethodCodeElement ("void", "FixedUpdate", AccessType.Private);
+				methodFixedUpdate.Code.Add ("CheckForAnimatorStateChanges (animator);");
+				classCodeElement.Methods.Add (methodFixedUpdate);
+				break;
+			case StateEventHandlingMethod.Update:
+				GenericMethodCodeElement methodUpdate = new GenericMethodCodeElement ("void", "Update", AccessType.Private);
+				methodUpdate.Code.Add ("CheckForAnimatorStateChanges (animator);");
+				classCodeElement.Methods.Add (methodUpdate);
+				break;
+			default:
+				break;
+			}
+		}
 		void PrepareFields () {
 			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Public);
 			classCodeElement.Fields.Add (animatorVar);
@@ -104,9 +123,9 @@ namespace Scio.AnimatorAccessGenerator
 		/// which can be subject to changes in future releases.
 		/// </summary>
 		void ProcessAnimatorStates () {
-			if (config.GenerateStateDict) {
+			if (config.GenerateNameDictionary) {
 				classCodeElement.Fields.Add (new GenericFieldCodeElement ("Hashtable", "stateDictionary", "new Hashtable ()"));
-				MethodCodeElement<string> method = new MethodCodeElement<string> ("StateIdToName");
+				MethodCodeElement<string> method = new MethodCodeElement<string> ("IdToName");
 				method.AddParameter (typeof (int), "id");
 				method.Code.Add ("if (stateDictionary.ContainsKey (id)) {");
 				method.Code.Add ("\treturn (string)stateDictionary[id];");
@@ -140,7 +159,7 @@ namespace Scio.AnimatorAccessGenerator
 			method.Code.Add (" return nameHash == " + fieldName + ";");
 			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + item + "\").");
 			classCodeElement.Methods.Add (method);
-			if (config.GenerateStateDict) {
+			if (config.GenerateNameDictionary) {
 				initialiserCode.Code.Add ("stateDictionary.Add (" + fieldName + ", \"" + item + "\");");
 			}
 		}

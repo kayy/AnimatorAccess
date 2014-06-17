@@ -157,17 +157,25 @@ namespace Scio.AnimatorAccessGenerator {
 			}
 			return template;
 		}
-
+		
 		/// <summary>
-		/// If true, a <hash Id, state name> dictionary is created including method StateIdToName (int id).
+		/// Determines if and where to generate the code for automatic event handling, i.e. callbacks on state changes.
 		/// </summary>
-		public virtual bool GenerateStateDict {
-			get { return Preferences.GetBool (Preferences.Key.GenerateStateDict, true); }
-			set { Preferences.SetBool (Preferences.Key.GenerateStateDict, value); }
+		public virtual StateEventHandlingMethod GenerateStateEventHandler {
+			get { return (StateEventHandlingMethod)Preferences.GetInt (Preferences.Key.GenerateStateEventHandler, (int)(StateEventHandlingMethod.FixedUpdate)); }
+			set { Preferences.SetInt (Preferences.Key.GenerateStateEventHandler, (int)value); }
 		}
 
 		/// <summary>
-		/// If true, a <hash Id, state name> dictionary is created including method StateIdToName (int id).
+		/// If true, a <hash Id, state name> dictionary is created including method IdToName (int id).
+		/// </summary>
+		public virtual bool GenerateNameDictionary {
+			get { return Preferences.GetBool (Preferences.Key.GenerateNameDictionary, true); }
+			set { Preferences.SetBool (Preferences.Key.GenerateNameDictionary, value); }
+		}
+
+		/// <summary>
+		/// If true, a <hash Id, state name> dictionary is created including method IdToName (int id).
 		/// </summary>
 		public virtual int AutoRefreshInterval {
 			get { return Preferences.GetInt (Preferences.Key.AutoRefreshInterval, 30); }

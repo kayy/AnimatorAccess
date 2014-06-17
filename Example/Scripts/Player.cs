@@ -50,12 +50,24 @@ namespace AnimatorAccessExample
 			anim = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
 			anim.SetRotate ((int)Direction.Facing);
 		}
-		
+
+		void OnEnable () {
+			anim.OnStateChange += OnStateChange;
+		}
+		void OnDisable () {
+			anim.OnStateChange -= OnStateChange;
+		}
+
 		void Update () {
 			horizontalInput = Input.GetAxis ("Horizontal");
 			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
 		}
-		
+
+		void OnStateChange (int layer, int newState, int previousState) {
+			if (anim.IsJumping (newState)) {
+				Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (previousState));
+			}
+		}
 		void FixedUpdate () {
 			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
 			if (anim.IsYawning (currentState0)) {

@@ -74,8 +74,7 @@ namespace Scio.CodeGeneration
 		public override string ToString () {
 			string str = "";
 			Code.ForEach ((string s) => str += s + "\n");
-			string pStr = "";
-			Parameters.ForEach ((ParameterCodeElement p) => pStr += p + ", ");
+			string pStr = ParameterCodeElement.ListToString (Parameters);
 			return string.Format ("{0} ({1})\n{2}", base.ToString (), pStr, str);
 		}
 	}
