@@ -10,6 +10,10 @@ Configuration is done via the Settings window.
 1. **Auto Refresh AssetDatabase:** Automatically call an AssetDabase.Refresh () after updating an existing AnimatorAccess class.  
    Note that the MonoDevelop project is reloaded too which can be annoying.
 1. **Auto Refresh Interval:** Automatically check for updates after this interval (in seconds) has elapsed. Set this to 0 to suppress automatic checking.
+1. **State Event Handler** Select if and where to generate the code for automatic event handling and invoking of callbacks on state changes:  
+		_FixedUpdate_: Check for state changes and transitions is performed in FixedUpdate  
+		_Update_: Same for Update method  
+		_None_: you have to manually invoke method CheckForAnimatorStateChanges () of the generated class.
 1. **Ignore Existing Code:** Unchecked (default) means that the current version of the class is analysed first. Existing members that are not valid any longer are created once but with the obsolete attribute set.  
    So you can replace references to these outdated members in your code. Performing another generation will then remove all obsolete members.  Check this if existing members should be removed immediately.  
    Note that this option overwrites 'Keep Obsolete Members'

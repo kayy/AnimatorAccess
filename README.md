@@ -50,6 +50,21 @@ parameters in a type safe way like **IsWalking ()** **SetSpeed ()**:
 		// animator.SetFloat (anim.paramIdSpeed, speed);
 </code></pre>
 
+Another way to use it are **Events**. The following code will register an event handler which is called everytime
+an animator state has changed.
+<pre><code>void OnEnable () {
+	anim.OnStateChange += OnStateChange;
+}
+void OnDisable () {
+	anim.OnStateChange -= OnStateChange;
+}
+void OnStateChange (int layer, int newState, int previousState) {
+	if (anim.IsJumping (newState)) {
+		Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (previousState));
+	}
+}
+</code></pre>
+
 
 ## Concept And Workflow
 ### Basic Idea
