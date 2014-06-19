@@ -182,6 +182,14 @@ namespace Scio.AnimatorAccessGenerator
 			}
 		}
 
+		void ProcessTransitions () {
+			InternalAPIAccess.ProcessAllTransitions (animator, ProcessTransition);
+		}
+
+		void ProcessTransition (TransitionRawInfo rawInfo) {
+
+		}
+
 		/// <summary>
 		/// Adds all Animator parameters as properties to the class code element. NOTE that this method relies on 
 		/// classes from namespace UnityEditorInternal which can be subject to changes in future releases.

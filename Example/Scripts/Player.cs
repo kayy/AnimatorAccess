@@ -53,9 +53,13 @@ namespace AnimatorAccessExample
 
 		void OnEnable () {
 			anim.OnStateChange += OnStateChange;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumping;
 		}
 		void OnDisable () {
 			anim.OnStateChange -= OnStateChange;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumping;
+			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
+			anim.AnyTransition ().OnStarted += OnTransitionStarted;
 		}
 
 		void Update () {
@@ -68,6 +72,17 @@ namespace AnimatorAccessExample
 				Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (previousState));
 			}
 		}
+
+		void OnIdleToJumping (AnimatorAccess.TransitionInfo info) {
+			Log.Temp ("Idle => Jumping");
+		}
+		void OnIdleToAnyState (AnimatorAccess.TransitionInfo info) {
+			Log.Temp ("Idle => *");
+		}
+		void OnTransitionStarted (AnimatorAccess.TransitionInfo info) {
+			Log.Temp ("Transition started");
+		}
+
 		void FixedUpdate () {
 			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
 			if (anim.IsYawning (currentState0)) {

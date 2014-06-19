@@ -36,6 +36,25 @@ namespace Scio.AnimatorAccessGenerator
 		Bool = 2,
 		Trigger = 3,
 	}
+
+	public class TransitionRawInfo
+	{
+		public int id;
+		public int layer;
+		public string layerName;
+		public int sourceId;
+		public int destId;
+
+		public TransitionRawInfo (int id, int layer, string layerName, int sourceId, int destId) {
+			this.id = id;
+			this.layer = layer;
+			this.layerName = layerName;
+			this.sourceId = sourceId;
+			this.destId = destId;
+		}
+	}
+
+
 	/// <summary>
 	/// Encapsulates all critical access to UnityEditorInternal stuff. Methods within this class might be affected
 	/// by future changes of the Unity API. Thus preprocessor #if statements are expected to grow.
@@ -43,6 +62,8 @@ namespace Scio.AnimatorAccessGenerator
 	public static class InternalAPIAccess
 	{
 		public delegate void ProcessAnimatorState (int layer, string layerName, string item);
+
+		public delegate void ProcessAnimatorTransition (TransitionRawInfo info);
 
 		public delegate void ProcessAnimatorParameter (AnimatorParameterType t, string item, string defaultValue);
 
@@ -63,14 +84,27 @@ namespace Scio.AnimatorAccessGenerator
 				UnityEditorInternal.StateMachine sm = controller.GetLayer (layer).stateMachine;
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
-					string item = state.uniqueName;
-//					string s = item + " :";
-//					Transition[] transitions = sm.GetTransitionsFromState(state);
-//					foreach (var t in transitions) {
-//						s += t.uniqueName;
-//					}
-//					Debug.Log (s);
-					callback (layer, layerName, item);
+					string stateName = state.uniqueName;
+					callback (layer, layerName, stateName);
+				}
+			}
+		}
+
+		public static void ProcessAllTransitions (Animator animator, ProcessAnimatorTransition callback) {
+			AnimatorController controller = GetInternalAnimatorController (animator);
+			int layerCount = controller.layerCount;
+			for (int layer = 0; layer < layerCount; layer++) {
+				string layerName = controller.GetLayer (layer).name;
+				UnityEditorInternal.StateMachine sm = controller.GetLayer (layer).stateMachine;
+				for (int i = 0; i < sm.stateCount; i++) {
+					UnityEditorInternal.State state = sm.GetState (i);
+					Transition[] transitions = sm.GetTransitionsFromState(state);
+					foreach (var t in transitions) {
+//						Debug.Log (state.uniqueName +  ", transition: " + t.uniqueName + " ---" + " dest = " + t.dstState + " (" + (Animator.StringToHash (state.uniqueName) == Animator.StringToHash (layerName + "." + t.dstState)) + ") " + " src = " + t.srcState);
+						TransitionRawInfo info = new TransitionRawInfo (t.uniqueNameHash, layer, layerName, 
+	                        t.srcState.uniqueNameHash, t.dstState.uniqueNameHash);
+						callback (info);
+					}
 				}
 			}
 		}
