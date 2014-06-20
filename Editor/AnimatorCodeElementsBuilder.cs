@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Scio.CodeGeneration;
+using AnimatorAccess;
 
 
 namespace Scio.AnimatorAccessGenerator
@@ -35,6 +36,8 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public class AnimatorCodeElementsBuilder : CodeElementsBuilder
 	{
+		const string TransitionInfoDict = "transitionInfos";
+
 		Config config;
 		string targetClassName;
 		
@@ -74,9 +77,9 @@ namespace Scio.AnimatorAccessGenerator
 			} else {
 				initialiserCode = PrepareConstructors ();
 			}
-			PrepareStateEventHandling ();
 			ProcessAnimatorStates ();
 			ProcessAnimatorParameters ();
+			PrepareStateEventHandling ();
 			return classCodeElement;
 		}
 
@@ -98,8 +101,9 @@ namespace Scio.AnimatorAccessGenerator
 				classCodeElement.Methods.Add (methodUpdate);
 				break;
 			default:
-				break;
+				return;
 			}
+			ProcessTransitions ();
 		}
 
 		/// <summary>
@@ -131,6 +135,8 @@ namespace Scio.AnimatorAccessGenerator
 		ICodeBlock PrepareAwakeMethod () {
 			VoidMethodCodeElement method = new VoidMethodCodeElement ("Awake");
 			method.Code.Add ("animator = GetComponent<Animator> ();");
+			// TODO_kay: remove from Awake
+			method.Code.Add ("Initialise (animator);");
 			classCodeElement.Methods.Add (method);
 			return method;
 		}
@@ -141,16 +147,6 @@ namespace Scio.AnimatorAccessGenerator
 		/// which can be subject to changes in future releases.
 		/// </summary>
 		void ProcessAnimatorStates () {
-			if (config.GenerateNameDictionary) {
-				classCodeElement.Fields.Add (new GenericFieldCodeElement ("Hashtable", "stateDictionary", "new Hashtable ()"));
-				MethodCodeElement<string> method = new MethodCodeElement<string> ("IdToName");
-				method.AddParameter (typeof (int), "id");
-				method.Code.Add ("if (stateDictionary.ContainsKey (id)) {");
-				method.Code.Add ("\treturn (string)stateDictionary[id];");
-				method.Code.Add ("}");
-				method.Code.Add ("return \"\";");
-				classCodeElement.Methods.Add (method);
-			}
 			InternalAPIAccess.ProcessAllAnimatorStates (animator, ProcessAnimatorState);
 		}
 
@@ -186,7 +182,12 @@ namespace Scio.AnimatorAccessGenerator
 			InternalAPIAccess.ProcessAllTransitions (animator, ProcessTransition);
 		}
 
-		void ProcessTransition (TransitionRawInfo rawInfo) {
+		void ProcessTransition (TransitionInfo t) {
+//			transitionInfos.Add (key, info);
+//			 TransitionInfo (t.uniqueNameHash, layer, layerName, 
+//			t.srcState.uniqueNameHash, t.dstState.uniqueNameHash)
+			initialiserCode.Code.Add (TransitionInfoDict + ".Add (" + t.id + ", new TransitionInfo (" + t.id + ", " + 
+				t.layer + ", \"" + t.layerName + "\", " + t.sourceId + ", " + t.destId + ");");
 
 		}
 

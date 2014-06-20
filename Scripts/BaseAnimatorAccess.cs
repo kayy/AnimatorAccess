@@ -27,7 +27,7 @@ namespace AnimatorAccess {
 	/// <summary>
 	/// Base class for all generated AnimatorAccess classes.
 	/// </summary>
-	public class BaseAnimatorAccess : MonoBehaviour 
+	public partial class BaseAnimatorAccess : MonoBehaviour 
 	{
 		/// <summary>
 		/// Callback method for animator state changes.
@@ -35,7 +35,7 @@ namespace AnimatorAccess {
 		/// <param name="newState">New state just entered.</param>
 		/// <param name="previousState">Previous state.</param>
 		/// </summary>
-		public delegate void OnStateChangeHandler (int layer, int newState, int previousState);
+		public delegate void OnStateChangeHandler (LayerStateInfo info);
 
 		public delegate void OnTransitionStartedHandler (TransitionInfo info);
 
@@ -47,69 +47,86 @@ namespace AnimatorAccess {
 
 		public event OnTransitionStartedHandler OnTransitionStarted;
 
+		public Dictionary<int, string> stateDictionary = new Dictionary<int, string> ();
+		
+		public Dictionary<int, TransitionInfo> transitionInfos = new Dictionary<int, TransitionInfo> ();
+
 		// TODO_kay: array? List<Handlers>
 		Dictionary<int, TransitionEventHandler> transitionEventHandlers = new Dictionary<int, TransitionEventHandler> ();
 
-		int [] _internalPreviousLayerStates;
+		public LayerStateInfo [] _internalLayerInfo;
 		int [] _internalTransitions;
 
 		int _internalLayerCount = -1;
 
-		void Initialise (Animator animator) {
+		protected virtual void Initialise (Animator animator) {
 			_internalLayerCount = animator.layerCount;
-			_internalPreviousLayerStates = new int[animator.layerCount];
+			_internalLayerInfo = new LayerStateInfo [_internalLayerCount];
+			for (int i = 0; i < _internalLayerCount; i++) {
+				_internalLayerInfo [i].layer = i;
+			}
 			_internalTransitions = new int[animator.layerCount];
 		}
 
-		public TransitionEventHandler Transition (int src, int dest) {
+		public TransitionEventHandler OnTransition (int src, int dest) {
 			if (!transitionEventHandlers.ContainsKey (src)) {
-				transitionEventHandlers [src] = new TransitionEventHandler ();
+				transitionEventHandlers [src] = new SingleTransitionEventHandler ();
 			}
 			return transitionEventHandlers [src];
 		}
 
-		public TransitionEventHandler TransitionFrom (int src) {
+		public TransitionEventHandler OnTransitionFrom (int src) {
 			if (!transitionEventHandlers.ContainsKey (src)) {
-				transitionEventHandlers [src] = new TransitionEventHandler ();
+				transitionEventHandlers [src] = new FromStateTransitionEventHandler ();
 			}
 			return transitionEventHandlers [src];
 		}
 
-		public TransitionEventHandler AnyTransition () {
+		public TransitionEventHandler OnAnyTransition () {
 			if (!transitionEventHandlers.ContainsKey (0)) {
-				transitionEventHandlers [0] = new TransitionEventHandler ();
+				transitionEventHandlers [0] = new AnyTransitionEventHandler ();
 			}
 			return transitionEventHandlers [0];
 		}
 
+		public string IdToName (int id) { 
+			if (stateDictionary.ContainsKey (id)) {
+				return (string)stateDictionary[id];
+			}
+			return "";
+		}
+		
 		/// <summary>
 		/// Checks for animator state changes if there are listeners registered in OnStateChange.
 		/// </summary>
 		/// <param name="animator">Animator instance for reading states of all layers.</param>
 		public void CheckForAnimatorStateChanges (Animator animator) {
-			if (OnStateChange != null) {
-				if (_internalLayerCount < 0) {
-					Initialise (animator);
-				}
-				for (int layer = 0; layer < _internalLayerCount; layer++) {
-					int current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
-					if (current != _internalPreviousLayerStates [layer]) {
-						OnStateChange (layer, current, _internalPreviousLayerStates [layer]);
-						_internalPreviousLayerStates [layer] = current;
-					}
-					
+			if (_internalLayerCount < 0) {
+				Initialise (animator);
+			}
+			for (int layer = 0; layer < _internalLayerCount; layer++) {
+				_internalLayerInfo [layer].State.Current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
+				if (animator.IsInTransition (layer)) {
+					_internalLayerInfo [layer].Transition.Current = animator.GetAnimatorTransitionInfo (layer).nameHash;
+				} else {
+					_internalLayerInfo [layer].Transition.Current = 0;
 				}
 			}
-			if (OnTransitionStarted != null) {
-				if (_internalLayerCount < 0) {
-					Initialise (animator);
+			if (OnStateChange != null) {
+				// TODO_kay: new state change handling
+				for (int layer = 0; layer < _internalLayerCount; layer++) {
+					if (_internalLayerInfo [layer].State.HasChanged) {
+						OnStateChange (_internalLayerInfo [layer]);
+					}
 				}
+			}
+			if (transitionEventHandlers != null && transitionEventHandlers.Count > 0) {
 				for (int layer = 0; layer < _internalLayerCount; layer++) {
 					if (animator.IsInTransition (layer)) {
 						AnimatorTransitionInfo animatorTransitionInfo = animator.GetAnimatorTransitionInfo (layer);
 						int transitionNameHash = animatorTransitionInfo.nameHash;
 						if (_internalTransitions [layer] != transitionNameHash) {
-							TransitionInfo info = new TransitionInfo ();
+							TransitionInfo info = transitionInfos [transitionNameHash];
 							OnTransitionStarted (info);
 							if (transitionEventHandlers.ContainsKey (transitionNameHash)) {
 								
@@ -123,23 +140,27 @@ namespace AnimatorAccess {
 		}
 	}
 
-	public class TransitionEventHandler
+	public class LayerStateInfo
 	{
-		public event BaseAnimatorAccess.OnTransitionStartedHandler OnStarted;
-
-		public TransitionEventHandler ()
-		{
-			Log.Temp ("Constructor");
-			if (OnStarted == null) {}
-		}
-	}
-	public class TransitionInfo
-	{
-		public int id;
 		public int layer;
-		public string layerName;
-		public int sourceId;
-		public int destId;
+		public HistorisedProperty<int> State;
+		public HistorisedProperty<int> Transition;
 	}
 
+	public class HistorisedProperty <T> where T : System.IComparable
+	{
+		T previous = default (T);
+		public T Previous { get { return previous; } }
+		
+		T current = default (T);
+		public T Current {
+			get { return current; }
+			set {
+				previous = current;
+				current = value;
+			}
+		}
+		public bool HasChanged { get { return current.Equals (previous); } }
+	}
+	
 }

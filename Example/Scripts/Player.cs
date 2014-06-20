@@ -53,13 +53,13 @@ namespace AnimatorAccessExample
 
 		void OnEnable () {
 			anim.OnStateChange += OnStateChange;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumping;
+			anim.OnTransition (anim.stateIdIdle, anim.stateIdJumping).Started += OnIdleToJumping;
 		}
 		void OnDisable () {
 			anim.OnStateChange -= OnStateChange;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumping;
-			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
-			anim.AnyTransition ().OnStarted += OnTransitionStarted;
+			anim.OnTransition (anim.stateIdIdle, anim.stateIdJumping).Started += OnIdleToJumping;
+			anim.OnTransitionFrom (anim.stateIdIdle).Started += OnIdleToAnyState;
+			anim.OnAnyTransition ().Started += OnTransitionStarted;
 		}
 
 		void Update () {
@@ -67,9 +67,9 @@ namespace AnimatorAccessExample
 			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
 		}
 
-		void OnStateChange (int layer, int newState, int previousState) {
-			if (anim.IsJumping (newState)) {
-				Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (previousState));
+		void OnStateChange (AnimatorAccess.LayerStateInfo info) {
+			if (anim.IsJumping (info.State.Current)) {
+				Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (info.State.Current));
 			}
 		}
 

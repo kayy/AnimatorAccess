@@ -19,8 +19,6 @@ namespace AnimatorAccess {
     {
         public Animator animator;
 		
-        public Hashtable stateDictionary = new Hashtable ();
-		
         /// <summary>
 		/// Hash of Animator state Base Layer.Walking
 		/// </summary>
@@ -103,13 +101,6 @@ namespace AnimatorAccess {
 		
 		private void FixedUpdate () { 
 			CheckForAnimatorStateChanges (animator);
-		}
-		
-		public string IdToName (int id) { 
-			if (stateDictionary.ContainsKey (id)) {
-				return (string)stateDictionary[id];
-			}
-			return "";
 		}
 		
 		/// <summary>
