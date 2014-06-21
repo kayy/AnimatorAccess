@@ -52,14 +52,20 @@ namespace AnimatorAccessExample
 		}
 
 		void OnEnable () {
-			anim.OnStateChange += OnStateChange;
-			anim.OnTransition (anim.stateIdIdle, anim.stateIdJumping).Started += OnIdleToJumping;
+			anim.AnyState ().OnChange += OnAnyStateChange;
+			anim.State (anim.stateIdYawning).OnEnter += OnEnterYawning;
+			anim.State (anim.stateIdYawning).OnExit += OnExitYawning;
+			anim.AnyTransition ().OnStarted += OnTransitionStarted;
+			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumping;
 		}
 		void OnDisable () {
-			anim.OnStateChange -= OnStateChange;
-			anim.OnTransition (anim.stateIdIdle, anim.stateIdJumping).Started += OnIdleToJumping;
-			anim.OnTransitionFrom (anim.stateIdIdle).Started += OnIdleToAnyState;
-			anim.OnAnyTransition ().Started += OnTransitionStarted;
+			anim.AnyState ().OnChange -= OnAnyStateChange;
+			anim.State (anim.stateIdYawning).OnEnter -= OnEnterYawning;
+			anim.State (anim.stateIdYawning).OnExit -= OnExitYawning;
+			anim.AnyTransition ().OnStarted -= OnTransitionStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted -= OnIdleToJumping;
+			anim.TransitionFrom (anim.stateIdIdle).OnStarted -= OnIdleToAnyState;
 		}
 
 		void Update () {
@@ -67,12 +73,20 @@ namespace AnimatorAccessExample
 			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
 		}
 
-		void OnStateChange (AnimatorAccess.LayerStateInfo info) {
+		void OnAnyStateChange (AnimatorAccess.LayerStatus info) {
 			if (anim.IsJumping (info.State.Current)) {
-				Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (info.State.Current));
+				Debug.Log ("OnStateChange: Jump, previous state was " + anim.stateDictionary [info.State.Previous]);
 			}
 		}
-
+		
+		void OnEnterYawning (AnimatorAccess.LayerStatus info) {
+			Debug.Log ("Entering state 'Yawning', previous state was " + anim.IdToName (info.State.Previous));
+		}
+		
+		void OnExitYawning (AnimatorAccess.LayerStatus info) {
+			Debug.Log ("Leaving state 'Yawning', previous state was " + anim.IdToName (info.State.Previous));
+		}
+		
 		void OnIdleToJumping (AnimatorAccess.TransitionInfo info) {
 			Log.Temp ("Idle => Jumping");
 		}

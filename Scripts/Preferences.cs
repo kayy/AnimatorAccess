@@ -48,7 +48,6 @@ namespace Scio.AnimatorAccessGenerator
 			ParameterPrefix,
 			ParameterHashPrefix,
 			DebugMode,
-			GenerateNameDictionary,
 			GenerateStateEventHandler
 		}
 

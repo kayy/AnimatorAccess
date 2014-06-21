@@ -49,7 +49,6 @@ namespace Scio.AnimatorAccessGenerator
 		static GUIContent AnimatorStateHashPrefix = new GUIContent ("Animator State Hash Prefix", "Optional prefix for all int fields representing an animator state.\nExample:\n'stateHash' will generate the field 'int stateHashIdle' for state 'Idle'.");
 		static GUIContent ParameterPrefix = new GUIContent ("Parameter Prefix", "Optional prefix for parameter access methods. Prefix is set betwen 'Get'/'Set' and the parameter name.\nExample:\n'Param' will generate the method 'float SetParamSpeed ()' for parameter 'Speed'.");
 		static GUIContent ParameterHashPrefix = new GUIContent ("Parameter Hash Prefix", "Optional prefix for int fields representing a parameter.\nExample:\n'paramHash' will generate the field 'float paramHashSpeed' for parameter 'Speed'.");
-		static GUIContent GenerateNameDictionary = new GUIContent ("Generate Name Dictionary", "Create an hash ID to plain name dictionary. If true, a method IdToName (int id) is added to look up the full name of Animator states, ... by their hash IDs.");
 
 		static GUIContent DebugMode = new GUIContent ("Debug Mode", "Extended logging to console view.");
 
@@ -70,8 +69,6 @@ namespace Scio.AnimatorAccessGenerator
 			config.ParameterPrefix = EditorGUILayout.TextField (ParameterPrefix, config.ParameterPrefix);
 			config.ParameterHashPrefix = EditorGUILayout.TextField (ParameterHashPrefix, config.ParameterHashPrefix);
 			config.ForceLayerPrefix = EditorGUILayout.Toggle (ForceLayerPrefix, config.ForceLayerPrefix);
-			EditorGUILayout.Separator ();
-			config.GenerateNameDictionary = EditorGUILayout.Toggle (GenerateNameDictionary, config.GenerateNameDictionary);
 			EditorGUILayout.Separator ();
 			advancedSettingFoldoutState = EditorGUILayout.Foldout (advancedSettingFoldoutState, "Advanced Settings");
 			if (advancedSettingFoldoutState) {

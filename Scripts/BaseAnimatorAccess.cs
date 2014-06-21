@@ -35,7 +35,7 @@ namespace AnimatorAccess {
 		/// <param name="newState">New state just entered.</param>
 		/// <param name="previousState">Previous state.</param>
 		/// </summary>
-		public delegate void OnStateChangeHandler (LayerStateInfo info);
+		public delegate void OnStateChangeHandler (LayerStatus status);
 
 		public delegate void OnTransitionStartedHandler (TransitionInfo info);
 
@@ -43,55 +43,120 @@ namespace AnimatorAccess {
 		/// Occurs once for every change of an animator state. If there are more than one changes at a time in different
 		/// layers, the listeners are called once for every single change.
 		/// </summary>
-		public event OnStateChangeHandler OnStateChange;
+		[System.ObsoleteAttribute ("Use AnyState ().OnChange instead or State (stateId).OnChange for a single state.", false)]
+		public event OnStateChangeHandler OnStateChange {
+			add { AnyState ().OnChange += value;}
+			remove { AnyState ().OnChange -= value; }
+		}
 
-		public event OnTransitionStartedHandler OnTransitionStarted;
+		public Dictionary<int, StateInfo> stateDictionary = new Dictionary<int, StateInfo> ();
 
-		public Dictionary<int, string> stateDictionary = new Dictionary<int, string> ();
-		
+		public Dictionary<int, StateEventHandler> stateEventHandlers = new Dictionary<int, StateEventHandler> ();
+
 		public Dictionary<int, TransitionInfo> transitionInfos = new Dictionary<int, TransitionInfo> ();
 
-		// TODO_kay: array? List<Handlers>
 		Dictionary<int, TransitionEventHandler> transitionEventHandlers = new Dictionary<int, TransitionEventHandler> ();
 
-		public LayerStateInfo [] _internalLayerInfo;
-		int [] _internalTransitions;
+		public LayerStatus [] _internalLayerStatus;
 
 		int _internalLayerCount = -1;
 
 		protected virtual void Initialise (Animator animator) {
 			_internalLayerCount = animator.layerCount;
-			_internalLayerInfo = new LayerStateInfo [_internalLayerCount];
+			_internalLayerStatus = new LayerStatus [_internalLayerCount];
 			for (int i = 0; i < _internalLayerCount; i++) {
-				_internalLayerInfo [i].layer = i;
+				_internalLayerStatus [i] = new LayerStatus (i, 0, 0);
 			}
-			_internalTransitions = new int[animator.layerCount];
 		}
 
-		public TransitionEventHandler OnTransition (int src, int dest) {
-			if (!transitionEventHandlers.ContainsKey (src)) {
-				transitionEventHandlers [src] = new SingleTransitionEventHandler ();
+		public SpecificStateChangeEventHandler State (int nameHash) {
+			if (stateDictionary.ContainsKey (nameHash)) {
+				StateInfo info = stateDictionary [nameHash];
+				// reuse handler if possible to maximise performance in FixedUdpate; 
+				// drawback: we have to create a handler first to get the hash ID
+				SpecificStateChangeEventHandler handler = new SpecificStateChangeEventHandler (info.layer, nameHash);
+				int id = handler.GetHashCode ();
+				if (!stateEventHandlers.ContainsKey (id)) {
+					stateEventHandlers [id] = handler;
+				} else {
+				}
+				return (SpecificStateChangeEventHandler)stateEventHandlers [id];
+			} else {
+				Debug.LogWarning ("There seem to be no animator state with nameHash [" + nameHash + "]. Maybe you need to update the corresonding AnimatorAccess component.");
 			}
-			return transitionEventHandlers [src];
+			return null;
 		}
 
-		public TransitionEventHandler OnTransitionFrom (int src) {
-			if (!transitionEventHandlers.ContainsKey (src)) {
-				transitionEventHandlers [src] = new FromStateTransitionEventHandler ();
+		public AnyStateChangeEventHandler AnyState () {
+			AnyStateChangeEventHandler handler = new AnyStateChangeEventHandler ();
+			int id = handler.GetHashCode ();
+			if (!stateEventHandlers.ContainsKey (id)) {
+				Log.Temp ("new ANY Handler");
+				stateEventHandlers [id] = handler;
 			}
-			return transitionEventHandlers [src];
+			return (AnyStateChangeEventHandler)stateEventHandlers [id];
+		}
+		
+		public SpecificTransitionEventHandler Transition (int source, int dest) {
+			TransitionInfo info = null;
+			foreach (TransitionInfo ti in transitionInfos.Values) {
+				if (ti.sourceId == source && ti.destId == dest) {
+					info = ti;
+					break;
+				}
+			}
+			if (info != null) {
+				SpecificTransitionEventHandler handler = new SpecificTransitionEventHandler (info.layer, info.id);
+				int id = handler.GetHashCode ();
+				if (!transitionEventHandlers.ContainsKey (id)) {
+					Log.Temp ("new specific Handler");
+					transitionEventHandlers [id] = handler;
+				} else {
+					Log.Temp ("Found existing specific handler");
+				}
+				return (SpecificTransitionEventHandler)transitionEventHandlers [id];
+			} else {
+				Debug.LogWarning ("There seem to be no transition from state [" + source + "] to [" + dest + "]. Maybe you need to update the corresonding AnimatorAccess component.");
+				return null;
+			}
 		}
 
-		public TransitionEventHandler OnAnyTransition () {
-			if (!transitionEventHandlers.ContainsKey (0)) {
-				transitionEventHandlers [0] = new AnyTransitionEventHandler ();
+		public FromStateTransitionEventHandler TransitionFrom (int source) {
+			TransitionInfo info = null;
+			foreach (TransitionInfo ti in transitionInfos.Values) {
+				if (ti.sourceId == source) {
+					info = ti;
+					break;
+				}
 			}
-			return transitionEventHandlers [0];
+			if (info != null) {
+				FromStateTransitionEventHandler handler = new FromStateTransitionEventHandler (info.layer, info.id);
+				int id = handler.GetHashCode ();
+				if (!transitionEventHandlers.ContainsKey (id)) {
+					Log.Temp ("new FromStateTransition Handler");
+					transitionEventHandlers [id] = handler;
+				} else { 
+					Log.Temp ("Found existing FromStateTransition handler");
+				}
+				return (FromStateTransitionEventHandler)transitionEventHandlers [id];
+			} else {
+				Debug.LogWarning ("There seem to be no transitions from state [" + source + "]. Maybe you need to update the corresonding AnimatorAccess component.");
+				return null;
+			}
+		}
+
+		public AnyTransitionEventHandler AnyTransition () {
+			AnyTransitionEventHandler handler = new AnyTransitionEventHandler ();
+			int id = handler.GetHashCode ();
+			if (!transitionEventHandlers.ContainsKey (id)) {
+				transitionEventHandlers [0] = handler;
+			}
+			return (AnyTransitionEventHandler)transitionEventHandlers [0];
 		}
 
 		public string IdToName (int id) { 
 			if (stateDictionary.ContainsKey (id)) {
-				return (string)stateDictionary[id];
+				return stateDictionary [id].stateName;
 			}
 			return "";
 		}
@@ -105,46 +170,37 @@ namespace AnimatorAccess {
 				Initialise (animator);
 			}
 			for (int layer = 0; layer < _internalLayerCount; layer++) {
-				_internalLayerInfo [layer].State.Current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
+				_internalLayerStatus [layer].State.Current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
 				if (animator.IsInTransition (layer)) {
-					_internalLayerInfo [layer].Transition.Current = animator.GetAnimatorTransitionInfo (layer).nameHash;
+					_internalLayerStatus [layer].Transition.Current = animator.GetAnimatorTransitionInfo (layer).nameHash;
 				} else {
-					_internalLayerInfo [layer].Transition.Current = 0;
+					_internalLayerStatus [layer].Transition.Current = 0;
 				}
 			}
-			if (OnStateChange != null) {
-				// TODO_kay: new state change handling
-				for (int layer = 0; layer < _internalLayerCount; layer++) {
-					if (_internalLayerInfo [layer].State.HasChanged) {
-						OnStateChange (_internalLayerInfo [layer]);
-					}
+			if (stateEventHandlers != null && stateEventHandlers.Count > 0) {
+				foreach (StateEventHandler handler in stateEventHandlers.Values) {
+					handler.Perform (_internalLayerStatus);
 				}
 			}
 			if (transitionEventHandlers != null && transitionEventHandlers.Count > 0) {
-				for (int layer = 0; layer < _internalLayerCount; layer++) {
-					if (animator.IsInTransition (layer)) {
-						AnimatorTransitionInfo animatorTransitionInfo = animator.GetAnimatorTransitionInfo (layer);
-						int transitionNameHash = animatorTransitionInfo.nameHash;
-						if (_internalTransitions [layer] != transitionNameHash) {
-							TransitionInfo info = transitionInfos [transitionNameHash];
-							OnTransitionStarted (info);
-							if (transitionEventHandlers.ContainsKey (transitionNameHash)) {
-								
-							}
-							_internalTransitions [layer] = transitionNameHash;
-						}
-					}
-
+				foreach (TransitionEventHandler handler in transitionEventHandlers.Values) {
+					handler.Perform (animator, transitionInfos);
 				}
 			}
 		}
 	}
 
-	public class LayerStateInfo
+	public class LayerStatus
 	{
 		public int layer;
-		public HistorisedProperty<int> State;
-		public HistorisedProperty<int> Transition;
+		public HistorisedProperty<int> State = new HistorisedProperty<int> ();
+		public HistorisedProperty<int> Transition = new HistorisedProperty<int> ();
+
+		public LayerStatus (int layer, int state, int transition) {
+			this.layer = layer;
+			State.Current = state;
+			Transition.Current = transition;
+		}
 	}
 
 	public class HistorisedProperty <T> where T : System.IComparable
@@ -160,7 +216,7 @@ namespace AnimatorAccess {
 				current = value;
 			}
 		}
-		public bool HasChanged { get { return current.Equals (previous); } }
+		public bool HasChanged { get { return !current.Equals (previous); } }
 	}
 	
 }

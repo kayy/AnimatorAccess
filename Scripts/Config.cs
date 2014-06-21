@@ -169,14 +169,6 @@ namespace Scio.AnimatorAccessGenerator {
 		/// <summary>
 		/// If true, a <hash Id, state name> dictionary is created including method IdToName (int id).
 		/// </summary>
-		public virtual bool GenerateNameDictionary {
-			get { return Preferences.GetBool (Preferences.Key.GenerateNameDictionary, true); }
-			set { Preferences.SetBool (Preferences.Key.GenerateNameDictionary, value); }
-		}
-
-		/// <summary>
-		/// If true, a <hash Id, state name> dictionary is created including method IdToName (int id).
-		/// </summary>
 		public virtual int AutoRefreshInterval {
 			get { return Preferences.GetInt (Preferences.Key.AutoRefreshInterval, 30); }
 			set { Preferences.SetInt (Preferences.Key.AutoRefreshInterval, value); }

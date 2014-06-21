@@ -8,48 +8,71 @@ namespace AnimatorAccess
 {
 	public interface TransitionEventHandler
 	{
-		event BaseAnimatorAccess.OnTransitionStartedHandler Started;
-
-		event BaseAnimatorAccess.OnTransitionStartedHandler Finished;
+		void Perform (Animator animator, Dictionary<int, TransitionInfo> transitionInfos);
 
 		/// <summary>
-		/// Perform the specified transitionNameHash and transitionInfos.
+		/// Key string to build hash code so that every handler can be identified within the dictionary. 
+		/// Naming convention is:
+		/// ClassName[:LayerIndex[:StateHashId]]
 		/// </summary>
-		/// <param name="transitionNameHash">Transition name hash.</param>
-		/// <param name="transitionInfos">Transition infos.</param>
-		void Perform (Animator animator, Dictionary<int, TransitionInfo> transitionInfos);
+		/// <returns>Key string as ClassName[:LayerIndex[:StateHashId]].</returns>
+		string GetKeyString ();
 	}
 
-	public class BaseTransitionEventHandler : TransitionEventHandler
+	public abstract class AbstractTransitionEventHandler : TransitionEventHandler
 	{
-		public event BaseAnimatorAccess.OnTransitionStartedHandler Started;
+		public event BaseAnimatorAccess.OnTransitionStartedHandler OnStarted;
 		
-		public event BaseAnimatorAccess.OnTransitionStartedHandler Finished;
-		
-		public BaseTransitionEventHandler ()
-		{
-			Log.Temp ("Constructor");
-			if (Started == null || Finished == null) {} // make compiler happy (CS0067)
+		public AbstractTransitionEventHandler () {
+			if (OnStarted == null) {} // make compiler happy (CS0067)
 		}
 
 		public virtual void Perform (Animator animator, Dictionary<int, TransitionInfo> transitionInfos) {
+		}
 
+		public override int GetHashCode () {
+			return GetKeyString ().GetHashCode ();
+		}
+		
+		public virtual string GetKeyString () {
+			return this.GetType ().Name;
 		}
 	}
 
-	public class SingleTransitionEventHandler : BaseTransitionEventHandler
+	public class AnyTransitionEventHandler : AbstractTransitionEventHandler
 	{
-		
+		// FIXME_kay: implement Perform - for others too
 	}
 	
-	public class FromStateTransitionEventHandler : BaseTransitionEventHandler
+	public class SpecificTransitionEventHandler : AbstractTransitionEventHandler
 	{
+		public event BaseAnimatorAccess.OnTransitionStartedHandler OnFinished;
 		
+		protected int layer = -1;
+		protected int transitionId = 0;
+
+		public SpecificTransitionEventHandler (int layer, int transitionId)
+		{
+			if (OnFinished == null) {} // make compiler happy (CS0067)
+		}
+		public override string GetKeyString () {
+			return base.GetKeyString () + ":" + layer + ":" + transitionId;
+		}
 	}
 	
-	public class AnyTransitionEventHandler : BaseTransitionEventHandler
+	public class FromStateTransitionEventHandler : AbstractTransitionEventHandler
 	{
-		
+		protected int layer = -1;
+		protected int stateId = 0;
+
+		public FromStateTransitionEventHandler (int layer, int stateId) {
+			this.layer = layer;
+			this.stateId = stateId;
+		}
+
+		public override string GetKeyString () {
+			return base.GetKeyString () + ":" + layer + ":" + stateId;
+		}
 	}
 	
 }

@@ -44,7 +44,7 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public static class InternalAPIAccess
 	{
-		public delegate void ProcessAnimatorState (int layer, string layerName, string item);
+		public delegate void ProcessAnimatorState (StateInfo info);
 
 		public delegate void ProcessAnimatorTransition (TransitionInfo info);
 
@@ -68,7 +68,8 @@ namespace Scio.AnimatorAccessGenerator
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
 					string stateName = state.uniqueName;
-					callback (layer, layerName, stateName);
+					StateInfo info = new StateInfo (state.uniqueNameHash, layer, layerName, stateName);
+					callback (info);
 				}
 			}
 		}
