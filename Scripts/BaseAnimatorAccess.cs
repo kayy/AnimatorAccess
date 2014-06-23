@@ -74,7 +74,7 @@ namespace AnimatorAccess {
 				StateInfo info = StateInfos [nameHash];
 				// reuse handler if possible to maximise performance in FixedUdpate; 
 				// drawback: we have to create a handler first to get the hash ID
-				SpecificStateObserver handler = new SpecificStateObserver (info.layer, nameHash);
+				SpecificStateObserver handler = new SpecificStateObserver (info.Layer, nameHash);
 				int id = handler.GetHashCode ();
 				if (!StateObservers.ContainsKey (id)) {
 					StateObservers [id] = handler;
@@ -87,11 +87,10 @@ namespace AnimatorAccess {
 			return null;
 		}
 
-		public AnyStateObserver AnyState () {
-			AnyStateObserver handler = new AnyStateObserver ();
+		public AnyStateObserver AnyState (int layer = -1) {
+			AnyStateObserver handler = new AnyStateObserver (layer);
 			int id = handler.GetHashCode ();
 			if (!StateObservers.ContainsKey (id)) {
-				Log.Temp ("new ANY Handler");
 				StateObservers [id] = handler;
 			}
 			return (AnyStateObserver)StateObservers [id];
@@ -100,19 +99,16 @@ namespace AnimatorAccess {
 		public SpecificTransitionObserver Transition (int source, int dest) {
 			TransitionInfo info = null;
 			foreach (TransitionInfo ti in TransitionInfos.Values) {
-				if (ti.sourceId == source && ti.destId == dest) {
+				if (ti.SourceId == source && ti.DestId == dest) {
 					info = ti;
 					break;
 				}
 			}
 			if (info != null) {
-				SpecificTransitionObserver handler = new SpecificTransitionObserver (info.layer, info.id);
+				SpecificTransitionObserver handler = new SpecificTransitionObserver (info.Layer, info.Id);
 				int id = handler.GetHashCode ();
 				if (!TransitionObservers.ContainsKey (id)) {
-					Log.Temp ("new specific Handler");
 					TransitionObservers [id] = handler;
-				} else {
-					Log.Temp ("Found existing specific handler");
 				}
 				return (SpecificTransitionObserver)TransitionObservers [id];
 			} else {
@@ -124,19 +120,16 @@ namespace AnimatorAccess {
 		public FromStateTransitionObserver TransitionFrom (int source) {
 			TransitionInfo info = null;
 			foreach (TransitionInfo ti in TransitionInfos.Values) {
-				if (ti.sourceId == source) {
+				if (ti.SourceId == source) {
 					info = ti;
 					break;
 				}
 			}
 			if (info != null) {
-				FromStateTransitionObserver handler = new FromStateTransitionObserver (info.layer, info.id);
+				FromStateTransitionObserver handler = new FromStateTransitionObserver (info.Layer, info.Id);
 				int id = handler.GetHashCode ();
 				if (!TransitionObservers.ContainsKey (id)) {
-					Log.Temp ("new FromStateTransition Handler");
 					TransitionObservers [id] = handler;
-				} else { 
-					Log.Temp ("Found existing FromStateTransition handler");
 				}
 				return (FromStateTransitionObserver)TransitionObservers [id];
 			} else {
@@ -156,7 +149,7 @@ namespace AnimatorAccess {
 
 		public string IdToName (int id) { 
 			if (StateInfos.ContainsKey (id)) {
-				return StateInfos [id].stateName;
+				return StateInfos [id].Name;
 			}
 			return "";
 		}
@@ -179,7 +172,7 @@ namespace AnimatorAccess {
 			}
 			if (StateObservers != null && StateObservers.Count > 0) {
 				foreach (StateObserver handler in StateObservers.Values) {
-					handler.Perform (StateInfos, LayerStatuses);
+					handler.Perform (LayerStatuses, StateInfos);
 				}
 			}
 			if (TransitionObservers != null && TransitionObservers.Count > 0) {

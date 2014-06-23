@@ -157,24 +157,24 @@ namespace Scio.AnimatorAccessGenerator
 		/// <param name="layerName">Layer name.</param>
 		/// <param name="item">State name.</param>
 		public void ProcessAnimatorState (StateInfo info) {
-			string layerPrefix = (info.layer > 0 || config.ForceLayerPrefix ? null : info.layerName);
-			string name = CodeGenerationUtils.GenerateStateName (config.AnimatorStatePrefix, info.stateName, layerPrefix);
+			string layerPrefix = (info.Layer > 0 || config.ForceLayerPrefix ? null : info.LayerName);
+			string name = CodeGenerationUtils.GenerateStateName (config.AnimatorStatePrefix, info.Name, layerPrefix);
 			name = name.FirstCharToUpper ();
-			string fieldName = CodeGenerationUtils.GenerateStateName (config.AnimatorStateHashPrefix, info.stateName, layerPrefix);
+			string fieldName = CodeGenerationUtils.GenerateStateName (config.AnimatorStateHashPrefix, info.Name, layerPrefix);
 			fieldName = fieldName.FirstCharToLower ();
 			GenericFieldCodeElement field = new GenericFieldCodeElement (typeof(int), fieldName);
-			field.Summary.Add ("Hash of Animator state " + info.stateName);
+			field.Summary.Add ("Hash of Animator state " + info.Name);
 			classCodeElement.Fields.Add (field);
-			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + info.stateName + "\");");
+			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + info.Name + "\");");
 			string methodName = "Is" + name;
 			MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
-			method.Origin = "state " + info.stateName;
+			method.Origin = "state " + info.Name;
 			method.AddParameter (typeof(int), "nameHash");
 			method.Code.Add (" return nameHash == " + fieldName + ";");
-			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + info.stateName + "\").");
+			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + info.Name + "\").");
 			classCodeElement.Methods.Add (method);
-			initialiserCode.Code.Add ("StateInfos.Add (" + info.id + ", new StateInfo (" + info.id + ", " + info.layer +
-	            ", \"" + info.layerName + "\", \"" + info.stateName + "\"));");
+			initialiserCode.Code.Add ("StateInfos.Add (" + info.Id + ", new StateInfo (" + info.Id + ", " + info.Layer +
+	            ", \"" + info.LayerName + "\", \"" + info.Name + "\"));");
 		}
 
 		void ProcessTransitions () {
@@ -185,8 +185,8 @@ namespace Scio.AnimatorAccessGenerator
 //			transitionInfos.Add (key, info);
 //			 TransitionInfo (t.uniqueNameHash, layer, layerName, 
 //			t.srcState.uniqueNameHash, t.dstState.uniqueNameHash)
-			initialiserCode.Code.Add (TransitionInfoDict + ".Add (" + t.id + ", new TransitionInfo (" + t.id + ", \"" + 
-				t.name + "\", " + t.layer + ", \"" + t.layerName + "\", " + t.sourceId + ", " + t.destId + "));");
+			initialiserCode.Code.Add (TransitionInfoDict + ".Add (" + t.Id + ", new TransitionInfo (" + t.Id + ", \"" + 
+				t.Name + "\", " + t.Layer + ", \"" + t.LayerName + "\", " + t.SourceId + ", " + t.DestId + "));");
 
 		}
 

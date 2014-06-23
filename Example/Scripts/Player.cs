@@ -58,6 +58,7 @@ namespace AnimatorAccessExample
 			anim.AnyTransition ().OnStarted += OnAnyTransitionStarted;
 			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
 			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumpingStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStay += OnIdleToJumpingStay;
 			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished += OnIdleToJumpingFinished;
 		}
 		void OnDisable () {
@@ -67,6 +68,7 @@ namespace AnimatorAccessExample
 			anim.AnyTransition ().OnStarted -= OnAnyTransitionStarted;
 			anim.TransitionFrom (anim.stateIdIdle).OnStarted -= OnIdleToAnyState;
 			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted -= OnIdleToJumpingStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStay -= OnIdleToJumpingStay;
 			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished -= OnIdleToJumpingFinished;
 		}
 
@@ -75,8 +77,9 @@ namespace AnimatorAccessExample
 			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
 		}
 
+		// state callbacks
 		void LogStateChange (string method, AnimatorAccess.StateInfo info, int previous) {
-			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.stateName, method, anim.IdToName (previous)));
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.Name, method, anim.IdToName (previous)));
 		}
 		void OnAnyStateChange (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
 			LogStateChange ("OnAnyStateChange", info, status.State.Previous);
@@ -90,13 +93,20 @@ namespace AnimatorAccessExample
 			LogStateChange ("OnExitYawning", info, status.State.Previous);
 		}
 
+		// transition callbacks
 		void LogTransition (string method, AnimatorAccess.TransitionInfo info) {
-			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}]     ----> {1:-25} callback: {2}", Time.realtimeSinceStartup, info.name, method));
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}]     ----> {1:-25} callback: {2}", Time.realtimeSinceStartup, info.Name, method));
 		}
+		int noOfCallsToOnIdleToJumpingStay = 0;
 		void OnIdleToJumpingStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			noOfCallsToOnIdleToJumpingStay = 0;
 			LogTransition ("OnIdleToJumpingStarted", info);
 		}
+		void OnIdleToJumpingStay (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			noOfCallsToOnIdleToJumpingStay++;
+		}
 		void OnIdleToJumpingFinished (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			Debug.Log ("                     " + noOfCallsToOnIdleToJumpingStay + " calls to OnIdleToJumpingStay");
 			LogTransition ("OnIdleToJumpingFinished", info);
 		}
 
