@@ -36,7 +36,7 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public class AnimatorCodeElementsBuilder : CodeElementsBuilder
 	{
-		const string TransitionInfoDict = "transitionInfos";
+		const string TransitionInfoDict = "TransitionInfos";
 
 		Config config;
 		string targetClassName;
@@ -173,7 +173,7 @@ namespace Scio.AnimatorAccessGenerator
 			method.Code.Add (" return nameHash == " + fieldName + ";");
 			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + info.stateName + "\").");
 			classCodeElement.Methods.Add (method);
-			initialiserCode.Code.Add ("stateDictionary.Add (" + info.id + ", new StateInfo (" + info.id + ", " + info.layer +
+			initialiserCode.Code.Add ("StateInfos.Add (" + info.id + ", new StateInfo (" + info.id + ", " + info.layer +
 	            ", \"" + info.layerName + "\", \"" + info.stateName + "\"));");
 		}
 
@@ -185,8 +185,8 @@ namespace Scio.AnimatorAccessGenerator
 //			transitionInfos.Add (key, info);
 //			 TransitionInfo (t.uniqueNameHash, layer, layerName, 
 //			t.srcState.uniqueNameHash, t.dstState.uniqueNameHash)
-			initialiserCode.Code.Add (TransitionInfoDict + ".Add (" + t.id + ", new TransitionInfo (" + t.id + ", " + 
-				t.layer + ", \"" + t.layerName + "\", " + t.sourceId + ", " + t.destId + "));");
+			initialiserCode.Code.Add (TransitionInfoDict + ".Add (" + t.id + ", new TransitionInfo (" + t.id + ", \"" + 
+				t.name + "\", " + t.layer + ", \"" + t.layerName + "\", " + t.sourceId + ", " + t.destId + "));");
 
 		}
 

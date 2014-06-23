@@ -21,7 +21,7 @@ namespace AnimatorAccess
 		}
 
 		public override string ToString () {
-			return string.Format ("[StateInfo: id={0} = {3}, layer({1})={2}]", id, layer, layerName, stateName);
+			return string.Format ("[State '{3}' id={0}, layer({1})='{2}']", id, layer, layerName, stateName);
 		}
 	}
 }

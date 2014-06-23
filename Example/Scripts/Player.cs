@@ -55,17 +55,19 @@ namespace AnimatorAccessExample
 			anim.AnyState ().OnChange += OnAnyStateChange;
 			anim.State (anim.stateIdYawning).OnEnter += OnEnterYawning;
 			anim.State (anim.stateIdYawning).OnExit += OnExitYawning;
-			anim.AnyTransition ().OnStarted += OnTransitionStarted;
+			anim.AnyTransition ().OnStarted += OnAnyTransitionStarted;
 			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumping;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumpingStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished += OnIdleToJumpingFinished;
 		}
 		void OnDisable () {
 			anim.AnyState ().OnChange -= OnAnyStateChange;
 			anim.State (anim.stateIdYawning).OnEnter -= OnEnterYawning;
 			anim.State (anim.stateIdYawning).OnExit -= OnExitYawning;
-			anim.AnyTransition ().OnStarted -= OnTransitionStarted;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted -= OnIdleToJumping;
+			anim.AnyTransition ().OnStarted -= OnAnyTransitionStarted;
 			anim.TransitionFrom (anim.stateIdIdle).OnStarted -= OnIdleToAnyState;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted -= OnIdleToJumpingStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished -= OnIdleToJumpingFinished;
 		}
 
 		void Update () {
@@ -73,28 +75,36 @@ namespace AnimatorAccessExample
 			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
 		}
 
-		void OnAnyStateChange (AnimatorAccess.LayerStatus info) {
-			if (anim.IsJumping (info.State.Current)) {
-				Debug.Log ("OnStateChange: Jump, previous state was " + anim.stateDictionary [info.State.Previous]);
-			}
+		void LogStateChange (string method, AnimatorAccess.StateInfo info, int previous) {
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.stateName, method, anim.IdToName (previous)));
+		}
+		void OnAnyStateChange (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			LogStateChange ("OnAnyStateChange", info, status.State.Previous);
 		}
 		
-		void OnEnterYawning (AnimatorAccess.LayerStatus info) {
-			Debug.Log ("Entering state 'Yawning', previous state was " + anim.IdToName (info.State.Previous));
+		void OnEnterYawning (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			LogStateChange ("OnEnterYawning", info, status.State.Previous);
 		}
 		
-		void OnExitYawning (AnimatorAccess.LayerStatus info) {
-			Debug.Log ("Leaving state 'Yawning', previous state was " + anim.IdToName (info.State.Previous));
+		void OnExitYawning (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			LogStateChange ("OnExitYawning", info, status.State.Previous);
 		}
-		
-		void OnIdleToJumping (AnimatorAccess.TransitionInfo info) {
-			Log.Temp ("Idle => Jumping");
+
+		void LogTransition (string method, AnimatorAccess.TransitionInfo info) {
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}]     ----> {1:-25} callback: {2}", Time.realtimeSinceStartup, info.name, method));
 		}
-		void OnIdleToAnyState (AnimatorAccess.TransitionInfo info) {
-			Log.Temp ("Idle => *");
+		void OnIdleToJumpingStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			LogTransition ("OnIdleToJumpingStarted", info);
 		}
-		void OnTransitionStarted (AnimatorAccess.TransitionInfo info) {
-			Log.Temp ("Transition started");
+		void OnIdleToJumpingFinished (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			LogTransition ("OnIdleToJumpingFinished", info);
+		}
+
+		void OnIdleToAnyState (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			LogTransition ("OnIdleToAnyState", info);
+		}
+		void OnAnyTransitionStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			LogTransition ("OnAnyTransitionStarted", info);
 		}
 
 		void FixedUpdate () {

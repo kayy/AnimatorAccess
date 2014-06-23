@@ -85,7 +85,7 @@ namespace Scio.AnimatorAccessGenerator
 					Transition[] transitions = sm.GetTransitionsFromState(state);
 					foreach (var t in transitions) {
 //						Debug.Log (state.uniqueName +  ", transition: " + t.uniqueName + " ---" + " dest = " + t.dstState + " (" + (Animator.StringToHash (state.uniqueName) == Animator.StringToHash (layerName + "." + t.dstState)) + ") " + " src = " + t.srcState);
-						TransitionInfo info = new TransitionInfo (t.uniqueNameHash, layer, layerName, 
+						TransitionInfo info = new TransitionInfo (t.uniqueNameHash, t.uniqueName, layer, layerName, 
 	                        t.srcState.uniqueNameHash, t.dstState.uniqueNameHash);
 						callback (info);
 					}
