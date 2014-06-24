@@ -34,7 +34,7 @@
 		{Methods:
 		{Attributes:[{Name} ({Parameters:{}|, |, })]
 		|}{Summary:{Comments:/// {}
-		||}||}{Access} {ElementType} {Name} ({Parameters:{}|, |, }) \{ 
+		||}||}{Access}{OverrideModifier: {}|} {ElementType} {Name} ({Parameters:{}|, |, }) \{ 
 			{Code:{}|
 			|
 			}

@@ -31,6 +31,14 @@ namespace Scio.CodeGeneration
 		Private = 1,
 	}
 
+	public enum OverrideType
+	{
+		None = 0,
+		Virtual = 1,
+		Override = 2,
+		Abstract = 3,
+	}
+
 	/// <summary>
 	/// Base class for all those elements that have some basic coding features in common e.g. name, access type, 
 	/// attributes, ... Some other elements like files or attributes don't share these features and thus do not
@@ -48,6 +56,13 @@ namespace Scio.CodeGeneration
 
 		public bool declaredStatic = false;
 		public string Static { get { return (declaredStatic ? "static" : ""); } }
+
+		public OverrideType overrideModifier = OverrideType.None;
+		public string OverrideModifier { 
+			get { 
+				return (overrideModifier == OverrideType.None ? "" : ("" + overrideModifier).ToLower ()); 
+			}
+		}
 
 		public List<AttributeCodeElement> Attributes = new List<AttributeCodeElement> ();
 		/// <summary>

@@ -53,6 +53,7 @@ namespace AnimatorAccessExample
 
 		void OnEnable () {
 			anim.AnyState ().OnChange += OnAnyStateChange;
+//			anim.Stat
 			anim.State (anim.stateIdYawning).OnEnter += OnEnterYawning;
 			anim.State (anim.stateIdYawning).OnExit += OnExitYawning;
 			anim.AnyTransition ().OnStarted += OnAnyTransitionStarted;

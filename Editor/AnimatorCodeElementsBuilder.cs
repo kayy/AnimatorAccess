@@ -48,8 +48,10 @@ namespace Scio.AnimatorAccessGenerator
 		/// The initialiser code i.e. Awake method. Future releases might contain an option to generate a plain class 
 		/// version.
 		/// </summary>
-		ICodeBlock initialiserCode;
-		
+		ICodeBlock AwakeMethod;
+
+		ICodeBlock EventManagerInitialiser;
+
 		public AnimatorCodeElementsBuilder (GameObject go, string className, Config c)
 		{
 			this.targetClassName = className;
@@ -73,10 +75,11 @@ namespace Scio.AnimatorAccessGenerator
 			PrepareInternalFields ();
 			if (config.GenerateMonoBehaviourComponent) {
 				classCodeElement.SetBaseClass (config.MonoBehaviourComponentBaseClass);
-				initialiserCode = PrepareAwakeMethod ();
+				AwakeMethod = PrepareAwakeMethod ();
 			} else {
-				initialiserCode = PrepareConstructors ();
+				AwakeMethod = PrepareConstructors ();
 			}
+			EventManagerInitialiser = PrepareEventManagerInitialiserMethod ();
 			ProcessAnimatorStates ();
 			ProcessAnimatorParameters ();
 			PrepareStateEventHandling ();
@@ -110,8 +113,7 @@ namespace Scio.AnimatorAccessGenerator
 		/// Prepares the internal fields like Animator animator.
 		/// </summary>
 		void PrepareInternalFields () {
-			GenericFieldCodeElement animatorVar = new GenericFieldCodeElement ("Animator", "animator", "", AccessType.Public);
-			classCodeElement.Fields.Add (animatorVar);
+			// TODO_kay: remove
 		}
 
 		/// <summary>
@@ -135,12 +137,17 @@ namespace Scio.AnimatorAccessGenerator
 		ICodeBlock PrepareAwakeMethod () {
 			VoidMethodCodeElement method = new VoidMethodCodeElement ("Awake");
 			method.Code.Add ("animator = GetComponent<Animator> ();");
-			// TODO_kay: remove from Awake
-			method.Code.Add ("Initialise (animator);");
 			classCodeElement.Methods.Add (method);
 			return method;
 		}
 
+		ICodeBlock PrepareEventManagerInitialiserMethod () {
+			VoidMethodCodeElement method = new VoidMethodCodeElement ("InitialiseEventManager");
+			method.overrideModifier = OverrideType.Override;
+			classCodeElement.Methods.Add (method);
+			return method;
+		}
+		
 		/// <summary>
 		/// Adds convenience methods to determine the current Animator state as boolean methods to the class code 
 		/// element (e.g. IsIdle ()). NOTE that this method relies on classes from namespace UnityEditorInternal 
@@ -165,7 +172,7 @@ namespace Scio.AnimatorAccessGenerator
 			GenericFieldCodeElement field = new GenericFieldCodeElement (typeof(int), fieldName);
 			field.Summary.Add ("Hash of Animator state " + info.Name);
 			classCodeElement.Fields.Add (field);
-			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + info.Name + "\");");
+			AwakeMethod.Code.Add (fieldName + " = Animator.StringToHash (\"" + info.Name + "\");");
 			string methodName = "Is" + name;
 			MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
 			method.Origin = "state " + info.Name;
@@ -173,7 +180,7 @@ namespace Scio.AnimatorAccessGenerator
 			method.Code.Add (" return nameHash == " + fieldName + ";");
 			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + info.Name + "\").");
 			classCodeElement.Methods.Add (method);
-			initialiserCode.Code.Add ("StateInfos.Add (" + info.Id + ", new StateInfo (" + info.Id + ", " + info.Layer +
+			EventManagerInitialiser.Code.Add ("StateInfos.Add (" + info.Id + ", new StateInfo (" + info.Id + ", " + info.Layer +
 	            ", \"" + info.LayerName + "\", \"" + info.Name + "\"));");
 		}
 
@@ -185,7 +192,7 @@ namespace Scio.AnimatorAccessGenerator
 //			transitionInfos.Add (key, info);
 //			 TransitionInfo (t.uniqueNameHash, layer, layerName, 
 //			t.srcState.uniqueNameHash, t.dstState.uniqueNameHash)
-			initialiserCode.Code.Add (TransitionInfoDict + ".Add (" + t.Id + ", new TransitionInfo (" + t.Id + ", \"" + 
+			EventManagerInitialiser.Code.Add (TransitionInfoDict + ".Add (" + t.Id + ", new TransitionInfo (" + t.Id + ", \"" + 
 				t.Name + "\", " + t.Layer + ", \"" + t.LayerName + "\", " + t.SourceId + ", " + t.DestId + "));");
 
 		}
@@ -260,7 +267,7 @@ namespace Scio.AnimatorAccessGenerator
 				classCodeElement.Methods.Add (getterMethod);
 			}
 			field.Summary.Add ("Hash of parameter " + item);
-			initialiserCode.Code.Add (fieldName + " = Animator.StringToHash (\"" + item + "\");");
+			AwakeMethod.Code.Add (fieldName + " = Animator.StringToHash (\"" + item + "\");");
 			classCodeElement.Fields.Add (field);
 		}
 
