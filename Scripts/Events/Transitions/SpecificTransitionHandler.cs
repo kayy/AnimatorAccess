@@ -9,7 +9,7 @@ namespace AnimatorAccess
 	/// <summary>
 	/// Observes one specific transition i.e. FROM -> TO.
 	/// </summary>
-	public class SpecificTransitionObserver : AbstractTransitionObserver
+	public class SpecificTransitionHandler : AbstractTransitionHandler
 	{
 		/// <summary>
 		/// Occurs when the specified transition is started.
@@ -34,7 +34,7 @@ namespace AnimatorAccess
 		/// </summary>
 		protected int transitionId = 0;
 		
-		public SpecificTransitionObserver (int layer, int transitionId)
+		public SpecificTransitionHandler (int layer, int transitionId)
 		{
 			this.layer = layer;
 			this.transitionId = transitionId;

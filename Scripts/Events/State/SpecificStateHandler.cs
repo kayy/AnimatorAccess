@@ -10,7 +10,7 @@ namespace AnimatorAccess
 	/// Notifies its listeners whenever anything related to the specified state changes. Possible event notifications 
 	/// are OnEnter, OnExit and OnStay.
 	/// </summary>
-	public class SpecificStateObserver : AbstractStateObserver
+	public class SpecificStateHandler : AbstractStateHandler
 	{
 		/// <summary>
 		/// Occurs once when this state is entered.
@@ -36,7 +36,7 @@ namespace AnimatorAccess
 		/// </summary>
 		protected int stateId = 0;
 		
-		public SpecificStateObserver (int layer, int stateId) {
+		public SpecificStateHandler (int layer, int stateId) {
 			this.layer = layer;
 			this.stateId = stateId;
 		}

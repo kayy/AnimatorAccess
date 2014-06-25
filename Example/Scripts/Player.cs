@@ -80,7 +80,7 @@ namespace AnimatorAccessExample
 
 		// state callbacks
 		void LogStateChange (string method, AnimatorAccess.StateInfo info, int previous) {
-			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.Name, method, anim.IdToName (previous)));
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.Name, method, anim.GetStateName (previous)));
 		}
 		void OnAnyStateChange (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
 			LogStateChange ("OnAnyStateChange", info, status.State.Previous);

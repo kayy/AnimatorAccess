@@ -9,9 +9,9 @@ namespace AnimatorAccess
 	/// <summary>
 	/// Observes any state change of the specified layer or of all layers if layer == -1. OnChange event with the state 
 	/// just enterd is raised if there is a state change. If you need more fine grained notifications use 
-	/// SpecificStateObserver.
+	/// SpecificStateHandler.
 	/// </summary>
-	public class AnyStateObserver : AbstractStateObserver
+	public class AnyStateHandler : AbstractStateHandler
 	{
 		/// <summary>
 		/// Occurs when Animator state has changed.
@@ -23,11 +23,8 @@ namespace AnimatorAccess
 		/// </summary>
 		protected int layer;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatorAccess.AnyStateObserver"/> class.
-		/// </summary>
-		/// <param name="layer">Layer index or -1 to check all layers.</param>
-		public AnyStateObserver (int layer = -1) {
+
+		public AnyStateHandler (int layer = -1) {
 			this.layer = layer;
 		}
 

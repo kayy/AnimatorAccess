@@ -95,7 +95,7 @@ namespace Scio.AnimatorAccessGenerator
 			switch (stateEventMethod) {
 			case StateEventHandlingMethod.FixedUpdate:
 				GenericMethodCodeElement methodFixedUpdate = new GenericMethodCodeElement ("void", "FixedUpdate", AccessType.Private);
-				methodFixedUpdate.Code.Add ("CheckForAnimatorStateChanges (animator);");
+				methodFixedUpdate.Code.Add ("CheckForAnimatorStateChanges ();");
 				classCodeElement.Methods.Add (methodFixedUpdate);
 				break;
 			case StateEventHandlingMethod.Update:

@@ -7,14 +7,14 @@ using System.Collections.Generic;
 namespace AnimatorAccess
 {
 	/// <summary>
-	/// Transition observers are called to check if any transition shoud be reported to listeners. Implementors should 
+	/// Transition handlers are called to check if any transition shoud be reported to listeners. Implementors should 
 	/// check for changes in LayerStatus[] and raise an event if their specific condition is met. Note 
 	/// that Perform () is called on every FixedUpdate or Update and thus should be carefully implemented regarding 
 	/// peformance.  
-	/// Transition observers are stored in a dictionary with GetKeyString () as key to optimise reusing. Implementors 
-	/// not deriving from AbstractTransitionObserver have to provide their own GetHashCode () method accordingly.
+	/// Transition handlers are stored in a dictionary with GetKeyString () as key to optimise reusing. Implementors 
+	/// not deriving from AbstractTransitionHandler have to provide their own GetHashCode () method accordingly.
 	/// </summary>
-	public interface TransitionObserver
+	public interface TransitionHandler
 	{
 		/// <summary>
 		/// Checks if a transition is started, finished, ... and if so raises an event.
@@ -33,11 +33,11 @@ namespace AnimatorAccess
 	}
 
 	/// <summary>
-	/// basic implementation of TransitionObserver.
+	/// Basic implementation of TransitionHandler. Recommended base class for transition handlers.
 	/// </summary>
-	public abstract class AbstractTransitionObserver : TransitionObserver
+	public abstract class AbstractTransitionHandler : TransitionHandler
 	{
-		protected AbstractTransitionObserver () {
+		protected AbstractTransitionHandler () {
 		}
 
 		public virtual void Perform (LayerStatus[] statuses, Dictionary<int, TransitionInfo> transitionInfos) {

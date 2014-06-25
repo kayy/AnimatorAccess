@@ -8,23 +8,24 @@ using System.Collections.Generic;
 namespace AnimatorAccess
 {
 	/// <summary>
-	/// Notifies all listeners whenever a trasition from the specified state is started or finished.
+	/// Notifies all listeners whenever a transition from the specified state occurs. Listeners can subscribe to 
+	/// OnStarted or OnFinished.
 	/// </summary>
-	public class FromStateTransitionObserver : AbstractTransitionObserver
+	public class FromStateTransitionHandler : AbstractTransitionHandler
 	{
 		/// <summary>
 		/// Occurs when a new transition from the specified state is started.
 		/// </summary>
 		public event BaseAnimatorAccess.TransitionEventHandler OnStarted;
 		/// <summary>
-		/// Occurs when the ongoing transition from the specified state just has finished.
+		/// Occurs when the ongoing transition from the specified state has finished.
 		/// </summary>
 		public event BaseAnimatorAccess.TransitionEventHandler OnFinished;
 		
 		protected int layer = -1;
 		protected int stateId = 0;
 		
-		public FromStateTransitionObserver (int layer, int stateId) {
+		public FromStateTransitionHandler (int layer, int stateId) {
 			this.layer = layer;
 			this.stateId = stateId;
 		}

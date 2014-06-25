@@ -24,6 +24,9 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
+	/// <summary>
+	/// Defines a method with an arbitrary return type.
+	/// </summary>
 	public class GenericMethodCodeElement : MemberCodeElement, ICodeBlock
 	{
 		public override MemberTypeID MemberType {
@@ -87,6 +90,9 @@ namespace Scio.CodeGeneration
 		}
 	}
 
+	/// <summary>
+	/// Type void cannot be specified as generic Parameter so this is the convenience class.
+	/// </summary>
 	public class VoidMethodCodeElement : GenericMethodCodeElement
 	{
 		public VoidMethodCodeElement (string name, AccessType access = AccessType.Public) : 

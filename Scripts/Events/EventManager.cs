@@ -6,80 +6,79 @@ using System.Collections.Generic;
 
 namespace AnimatorAccess
 {
+	/// <summary>
+	/// Handles state and transition event management for BaseAnimatorAccess. See comments there for more information.
+	/// </summary>
 	public class EventManager
 	{
-		/// <summary>
-		/// Every layer's current status, updated in CheckForAnimatorStateChanges.
-		/// </summary>
+		int layerCount = -1;
+		
 		public LayerStatus [] LayerStatuses;
 		
 		public Dictionary<int, StateInfo> StateInfos = new Dictionary<int, StateInfo> ();
 		
-		public Dictionary<int, StateObserver> StateObservers = new Dictionary<int, StateObserver> ();
+		public Dictionary<int, StateHandler> StateHandlers = new Dictionary<int, StateHandler> ();
 		
 		public Dictionary<int, TransitionInfo> TransitionInfos = new Dictionary<int, TransitionInfo> ();
 		
-		public Dictionary<int, TransitionObserver> TransitionObservers = new Dictionary<int, TransitionObserver> ();
+		public Dictionary<int, TransitionHandler> TransitionHandlers = new Dictionary<int, TransitionHandler> ();
 
-		/// <summary>
-		/// Retrieves a reference to observe a single state.
-		/// </summary>
-		/// <param name="nameHash">Name hash of the state to observe.</param>
-		public SpecificStateObserver State (int nameHash) {
+		public void Initialise (Animator animator, BaseAnimatorAccess animatorAccess) {
+			layerCount = animator.layerCount;
+			LayerStatuses = new LayerStatus [layerCount];
+			for (int i = 0; i < layerCount; i++) {
+				LayerStatuses [i] = new LayerStatus (i, 0, 0);
+			}
+			// callback to overriden method in generated class to initialise state and transition infos
+			animatorAccess.InitialiseEventManager ();
+		}
+		
+#region State Event Handling
+		public AnyStateHandler AnyState (int layer = -1) {
+			if (layer > layerCount) {
+				Debug.LogWarning ("The specified layer " + layer + " exceeds layer count (" + layerCount + ")! Seems like the AnimatorAccess component needs to be updated.");
+			}
+			AnyStateHandler handler = new AnyStateHandler (layer);
+			int id = handler.GetHashCode ();
+			if (!StateHandlers.ContainsKey (id)) {
+				StateHandlers [id] = handler;
+			}
+			return (AnyStateHandler)StateHandlers [id];
+		}
+
+		public SpecificStateHandler State (int nameHash) {
 			if (StateInfos.ContainsKey (nameHash)) {
 				StateInfo info = StateInfos [nameHash];
 				// reuse handler if possible to maximise performance in FixedUdpate; 
 				// drawback: we have to create a handler first to get the hash ID
-				SpecificStateObserver handler = new SpecificStateObserver (info.Layer, nameHash);
+				SpecificStateHandler handler = new SpecificStateHandler (info.Layer, nameHash);
 				int id = handler.GetHashCode ();
-				if (!StateObservers.ContainsKey (id)) {
-					StateObservers [id] = handler;
+				if (!StateHandlers.ContainsKey (id)) {
+					StateHandlers [id] = handler;
 				} else {
 				}
-				return (SpecificStateObserver)StateObservers [id];
+				return (SpecificStateHandler)StateHandlers [id];
 			} else {
 				Debug.LogWarning ("There seem to be no animator state with nameHash [" + nameHash + "]. Maybe you need to update the corresonding AnimatorAccess component.");
 			}
 			return null;
 		}
+#endregion
 		
-		/// <summary>
-		/// Occurs once for every change of an animator state. If there are more than one changes at a time in different
-		/// layers, the listeners are called once for every single change.
-		/// </summary>
-		/// <returns>The state.</returns>
-		/// <param name="layer">If set i.e. != -1, only the speicfied layer will be observed.</param>
-		public AnyStateObserver AnyState (int layer = -1) {
-			AnyStateObserver handler = new AnyStateObserver (layer);
+#region Transition Event Handling
+		public AnyTransitionHandler AnyTransition (int layer = -1) {
+			if (layer > layerCount) {
+				Debug.LogWarning ("The specified layer " + layer + " exceeds layer count (" + layerCount + ")! Seems like the AnimatorAccess component needs to be updated.");
+			}
+			AnyTransitionHandler handler = new AnyTransitionHandler (layer);
 			int id = handler.GetHashCode ();
-			if (!StateObservers.ContainsKey (id)) {
-				StateObservers [id] = handler;
+			if (!TransitionHandlers.ContainsKey (id)) {
+				TransitionHandlers [0] = handler;
 			}
-			return (AnyStateObserver)StateObservers [id];
+			return (AnyTransitionHandler)TransitionHandlers [0];
 		}
-		
-		public SpecificTransitionObserver Transition (int source, int dest) {
-			TransitionInfo info = null;
-			foreach (TransitionInfo ti in TransitionInfos.Values) {
-				if (ti.SourceId == source && ti.DestId == dest) {
-					info = ti;
-					break;
-				}
-			}
-			if (info != null) {
-				SpecificTransitionObserver handler = new SpecificTransitionObserver (info.Layer, info.Id);
-				int id = handler.GetHashCode ();
-				if (!TransitionObservers.ContainsKey (id)) {
-					TransitionObservers [id] = handler;
-				}
-				return (SpecificTransitionObserver)TransitionObservers [id];
-			} else {
-				Debug.LogWarning ("There seem to be no transition from state [" + source + "] to [" + dest + "]. Maybe you need to update the corresonding AnimatorAccess component.");
-				return null;
-			}
-		}
-		
-		public FromStateTransitionObserver TransitionFrom (int source) {
+
+		public FromStateTransitionHandler TransitionFrom (int source) {
 			TransitionInfo info = null;
 			foreach (TransitionInfo ti in TransitionInfos.Values) {
 				if (ti.SourceId == source) {
@@ -88,51 +87,60 @@ namespace AnimatorAccess
 				}
 			}
 			if (info != null) {
-				FromStateTransitionObserver handler = new FromStateTransitionObserver (info.Layer, info.Id);
+				FromStateTransitionHandler handler = new FromStateTransitionHandler (info.Layer, info.Id);
 				int id = handler.GetHashCode ();
-				if (!TransitionObservers.ContainsKey (id)) {
-					TransitionObservers [id] = handler;
+				if (!TransitionHandlers.ContainsKey (id)) {
+					TransitionHandlers [id] = handler;
 				}
-				return (FromStateTransitionObserver)TransitionObservers [id];
+				return (FromStateTransitionHandler)TransitionHandlers [id];
 			} else {
 				Debug.LogWarning ("There seem to be no transitions from state [" + source + "]. Maybe you need to update the corresonding AnimatorAccess component.");
 				return null;
 			}
 		}
-		
-		public AnyTransitionObserver AnyTransition () {
-			AnyTransitionObserver handler = new AnyTransitionObserver ();
-			int id = handler.GetHashCode ();
-			if (!TransitionObservers.ContainsKey (id)) {
-				TransitionObservers [0] = handler;
-			}
-			return (AnyTransitionObserver)TransitionObservers [0];
-		}
 
-		public string IdToName (int id) { 
+		public SpecificTransitionHandler Transition (int source, int dest) {
+			TransitionInfo info = null;
+			foreach (TransitionInfo ti in TransitionInfos.Values) {
+				if (ti.SourceId == source && ti.DestId == dest) {
+					info = ti;
+					break;
+				}
+			}
+			if (info != null) {
+				SpecificTransitionHandler handler = new SpecificTransitionHandler (info.Layer, info.Id);
+				int id = handler.GetHashCode ();
+				if (!TransitionHandlers.ContainsKey (id)) {
+					TransitionHandlers [id] = handler;
+				}
+				return (SpecificTransitionHandler)TransitionHandlers [id];
+			} else {
+				Debug.LogWarning ("There seem to be no transition from state [" + source + "] to [" + dest + "]. Maybe you need to update the corresonding AnimatorAccess component.");
+				return null;
+			}
+		}
+#endregion
+
+		public string GetStateName (int id) { 
 			if (StateInfos.ContainsKey (id)) {
 				return StateInfos [id].Name;
 			}
 			return "";
 		}
-
-		int _internalLayerCount = -1;
 		
-		public void Initialise (Animator animator, BaseAnimatorAccess animatorAccess) {
-			_internalLayerCount = animator.layerCount;
-			LayerStatuses = new LayerStatus [_internalLayerCount];
-			for (int i = 0; i < _internalLayerCount; i++) {
-				LayerStatuses [i] = new LayerStatus (i, 0, 0);
+		public string GetTransitionName (int id) { 
+			if (TransitionInfos.ContainsKey (id)) {
+				return TransitionInfos [id].Name;
 			}
-			animatorAccess.InitialiseEventManager ();
+			return "";
 		}
-
+		
 		/// <summary>
 		/// Checks for animator state changes if there are listeners registered in OnStateChange.
 		/// </summary>
 		/// <param name="animator">Animator instance for reading states of all layers.</param>
 		public void CheckForAnimatorStateChanges (Animator animator) {
-			for (int layer = 0; layer < _internalLayerCount; layer++) {
+			for (int layer = 0; layer < layerCount; layer++) {
 				LayerStatuses [layer].State.Current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
 				if (animator.IsInTransition (layer)) {
 					LayerStatuses [layer].Transition.Current = animator.GetAnimatorTransitionInfo (layer).nameHash;
@@ -140,13 +148,13 @@ namespace AnimatorAccess
 					LayerStatuses [layer].Transition.Current = 0;
 				}
 			}
-			if (StateObservers != null && StateObservers.Count > 0) {
-				foreach (StateObserver handler in StateObservers.Values) {
+			if (StateHandlers != null && StateHandlers.Count > 0) {
+				foreach (StateHandler handler in StateHandlers.Values) {
 					handler.Perform (LayerStatuses, StateInfos);
 				}
 			}
-			if (TransitionObservers != null && TransitionObservers.Count > 0) {
-				foreach (TransitionObserver handler in TransitionObservers.Values) {
+			if (TransitionHandlers != null && TransitionHandlers.Count > 0) {
+				foreach (TransitionHandler handler in TransitionHandlers.Values) {
 					handler.Perform (LayerStatuses, TransitionInfos);
 				}
 			}

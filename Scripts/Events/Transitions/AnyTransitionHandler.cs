@@ -7,10 +7,10 @@ using System.Collections.Generic;
 namespace AnimatorAccess
 {
 	/// <summary>
-	/// Observes any transitions of the specified layer or of all layers if layer == -1. See FromStateTransitionObserver
-	/// and SpecificTransitionObserver for more specific event notifications.
+	/// Observes any transitions of the specified layer or of all layers if layer == -1. See FromStateTransitionHandler
+	/// and SpecificTransitionHandler for more specific event notifications.
 	/// </summary>
-	public class AnyTransitionObserver : AbstractTransitionObserver
+	public class AnyTransitionHandler : AbstractTransitionHandler
 	{
 		/// <summary>
 		/// Occurs when a new transition is started.
@@ -27,10 +27,10 @@ namespace AnimatorAccess
 		protected int layer;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AnimatorAccess.AnyTransitionObserver"/> class.
+		/// Initializes a new instance of the <see cref="AnimatorAccess.AnyTransitionHandler"/> class.
 		/// </summary>
 		/// <param name="layer">Layer index or -1 to observe all layers.</param>
-		public AnyTransitionObserver (int layer = -1) {
+		public AnyTransitionHandler (int layer = -1) {
 			this.layer = layer;
 		}
 		

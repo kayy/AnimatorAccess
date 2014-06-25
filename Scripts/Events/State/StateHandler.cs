@@ -7,14 +7,14 @@ using System.Collections.Generic;
 namespace AnimatorAccess
 {
 	/// <summary>
-	/// Animator state observer is called to check if an event related to a state change should be raised. Implementing 
+	/// Animator state handlers are called to check if an event related to a state change should be raised. Implementing 
 	/// classes should check for changes in LayerStatus[] and raise an event if their specific condition is met. Note 
 	/// that Perform () is called on every FixedUpdate or Update and thus should be carefully implemented regarding 
 	/// peformance.  
-	/// State observers are stored in a dictionary with GetKeyString () as key to optimise reusing. Implementors not 
-	/// deriving from AbstractStateObserver have to provide their own GetHashCode () method accordingly.
+	/// State handlers are stored in a dictionary with GetKeyString () as key to optimise reusing. Implementors not 
+	/// deriving from AbstractStateHandler have to provide their own GetHashCode () method accordingly.
 	/// </summary>
-	public interface StateObserver
+	public interface StateHandler
 	{
 		/// <summary>
 		/// Checks for changes and if so raises an event.
@@ -32,9 +32,9 @@ namespace AnimatorAccess
 	}
 
 	/// <summary>
-	/// Implements some basic functionality of StateObserver expecially GetHashCode ().
+	/// Implements some basic functionality of StateHandler expecially GetHashCode ().
 	/// </summary>
-	public abstract class AbstractStateObserver : StateObserver
+	public abstract class AbstractStateHandler : StateHandler
 	{
 		public abstract void Perform (LayerStatus [] statuses, Dictionary<int, StateInfo> stateInfos);
 
@@ -58,13 +58,13 @@ namespace AnimatorAccess
 	}
 
 	/// <summary>
-	/// EXPERIMENTAL!!! Dynamic state observer meant to supply its Perform implementation as delegate.
+	/// EXPERIMENTAL!!! Dynamic state handler meant to supply its Perform implementation as delegate.
 	/// </summary>
-	public class DynamicStateObserver : AnyStateObserver
+	public class DynamicStateHandler : AnyStateHandler
 	{
 		System.Action<Dictionary<int, StateInfo>, LayerStatus []> performAction;
 
-		public DynamicStateObserver (System.Action<Dictionary<int, StateInfo>, LayerStatus []> performAction) {
+		public DynamicStateHandler (System.Action<Dictionary<int, StateInfo>, LayerStatus []> performAction) {
 			this.performAction = performAction;
 		}
 

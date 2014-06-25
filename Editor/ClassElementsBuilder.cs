@@ -126,6 +126,8 @@ namespace Scio.AnimatorAccessGenerator
 				if (!existingClass.IsEmpty ()) {
 					List<ClassMemberCompareElement> comparisonResult = CodeElementUtils.CompareClasses (existingClass, newClass, 
 						config.IgnoreExistingCode, config.KeepObsoleteMembers);
+					// only Get, Set and Is methods of the existing class are analysed by reflection so remove all 
+					// other methods that are provided by default
 					comparisonResult.RemoveAll ((element) => element.Member == "Awake" || element.Member == "InitialiseEventManager");
 					string message = "";
 					comparisonResult.ForEach ((s) => message += s + "\n");
