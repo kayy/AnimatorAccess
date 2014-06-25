@@ -25,7 +25,8 @@ using System.Collections.Generic;
 
 namespace AnimatorAccess {
 	/// <summary>
-	/// Base class for all generated AnimatorAccess classes.
+	/// Base class for all generated AnimatorAccess classes. To extend this class use a 2nd partial class definition
+	/// outside this file to add methods.
 	/// </summary>
 	public partial class BaseAnimatorAccess : MonoBehaviour 
 	{
@@ -63,8 +64,15 @@ namespace AnimatorAccess {
 			add { AnyTransition ().OnStarted += value;}
 			remove { AnyTransition ().OnStarted -= value; }
 		}
-		
+
+		/// <summary>
+		/// DON'T USE this directly! Use property EventManager instead.
+		/// </summary>
 		EventManager _internalEventManager = null;
+		/// <summary>
+		/// Needed when extending the interface by a second partial class declaration.
+		/// </summary>
+		/// <value>The event manager.</value>
 		protected EventManager EventManager { 
 			get {
 				if (_internalEventManager == null) {
@@ -75,7 +83,11 @@ namespace AnimatorAccess {
 			}
 		}
 
+		/// <summary>
+		/// Animator component is set up automatically in the generated class's Awake method.
+		/// </summary>
 		public Animator animator;
+
 		/// <summary>
 		/// State info dictionary having the states' name hashes as key.
 		/// </summary>
@@ -91,12 +103,6 @@ namespace AnimatorAccess {
 		/// </summary>
 		/// <value>The layer statuses.</value>
 		public LayerStatus [] LayerStatuses { get { return EventManager.LayerStatuses; } }
-
-		/// <summary>
-		/// Generated code of derived classes fill StateInfo and TransitionInfo dictionaries in their overridden method.
-		/// </summary>
-		public virtual void InitialiseEventManager () {
-		}
 
 		/// <summary>
 		/// Occurs once for every change of an animator state. If there are more than one changes at a time in different
@@ -144,18 +150,33 @@ namespace AnimatorAccess {
 			return EventManager.Transition (source, destination);
 		}
 
+		/// <summary>
+		/// Generated code of derived classes fill StateInfo and TransitionInfo dictionaries in their overridden method.
+		/// </summary>
+		public virtual void InitialiseEventManager () {
+		}
+
+		/// <summary>
+		/// Hash to name conversion.
+		/// </summary>
+		/// <returns>The state name.</returns>
+		/// <param name="stateNameHash">State name hash.</param>
 		public string GetStateName (int stateNameHash) { 
 			return EventManager.GetStateName (stateNameHash);
 		}
 
+		/// <summary>
+		/// Hash to name conversion.
+		/// </summary>
+		/// <returns>The transition name.</returns>
+		/// <param name="transitionNameHash">Transition name hash.</param>
 		public string GetTransitionName (int transitionNameHash) { 
 			return EventManager.GetTransitionName (transitionNameHash);
 		}
 
 		/// <summary>
-		/// Checks for animator state changes if there are listeners registered in OnStateChange.
+		/// Updates LayerStatuses, checks for status and transition changes and informs all event subscribers.
 		/// </summary>
-		/// <param name="animator">Animator instance for reading states of all layers.</param>
 		public void CheckForAnimatorStateChanges () {
 			EventManager.CheckForAnimatorStateChanges (animator);
 		}

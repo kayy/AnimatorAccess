@@ -36,6 +36,7 @@ namespace Scio.AnimatorAccessGenerator
 	/// </summary>
 	public class AnimatorCodeElementsBuilder : CodeElementsBuilder
 	{
+		const string StateInfoDict = "StateInfos";
 		const string TransitionInfoDict = "TransitionInfos";
 
 		Config config;
@@ -72,7 +73,7 @@ namespace Scio.AnimatorAccessGenerator
 			if (!string.IsNullOrEmpty (config.DefaultNamespace)) {
 				classCodeElement.NameSpace = new NameSpaceCodeElement (config.DefaultNamespace);
 			}
-			PrepareInternalFields ();
+			ProcessInternalFields ();
 			if (config.GenerateMonoBehaviourComponent) {
 				classCodeElement.SetBaseClass (config.MonoBehaviourComponentBaseClass);
 				AwakeMethod = PrepareAwakeMethod ();
@@ -82,14 +83,14 @@ namespace Scio.AnimatorAccessGenerator
 			EventManagerInitialiser = PrepareEventManagerInitialiserMethod ();
 			ProcessAnimatorStates ();
 			ProcessAnimatorParameters ();
-			PrepareStateEventHandling ();
+			ProcessStateEventHandling ();
 			return classCodeElement;
 		}
 
 		/// <summary>
 		/// Depending on config setting a FixedUpdate or Update method will be generated. None will omit this step.
 		/// </summary>
-		void PrepareStateEventHandling () {
+		void ProcessStateEventHandling () {
 			StateEventHandlingMethod stateEventMethod = config.GenerateStateEventHandler;
 //			StateEventHandlingMethod stateEventMethod = StateEventHandlingMethod.FixedUpdate;
 			switch (stateEventMethod) {
@@ -109,11 +110,8 @@ namespace Scio.AnimatorAccessGenerator
 			ProcessTransitions ();
 		}
 
-		/// <summary>
-		/// Prepares the internal fields like Animator animator.
-		/// </summary>
-		void PrepareInternalFields () {
-			// TODO_kay: remove
+		void ProcessInternalFields () {
+			// internal fields have moved to base class
 		}
 
 		/// <summary>
@@ -169,32 +167,57 @@ namespace Scio.AnimatorAccessGenerator
 			name = name.FirstCharToUpper ();
 			string fieldName = CodeGenerationUtils.GenerateStateName (config.AnimatorStateHashPrefix, info.Name, layerPrefix);
 			fieldName = fieldName.FirstCharToLower ();
+			// field declaration
 			GenericFieldCodeElement field = new GenericFieldCodeElement (typeof(int), fieldName);
 			field.Summary.Add ("Hash of Animator state " + info.Name);
 			classCodeElement.Fields.Add (field);
+			// field initialisation
 			AwakeMethod.Code.Add (fieldName + " = Animator.StringToHash (\"" + info.Name + "\");");
+			// IsXXX method
 			string methodName = "Is" + name;
 			MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
 			method.Origin = "state " + info.Name;
 			method.AddParameter (typeof(int), "nameHash");
-			method.Code.Add (" return nameHash == " + fieldName + ";");
+			method.Code.Add ("return nameHash == " + fieldName + ";");
 			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + info.Name + "\").");
 			classCodeElement.Methods.Add (method);
-			EventManagerInitialiser.Code.Add ("StateInfos.Add (" + info.Id + ", new StateInfo (" + info.Id + ", " + info.Layer +
-	            ", \"" + info.LayerName + "\", \"" + info.Name + "\"));");
+			// state dictionary is filled in overriden method InitialiseEventManager
+			object [] parameters = new object[] {info.Id,
+				info.Layer, 
+				info.LayerName, 
+				info.Name, 
+				info.Tag, 
+				info.Speed, 
+				info.FootIK, 
+				info.Mirror, 
+				info.Motion.Name
+			};
+			string parameterList = CodeElementUtils.GetCallParameterString (parameters);
+			EventManagerInitialiser.Code.Add (StateInfoDict + ".Add (" + info.Id + ", new StateInfo (" + parameterList + "));");
 		}
 
+		/// <summary>
+		/// Generate code to fill transition info dictionary in InitialiseEventManager.
+		/// </summary>
 		void ProcessTransitions () {
 			InternalAPIAccess.ProcessAllTransitions (animator, ProcessTransition);
 		}
 
-		void ProcessTransition (TransitionInfo t) {
-//			transitionInfos.Add (key, info);
-//			 TransitionInfo (t.uniqueNameHash, layer, layerName, 
-//			t.srcState.uniqueNameHash, t.dstState.uniqueNameHash)
-			EventManagerInitialiser.Code.Add (TransitionInfoDict + ".Add (" + t.Id + ", new TransitionInfo (" + t.Id + ", \"" + 
-				t.Name + "\", " + t.Layer + ", \"" + t.LayerName + "\", " + t.SourceId + ", " + t.DestId + "));");
-
+		void ProcessTransition (TransitionInfo info) {
+			object [] parameters = new object[] {info.Id,
+				info.Name, 
+				info.Layer, 
+				info.LayerName, 
+				info.SourceId, 
+				info.DestId, 
+				info.Atomic, 
+				info.Duration, 
+				info.Mute,
+				info.Offset,
+				info.Solo,
+			};
+			string parameterList = CodeElementUtils.GetCallParameterString (parameters);
+			EventManagerInitialiser.Code.Add (TransitionInfoDict + ".Add (" + info.Id + ", new TransitionInfo (" + parameterList + "));");
 		}
 
 		/// <summary>

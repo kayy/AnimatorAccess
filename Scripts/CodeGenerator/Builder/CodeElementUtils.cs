@@ -47,20 +47,37 @@ namespace Scio.CodeGeneration
 		}
 		
 		public static string GetFormattedValue (object obj) {
+			string s = null;
 			if (obj == null) {
-				return "null";
-			} else if (obj == typeof(bool)) {
-				return obj.ToString ().ToLower ();
-			} else if (obj == typeof(string)) {
-				string s = obj.ToString ();
-				if (s.StartsWith ("\"") && s.EndsWith ("\"")) {
-					return s;
+				s = "null";
+			} else if (obj is bool) {
+				s = obj.ToString ().ToLower ();
+			} else if (obj is string) {
+				s = obj.ToString ();
+				if (!s.StartsWith ("\"") || !s.EndsWith ("\"")) {
+					s = "\"" + s + "\"";
 				}
-				return "\"" + s + "\"";
+			} else if (obj is float) {
+				s = obj.ToString () + "f";
+			} else {
+				s = obj.ToString ();
 			}
-			return obj.ToString ();
+			return s;
 		}
 		
+		public static string GetCallParameterString (params object [] parameters) {
+			string s = "";
+			foreach (object p in parameters) {
+				string paramString = CodeElementUtils.GetFormattedValue (p);
+				if (string.IsNullOrEmpty (s)) {
+					s = paramString;
+				} else {
+					s += ", " + paramString;
+				}
+			}
+			return s;
+		}
+
 		static AccessType GetAccessType (MethodInfo method) {
 			if (method == null) {
 				return AccessType.Private;

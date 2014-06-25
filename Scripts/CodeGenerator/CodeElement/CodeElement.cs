@@ -60,6 +60,7 @@ namespace Scio.CodeGeneration
 		Parameter = 20,
 		Comment = 21,
 		Attribute = 22,
+		LineOfCode = 23,
 		NamespaceDirective = 40,
 		UsingDirective = 41,
 		File = 100,

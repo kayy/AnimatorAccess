@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 namespace Scio.CodeGeneration
 {
-	public abstract class SimpleCodeElement
+	public abstract class SimpleCodeElement : CodeElement
 	{
 		public abstract MemberTypeID MemberType { get; }
 		

@@ -67,8 +67,8 @@ namespace Scio.AnimatorAccessGenerator
 				UnityEditorInternal.StateMachine sm = controller.GetLayer (layer).stateMachine;
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
-					string stateName = state.uniqueName;
-					StateInfo info = new StateInfo (state.uniqueNameHash, layer, layerName, stateName);
+					StateInfo info = new StateInfo (state.uniqueNameHash, layer, layerName, state.uniqueName, state.tag,
+						state.speed, state.iKOnFeet, state.mirror, state.GetMotion ().name);
 					callback (info);
 				}
 			}
@@ -86,7 +86,7 @@ namespace Scio.AnimatorAccessGenerator
 					foreach (var t in transitions) {
 //						Debug.Log (state.uniqueName +  ", transition: " + t.uniqueName + " ---" + " dest = " + t.dstState + " (" + (Animator.StringToHash (state.uniqueName) == Animator.StringToHash (layerName + "." + t.dstState)) + ") " + " src = " + t.srcState);
 						TransitionInfo info = new TransitionInfo (t.uniqueNameHash, t.uniqueName, layer, layerName, 
-	                        t.srcState.uniqueNameHash, t.dstState.uniqueNameHash);
+	                        t.srcState.uniqueNameHash, t.dstState.uniqueNameHash, t.atomic, t.duration, t.mute, t.offset, t.solo);
 						callback (info);
 					}
 				}

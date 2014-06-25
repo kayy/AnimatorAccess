@@ -8,10 +8,11 @@ namespace AnimatorAccess
 {
 	/// <summary>
 	/// Handles state and transition event management for BaseAnimatorAccess. See comments there for more information.
+	/// All members are intentionally declared public to support extending BaseAccessAnimator with new handlers.
 	/// </summary>
 	public class EventManager
 	{
-		int layerCount = -1;
+		public int LayerCount = -1;
 		
 		public LayerStatus [] LayerStatuses;
 		
@@ -24,9 +25,9 @@ namespace AnimatorAccess
 		public Dictionary<int, TransitionHandler> TransitionHandlers = new Dictionary<int, TransitionHandler> ();
 
 		public void Initialise (Animator animator, BaseAnimatorAccess animatorAccess) {
-			layerCount = animator.layerCount;
-			LayerStatuses = new LayerStatus [layerCount];
-			for (int i = 0; i < layerCount; i++) {
+			LayerCount = animator.layerCount;
+			LayerStatuses = new LayerStatus [LayerCount];
+			for (int i = 0; i < LayerCount; i++) {
 				LayerStatuses [i] = new LayerStatus (i, 0, 0);
 			}
 			// callback to overriden method in generated class to initialise state and transition infos
@@ -35,8 +36,8 @@ namespace AnimatorAccess
 		
 #region State Event Handling
 		public AnyStateHandler AnyState (int layer = -1) {
-			if (layer > layerCount) {
-				Debug.LogWarning ("The specified layer " + layer + " exceeds layer count (" + layerCount + ")! Seems like the AnimatorAccess component needs to be updated.");
+			if (layer > LayerCount) {
+				Debug.LogWarning ("The specified layer " + layer + " exceeds layer count (" + LayerCount + ")! Seems like the AnimatorAccess component needs to be updated.");
 			}
 			AnyStateHandler handler = new AnyStateHandler (layer);
 			int id = handler.GetHashCode ();
@@ -67,8 +68,8 @@ namespace AnimatorAccess
 		
 #region Transition Event Handling
 		public AnyTransitionHandler AnyTransition (int layer = -1) {
-			if (layer > layerCount) {
-				Debug.LogWarning ("The specified layer " + layer + " exceeds layer count (" + layerCount + ")! Seems like the AnimatorAccess component needs to be updated.");
+			if (layer > LayerCount) {
+				Debug.LogWarning ("The specified layer " + layer + " exceeds layer count (" + LayerCount + ")! Seems like the AnimatorAccess component needs to be updated.");
 			}
 			AnyTransitionHandler handler = new AnyTransitionHandler (layer);
 			int id = handler.GetHashCode ();
@@ -135,12 +136,8 @@ namespace AnimatorAccess
 			return "";
 		}
 		
-		/// <summary>
-		/// Checks for animator state changes if there are listeners registered in OnStateChange.
-		/// </summary>
-		/// <param name="animator">Animator instance for reading states of all layers.</param>
 		public void CheckForAnimatorStateChanges (Animator animator) {
-			for (int layer = 0; layer < layerCount; layer++) {
+			for (int layer = 0; layer < LayerCount; layer++) {
 				LayerStatuses [layer].State.Current = animator.GetCurrentAnimatorStateInfo (layer).nameHash;
 				if (animator.IsInTransition (layer)) {
 					LayerStatuses [layer].Transition.Current = animator.GetAnimatorTransitionInfo (layer).nameHash;

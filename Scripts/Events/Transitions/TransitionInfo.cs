@@ -36,15 +36,49 @@ namespace AnimatorAccess
 		/// The destination state identifier.
 		/// </summary>
 		public readonly int DestId;
-		
-		public TransitionInfo (int id, string name, int layer, string layerName, int sourceId, int destId)
-		{
+		/// <summary>
+		/// Atomic flag as defined in inspector.
+		/// </summary>
+		public bool Atomic;
+		/// <summary>
+		/// Duration of the transition.
+		/// </summary>
+		public float Duration;
+		/// <summary>
+		/// Mute flag as defined in inspector.
+		/// </summary>
+		public bool Mute;
+		/// <summary>
+		/// Offset of this transition.
+		/// </summary>
+		public float Offset;
+		/// <summary>
+		/// Solo flag as defined in inspector.
+		/// </summary>
+		public bool Solo;
+
+		public TransitionInfo (int id, string name, int layer, string layerName, int sourceId, int destId) {
 			this.Id = id;
 			this.Name = name;
 			this.Layer = layer;
 			this.LayerName = layerName;
 			this.SourceId = sourceId;
 			this.DestId = destId;
+		}
+
+		public TransitionInfo (int id, string name, int layer, string layerName, int sourceId, int destId, 
+				bool atomic, float duration, bool mute, float offset, bool solo) {
+			this.Id = id;
+			this.Name = name;
+			this.Layer = layer;
+			this.LayerName = layerName;
+			this.SourceId = sourceId;
+			this.DestId = destId;
+			this.Atomic = atomic;
+			this.Duration = duration;
+			this.Mute = mute;
+			this.Offset = offset;
+			this.Solo = solo;		
 		}
 
 		public override string ToString () {

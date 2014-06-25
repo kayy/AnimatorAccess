@@ -6,7 +6,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-	[Scio.CodeGeneration.GeneratedClassAttribute ("06/24/2014 14:27:25")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/25/2014 19:47:55")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -16,58 +16,58 @@ namespace AnimatorAccess {
 	///  - Delete this member to avoid comile error CS0102 ... already contains a definition ...''. 
 	/// </summary>
 	public class ExamplePlayerAnimatorAccess : BaseAnimatorAccess
-	{
-		/// <summary>
+    {
+        /// <summary>
 		/// Hash of Animator state Base Layer.Walking
 		/// </summary>
 		public int stateIdWalking;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of Animator state Base Layer.Idle
 		/// </summary>
 		public int stateIdIdle;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of Animator state Base Layer.Yawning
 		/// </summary>
 		public int stateIdYawning;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of Animator state Base Layer.Jumping
 		/// </summary>
 		public int stateIdJumping;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of Animator state Rot.Rotate-Left
 		/// </summary>
 		public int stateIdRot_Rotate_Left;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of Animator state Rot.Rotate-Right
 		/// </summary>
 		public int stateIdRot_Rotate_Right;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of Animator state Rot.Centered
 		/// </summary>
 		public int stateIdRot_Centered;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of parameter Speed
 		/// </summary>
 		public int paramIdSpeed;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of parameter JumpTrigger
 		/// </summary>
 		public int paramIdJumpTrigger;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of parameter YawnTrigger
 		/// </summary>
 		public int paramIdYawnTrigger;
 		
-		/// <summary>
+        /// <summary>
 		/// Hash of parameter Rotate
 		/// </summary>
 		public int paramIdRotate;
@@ -91,25 +91,25 @@ namespace AnimatorAccess {
 		}
 		
 		public override void InitialiseEventManager () { 
-			StateInfos.Add (-2010423537, new StateInfo (-2010423537, 0, "Base Layer", "Base Layer.Walking"));
-			StateInfos.Add (1432961145, new StateInfo (1432961145, 0, "Base Layer", "Base Layer.Idle"));
-			StateInfos.Add (-117804301, new StateInfo (-117804301, 0, "Base Layer", "Base Layer.Yawning"));
-			StateInfos.Add (-1407378526, new StateInfo (-1407378526, 0, "Base Layer", "Base Layer.Jumping"));
-			StateInfos.Add (-1817809755, new StateInfo (-1817809755, 1, "Rot", "Rot.Rotate-Left"));
-			StateInfos.Add (1375079058, new StateInfo (1375079058, 1, "Rot", "Rot.Rotate-Right"));
-			StateInfos.Add (-1799351532, new StateInfo (-1799351532, 1, "Rot", "Rot.Centered"));
-			TransitionInfos.Add (708569559, new TransitionInfo (708569559, "Base Layer.Walking -> Base Layer.Idle", 0, "Base Layer", -2010423537, 1432961145));
-			TransitionInfos.Add (856518066, new TransitionInfo (856518066, "Base Layer.Idle -> Base Layer.Walking", 0, "Base Layer", 1432961145, -2010423537));
-			TransitionInfos.Add (1138507854, new TransitionInfo (1138507854, "Base Layer.Idle -> Base Layer.Yawning", 0, "Base Layer", 1432961145, -117804301));
-			TransitionInfos.Add (389753119, new TransitionInfo (389753119, "Base Layer.Idle -> Base Layer.Jumping", 0, "Base Layer", 1432961145, -1407378526));
-			TransitionInfos.Add (781957174, new TransitionInfo (781957174, "Base Layer.Yawning -> Base Layer.Idle", 0, "Base Layer", -117804301, 1432961145));
-			TransitionInfos.Add (1298684863, new TransitionInfo (1298684863, "Base Layer.Jumping -> Base Layer.Idle", 0, "Base Layer", -1407378526, 1432961145));
-			TransitionInfos.Add (796133751, new TransitionInfo (796133751, "Rot.Rotate-Left -> Rot.Rotate-Right", 1, "Rot", -1817809755, 1375079058));
-			TransitionInfos.Add (-1706334441, new TransitionInfo (-1706334441, "Rot.Rotate-Left -> Rot.Centered", 1, "Rot", -1817809755, -1799351532));
-			TransitionInfos.Add (-1985854260, new TransitionInfo (-1985854260, "Rot.Rotate-Right -> Rot.Rotate-Left", 1, "Rot", 1375079058, -1817809755));
-			TransitionInfos.Add (-1394703878, new TransitionInfo (-1394703878, "Rot.Rotate-Right -> Rot.Centered", 1, "Rot", 1375079058, -1799351532));
-			TransitionInfos.Add (699184725, new TransitionInfo (699184725, "Rot.Centered -> Rot.Rotate-Right", 1, "Rot", -1799351532, 1375079058));
-			TransitionInfos.Add (-825030163, new TransitionInfo (-825030163, "Rot.Centered -> Rot.Rotate-Left", 1, "Rot", -1799351532, -1817809755));
+			StateInfos.Add (-2010423537, new StateInfo (-2010423537, 0, "Base Layer", "Base Layer.Walking", "", 1f, false, false, "Walk"));
+			StateInfos.Add (1432961145, new StateInfo (1432961145, 0, "Base Layer", "Base Layer.Idle", "", 1f, false, false, "Idle"));
+			StateInfos.Add (-117804301, new StateInfo (-117804301, 0, "Base Layer", "Base Layer.Yawning", "", 1f, false, false, "Yawn"));
+			StateInfos.Add (-1407378526, new StateInfo (-1407378526, 0, "Base Layer", "Base Layer.Jumping", "", 1f, false, false, "Jump"));
+			StateInfos.Add (-1817809755, new StateInfo (-1817809755, 1, "Rot", "Rot.Rotate-Left", "", 1f, false, false, "Rotate-Left"));
+			StateInfos.Add (1375079058, new StateInfo (1375079058, 1, "Rot", "Rot.Rotate-Right", "", 1f, false, false, "Rotate-Right"));
+			StateInfos.Add (-1799351532, new StateInfo (-1799351532, 1, "Rot", "Rot.Centered", "", 1f, false, false, "Centered"));
+			TransitionInfos.Add (708569559, new TransitionInfo (708569559, "Base Layer.Walking -> Base Layer.Idle", 0, "Base Layer", -2010423537, 1432961145, true, 0.2068965f, false, 0f, false));
+			TransitionInfos.Add (856518066, new TransitionInfo (856518066, "Base Layer.Idle -> Base Layer.Walking", 0, "Base Layer", 1432961145, -2010423537, true, 0.09230769f, false, 0f, false));
+			TransitionInfos.Add (1138507854, new TransitionInfo (1138507854, "Base Layer.Idle -> Base Layer.Yawning", 0, "Base Layer", 1432961145, -117804301, true, 0.09230769f, false, 0f, false));
+			TransitionInfos.Add (389753119, new TransitionInfo (389753119, "Base Layer.Idle -> Base Layer.Jumping", 0, "Base Layer", 1432961145, -1407378526, true, 0.09230769f, false, 0f, false));
+			TransitionInfos.Add (781957174, new TransitionInfo (781957174, "Base Layer.Yawning -> Base Layer.Idle", 0, "Base Layer", -117804301, 1432961145, true, 0.1090909f, false, 0f, false));
+			TransitionInfos.Add (1298684863, new TransitionInfo (1298684863, "Base Layer.Jumping -> Base Layer.Idle", 0, "Base Layer", -1407378526, 1432961145, true, 0.3157895f, false, 0f, false));
+			TransitionInfos.Add (796133751, new TransitionInfo (796133751, "Rot.Rotate-Left -> Rot.Rotate-Right", 1, "Rot", -1817809755, 1375079058, true, 0.75f, false, 0f, false));
+			TransitionInfos.Add (-1706334441, new TransitionInfo (-1706334441, "Rot.Rotate-Left -> Rot.Centered", 1, "Rot", -1817809755, -1799351532, false, 0.4559997f, false, 0f, false));
+			TransitionInfos.Add (-1985854260, new TransitionInfo (-1985854260, "Rot.Rotate-Right -> Rot.Rotate-Left", 1, "Rot", 1375079058, -1817809755, true, 0.75f, false, 0f, false));
+			TransitionInfos.Add (-1394703878, new TransitionInfo (-1394703878, "Rot.Rotate-Right -> Rot.Centered", 1, "Rot", 1375079058, -1799351532, false, 0.2279998f, false, 0f, false));
+			TransitionInfos.Add (699184725, new TransitionInfo (699184725, "Rot.Centered -> Rot.Rotate-Right", 1, "Rot", -1799351532, 1375079058, true, 0.7415018f, false, 0.001918154f, false));
+			TransitionInfos.Add (-825030163, new TransitionInfo (-825030163, "Rot.Centered -> Rot.Rotate-Left", 1, "Rot", -1799351532, -1817809755, true, 0.25f, false, 0f, false));
 		}
 		
 		/// <summary>
@@ -216,11 +216,11 @@ namespace AnimatorAccess {
 		}
 		
 		private void FixedUpdate () { 
-			CheckForAnimatorStateChanges (animator);
+			CheckForAnimatorStateChanges ();
 		}
 		
-		
-	}
+        
+    }
 }
 
 
