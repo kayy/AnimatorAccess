@@ -170,24 +170,30 @@ and their method definitions:
 	void OnIdleEntered (StateInfo info, LayerStatus status) { ... }
 	void OnTransitionFromJumping (TransitionInfo info, LayerStatus status) { ... }
 
-Registering a listener implies an entry in dictionary and a call to its check method every frame. As there are only 
-a few lines of basic C# code executed, it should not have any perfomance penalties.
+Hint: If you feel that entering a state is too late for the action to perform, use a transition **OnStarted** event instead to _win_ the transition time.
+
+**Performance:** Registering a listener implies an entry in dictionary and a call to its check method every frame. 
+As there are only a few lines of basic C# code executed, it should not have any perfomance penalties.
 
 ### Runtime Details about States And Transitions
 
 An AnimatorAccess component provides access to a couple of information about states and transitions that is otherwise
-not available at runtime. The properties
+not available at runtime. This lets you easily **look up the name**, speed, ... for debugging purposes. The properties
 
 	public Dictionary<int, StateInfo> StateInfos;
 	public Dictionary<int, TransitionInfo> TransitionInfos;
 
-provide dictionaries with having the state / transition name hash as key: 
+provide dictionaries having the state / transition name hash as key: 
 
-- StateInfo contains clear text name, layer, layer name, tag, speed, ... 
-- TransitionInfo contains clear text name, layer, source, destination, duration,  
+- **StateInfo** contains clear text name, layer, layer name, tag, speed, ... 
+- **TransitionInfo** contains clear text name, layer, source, destination, duration,  
 
-These properties are initialised deferred at the time of the first access or when an event listener is registered. 
-Thus if you are afraid of performance drawbacks don't use them and refrain from events.
+Transition name hashes are not provided an integer member variable like for states and parameters. Either you have 
+an ID in case of an event listener and thus the TransitionInfo or you can iterate the TransitionInfos dictionary and
+search for whatever you are looking for. **Never rely on state or transition names!** Use them for debugging only.
+
+Both properties are initialised deferred at the time of the first access or when an event listener is registered. 
+Thus if you are afraid of performance drawbacks don't use them and (refrain from events).
 
 ### Renaming And Efficient Handling of Obsolete Warnings
 Although generated code should not be edited, it can be pretty useful to do so temporarily to quickly update your
