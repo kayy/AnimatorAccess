@@ -6,6 +6,9 @@ using System.Collections;
 
 namespace AnimatorAccess
 {
+	/// <summary>
+	/// NOT YET USED! 
+	/// </summary>
 	public class AnimatorAccessAttribute : Scio.CodeGeneration.GeneratedClassAttribute
 	{
 		public readonly string allTransitionsHash;

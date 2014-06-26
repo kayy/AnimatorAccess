@@ -33,37 +33,36 @@ FixedUpdate method to control animations
  -   **Speed** (float)
 
 To use **ExamplePlayerAnimatorAccess** define a member in **Player.cs** and assign a reference in Awake ():
-<pre><code>AnimatorAccess.ExamplePlayerAnimatorAccess anim;
 
-void Awake () {
-    anim = GetComponent < AnimatorAccess.ExamplePlayerAnimatorAccess > ();
-</code></pre>
+	AnimatorAccess.ExamplePlayerAnimatorAccess anim;
+	void Awake () {
+	    anim = GetComponent < AnimatorAccess.ExamplePlayerAnimatorAccess > ();
+
 Now you have convenient access to all parameters and animator states. Aside from using parameter and state hash IDs 
 directly, there are predefined methods for querying the state (prefix **Is**) and **Get** and **Set** methods to access 
 parameters in a type safe way like **IsWalking ()** **SetSpeed ()**:
-<pre><code>void FixedUpdate () {
-	currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
-	if (anim.IsWalking (currentState0)) {
-		// set speed 
-		anim.SetSpeed (speed);
-		// alternatively you can use hash IDs directly but this is more cumbersome:
-		// animator.SetFloat (anim.paramIdSpeed, speed);
-</code></pre>
 
-Another way to use it are **Events**. The following code will register an event handler which is called everytime
-an animator state has changed.
-<pre><code>void OnEnable () {
-	anim.OnStateChange += OnStateChange;
-}
-void OnDisable () {
-	anim.OnStateChange -= OnStateChange;
-}
-void OnStateChange (int layer, int newState, int previousState) {
-	if (anim.IsJumping (newState)) {
-		Debug.Log ("OnStateChange: Jump, previous state was " + anim.IdToName (previousState));
+	void FixedUpdate () {
+		currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
+		if (anim.IsWalking (currentState0)) {
+			// set speed 
+			anim.SetSpeed (speed);
+			// alternatively you can use hash IDs directly but this is more cumbersome:
+			// animator.SetFloat (anim.paramIdSpeed, speed);
+
+**Events** are another powerful way to use the generated component. The following code will register some event 
+handlers which are called whenever a state or transition meets the given criteria:
+
+	void OnEnable () {
+		anim.State (anim.stateIdIdle).OnActive += OnIdle;
+		anim.TransitionTo (anim.stateIdWalking).OnStarted += OnStartedTransitionToWalking;
 	}
-}
-</code></pre>
+	void OnIdle (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+		// Called repeatedly on each cycle as long as state 'Idle' is active
+	}
+	void OnStartedTransitionToWalking (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+		//	Called once every time a transition to state 'Walking' is starting
+	}
 
 
 ## Concept And Workflow
@@ -78,7 +77,8 @@ component to be generated and works with a **two-step** procedure to handle chan
 The basic idea is to give you the chance to refactor your code without having uncompileable code. If there are any 
 references to members that are not valid any longer, obsolete warnings guide you where you have to make changes:
  
-(_CS0168: Animator state or parameter is no longer valid and will be removed in the next code generation..._) .
+(_CS0168: Animator state or parameter is no longer valid and will be removed in the next code generation..._)
+
 
 ### Workflow Using The Custom Editor
 The generated component has a custom inspector window:
@@ -114,12 +114,84 @@ automatic refresh so push _Refresh_ after Undo.
 
 ## Using The Generated Code in MonoDevelop
 
-See the Quick Start section above or find more details in the provided _ExampleScene_ in the _Example_ folder.
+In this section we assume the example setup described in the [usage example above](#usage-example).
+The code including a working example scene can be found in the provided Example folder s. 
+[Scripts](https://github.com/kayy/AnimatorAccess/tree/master/Example/Scripts). See section [Naming Conventions](#naming-convention-and-customising) below for more about how member names are built.
 
+### Accessing Parameters
+For every Animator parameter a public integer field is generated that contains the parameter name hash. Depending on 
+the parameter type, **additional Get- and Set-methods** are generated . For example
+an integer parameter _rotate_ will produce the following 3 members in the generated class:
+
+	public int paramIdJumpTrigger;
+	public void SetRotate (int newValue) { ... }
+	public int GetRotate () { ... }
+
+In general it is not recommended to use the paramIdJumpTrigger directly. Instead call the corresponding Get and Set
+methods. This makes your code more robust because the compiler will detect type mismatches already if you for example
+try to set an integer to a boolean parameter. So in your _Player.cs_ you just write
+
+	anim.SetRotate (myValue);
+
+Note that there will be no _Get_ method for _trigger_ parameters. On the other hand a float produces 2 _Set_ methods 
+like in class Animator.
+
+### Working with States
+Like with parameters integer member fields are created for holding the name hash of each state. For checking the current state of a specific layer a bool method is generated:
+
+	public int stateIdIdle;
+	public bool IsIdle (int nameHash) { ... }
+
+At the moment (release 0.8) the name hash of the layer has to be provided as argument. Maybe a future release will 
+provide an overlodaded version without parameter doing the look up internally.
+
+### Events on States And Transitions
+All generated AnimatorAccess components provide an interface to register listener callbacks for a wide range of use 
+cases. Events occur when a specific condition is met that is related to states or transitions. 
+
+The condition is defined when a listener subscribes to a certain event by using **+=** operator as the standard **C# 
+event mechanism** is used. That means there will be no notification as long as no listener has subscribed. Compared to
+Unity's SendMessage approach this design has **advantages regarding performance** as otherwise there would have been 
+hundreds of SendMessage calls every second even if no component is interested.
+
+Some examples for registering listeners:
+
+	anim.AnyState (0).OnChange += OnStateChangeLayer0:
+		// called whenever the state changes in layer 0; Leave layer empty to observe all layers
+	anim.State (anim.stateIdIdle).OnEnter += OnIdleEntered;
+		// called once when 'Idle' state is entered
+	anim.Transition (anim.stateIdIdle, anim.stateIdWalking).OnStarted += OnIdleToWalking;
+		// called when the transition from 'Idle' to 'Walking' has started
+	anim.TransitionFrom (anim.stateIdJumping).OnActive += OnTransitionFromJumping;
+		// called every frame as long as any transition from State 'Jumping' is ongoing
+
+and their method definitions:
+
+	void OnIdleEntered (StateInfo info, LayerStatus status) { ... }
+	void OnTransitionFromJumping (TransitionInfo info, LayerStatus status) { ... }
+
+Registering a listener implies an entry in dictionary and a call to its check method every frame. As there are only 
+a few lines of basic C# code executed, it should not have any perfomance penalties.
+
+### Runtime Details about States And Transitions
+
+An AnimatorAccess component provides access to a couple of information about states and transitions that is otherwise
+not available at runtime. The properties
+
+	public Dictionary<int, StateInfo> StateInfos;
+	public Dictionary<int, TransitionInfo> TransitionInfos;
+
+provide dictionaries with having the state / transition name hash as key: 
+
+- StateInfo contains clear text name, layer, layer name, tag, speed, ... 
+- TransitionInfo contains clear text name, layer, source, destination, duration,  
+
+These properties are initialised deferred at the time of the first access or when an event listener is registered. 
+Thus if you are afraid of performance drawbacks don't use them and refrain from events.
+
+### Renaming And Efficient Handling of Obsolete Warnings
 Although generated code should not be edited, it can be pretty useful to do so temporarily to quickly update your
 other code.
-
-### Efficient Handling of Warnings
 If you rename Animator parameters, states or layers that are referenced in your own code, you will get warnings
 about using obsolete members. While single occurrences are easy to maintain, renaming of a widely used parameter
 would be painful to replace in code.
@@ -176,5 +248,6 @@ See [README-Advanced.md](./README-Advanced.md#animator-access-generator-advanced
 - Persistent Storage Location
 - SmartFormat Template
 - Moving Animator Access Menu
-- File Specific Configuration
 - Git Subtree Integration / Contributing
+- File Specific Configuration
+- Extending BaseAnimatorAccess

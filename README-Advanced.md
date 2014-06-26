@@ -32,12 +32,12 @@ Configuration is done via the Settings window.
 1. **Parameter Hash Prefix:** Optional prefix for int fields representing a parameter.  
    Example:  
    'paramHash' will generate the field 'float paramHashSpeed' for parameter 'Speed'.
-1. **Generate State Dictionary:** Create an Animator state dictionary that can be queried by StateIdToName (int id).
 1. **Debug Mode:** Extended logging to console view.
 
 ## Persistent Storage Location
 All settings are saved in directory at:
-<pre><code>Application.persistentDataPath + "/AnimatorAccessConfig.txt"</pre></code>
+
+	Application.persistentDataPath + "/AnimatorAccessConfig.txt":
 See the [Unity documentation](http://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html)
 or use Debug.Log to find the OS specific place.
 
@@ -55,10 +55,13 @@ _InstallationDir_/Editor/Templates/DefaultTemplate-UNIX.txt
 _InstallationDir_/Editor/Templates/DefaultTemplate-Win.txt
 
 ## Moving Animator Access Menu
+
 If you want to move the menu for Animator Access from top menu to a different location:
 
-Edit the constant **RootMenu** in file **Editor/MenuLocation.cs**. Note that you have to repeat this step after 
-every update of Animator Access.
+Edit the constant **RootMenu** in file **Editor/MenuLocation.cs**.
+
+Note that you have to **repeat this step after every update of Animator Access**.
+
 
 ## Git Subtree Integration / Contributing
 If you are using Git in your project, a _git subtree_ for AnimatorAccess might be the easiest way to integrate it.
@@ -83,29 +86,59 @@ This is currently not supported via GUI but can be done easily in code. The resp
 designed as partial class so that it can be extended in a separate file. In order to register your own 
 **SpecialConfig** create a new file ConfigFactoryExt.cs and implement **ConfigFactory**'s static constructor. 
 
-<pre><code>
-namespace Scio.AnimatorAccessGenerator
-{
-	public partial class ConfigFactory {
-		static ConfigFactory () {
-			ConfigFactory myFactory = new ConfigFactory ();
-			instance = myFactory;
-			myFactory.defaultConfig = new Config ();
-			Config specialConfig = new SpecialConfig ();
-			specialConfig.AnimatorStatePrefix = "MyAnim";
-			myFactory.configs ["ExamplePlayerAnimatorAccess"] = specialConfig;
-		}
-	}
-	// Provide an implementation of your **SpecialConfig** class. Bear in mind that the default class makes all
-	// changes persistent.
-	public class SpecialConfig : Config {
-		public override string AnimatorStatePrefix {
-			get {
-				return "MyAnim";
+	namespace Scio.AnimatorAccessGenerator
+	{
+		public partial class ConfigFactory {
+			static ConfigFactory () {
+				ConfigFactory myFactory = new ConfigFactory ();
+				instance = myFactory;
+				myFactory.defaultConfig = new Config ();
+				Config specialConfig = new SpecialConfig ();
+				specialConfig.AnimatorStatePrefix = "MyAnim";
+				myFactory.configs ["ExamplePlayerAnimatorAccess"] = specialConfig;
 			}
-			// provide an empty setter to avoid that "MyAnim" is written back to the default config.
-			set {}
+		}
+		// Provide an implementation of your **SpecialConfig** class. Bear in mind that the default class makes all
+		// changes persistent.
+		public class SpecialConfig : Config {
+			public override string AnimatorStatePrefix {
+				get {
+					return "MyAnim";
+				}
+				// provide an empty setter to avoid that "MyAnim" is written back to the default config.
+				set {}
+			}
 		}
 	}
-}
-</pre></code>
+
+
+## Extending BaseAnimatorAccess
+
+BaseAnimatorAccess extensions can be done the same way like _ConfigFactory_. The class is declared as _partial_ and 
+thus can be extended by own interface methods. Further on you need to create a handler that is called:
+
+	namespace AnimatorAccess
+	{
+		public partial class BaseAnimatorAccess
+		{
+			public AnyStateOn2LayersHandler AnyStateOn2Layers (int layer1, int layer2)
+			{
+				AnyStateOn2LayersHandler handler = new AnyStateOn2LayersHandler (layer1, layer2);
+				int id = handler.GetHashCode ();
+				if (!StateHandlers.ContainsKey (id)) {
+					StateHandlers [id] = handler;
+				}
+				return (AnyStateHandler)StateHandlers [id];
+			}
+		}
+	
+		public class AnyStateOn2LayersHandler : AbstractStateHandler
+		{
+			public AnyStateOn2LayersHandler ((int layer1, int layer2) {}
+		
+			public override void Perform (LayerStatus[] statuses, Dictionary<int, StateInfo> stateInfos) {}
+		}
+	}
+
+	
+	
