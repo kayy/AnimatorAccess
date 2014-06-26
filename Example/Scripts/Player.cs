@@ -8,7 +8,7 @@ namespace AnimatorAccessExample
 	/// <summary>
 	/// AnimatorAccess based example for player controller.
 	/// </summary>
-	public class PlayerWithoutEvents : MonoBehaviour
+	public class Player : MonoBehaviour
 	{
 		public enum Direction
 		{
@@ -19,25 +19,24 @@ namespace AnimatorAccessExample
 		Direction walkingDirection = Direction.Facing;
 		
 		AnimatorAccess.ExamplePlayerAnimatorAccess anim;
-
+		
 		Animator animator;
 		int currentState0;
-		int previousState0;
-
+		
 		/// <summary>
 		/// Probability for start yawning in idle state. Yawning blocks input.
 		/// </summary>
 		public float YawnThreshold = 0.995f;
-
+		
 		/// <summary>
 		/// In idle state change look direction after interval has elapsed.
 		/// </summary>
 		public float randomRotationInterval = 3f;
 		float randomRotationTimestamp = 0f;
-
+		
 		public float maxSpeed = 5f;
 		public float speed;
-
+		
 		/// <summary>
 		/// The horizontal input from cursor left and right which is taken in Update (). Transformed to speed in 
 		/// FixedUpdate.
@@ -45,29 +44,44 @@ namespace AnimatorAccessExample
 		float horizontalInput;
 		
 		bool jumpKeyPressed = false;
-
+		
+		public bool logTransitions = true;
+		public bool logStates = true;
+		
 		void Awake () {
 			animator = GetComponent<Animator> ();
 			anim = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
 			anim.SetRotate ((int)Direction.Facing);
 		}
-
+		
+		void OnEnable () {
+			anim.AnyState ().OnChange += OnAnyStateChange;
+			//			anim.Stat
+			anim.State (anim.stateIdYawning).OnEnter += OnYawning;
+			anim.AnyTransition ().OnStarted += OnAnyTransitionStarted;
+			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumpingStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStay += OnIdleToJumpingStay;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished += OnIdleToJumpingFinished;
+		}
+		void OnDisable () {
+			anim.AnyState ().OnChange -= OnAnyStateChange;
+			anim.State (anim.stateIdYawning).OnEnter -= OnYawning;
+			anim.AnyTransition ().OnStarted -= OnAnyTransitionStarted;
+			anim.TransitionFrom (anim.stateIdIdle).OnStarted -= OnIdleToAnyState;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted -= OnIdleToJumpingStarted;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStay -= OnIdleToJumpingStay;
+			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished -= OnIdleToJumpingFinished;
+		}
+		
 		void Update () {
 			horizontalInput = Input.GetAxis ("Horizontal");
 			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
 		}
-
+		
 		void FixedUpdate () {
-			previousState0 = currentState0;
 			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
 			if (anim.IsYawning (currentState0)) {
-				// input is suppressed on yawning
-				speed = 0f;
-				if (currentState0 != previousState0) {
-					Log.Temp ("YAWN");
-					audio.Play ();
-					// just entered yawning state
-				}
 				return;
 			} else if (anim.IsIdle (currentState0)) {
 				float random = Random.value;
@@ -104,6 +118,38 @@ namespace AnimatorAccessExample
 			// animator.SetFloat (anim.paramIdSpeed, Mathf.Abs (speed));
 		}
 		
+		// state callbacks
+		void OnAnyStateChange (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			LogStateChange ("OnAnyStateChange", info, status.State.Previous);
+		}
+		
+		void OnYawning (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			// input is suppressed on yawning
+			speed = 0f;
+			LogStateChange ("OnEnterYawning", info, status.State.Previous);
+		}
+
+		// transition callbacks
+		int noOfCallsToOnIdleToJumpingStay = 0;
+		void OnIdleToJumpingStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			noOfCallsToOnIdleToJumpingStay = 0;
+			LogTransition ("OnIdleToJumpingStarted", info);
+		}
+		void OnIdleToJumpingStay (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			noOfCallsToOnIdleToJumpingStay++;
+		}
+		void OnIdleToJumpingFinished (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			Debug.Log ("                     " + noOfCallsToOnIdleToJumpingStay + " calls to OnIdleToJumpingStay");
+			LogTransition ("OnIdleToJumpingFinished", info);
+		}
+		
+		void OnIdleToAnyState (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			LogTransition ("OnIdleToAnyState", info);
+		}
+		void OnAnyTransitionStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			LogTransition ("OnAnyTransitionStarted", info);
+		}
+		
 		void OnTriggerstay (Collider other) {
 			PushBack ();
 		}
@@ -111,7 +157,7 @@ namespace AnimatorAccessExample
 		void OnTriggerEnter (Collider other) {
 			PushBack ();
 		}
-
+		
 		/// <summary>
 		/// Avoid that player is walking outside camera focus
 		/// </summary>
@@ -122,7 +168,17 @@ namespace AnimatorAccessExample
 		Direction ToDirection (float newSpeed) {
 			return newSpeed > 0 ? Direction.Right : newSpeed < 0f ? Direction.Left : Direction.Facing;
 		}
-
+		
+		void LogStateChange (string method, AnimatorAccess.StateInfo info, int previous) {
+			if (logStates) {
+				UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.Name, method, anim.GetStateName (previous)));
+			}
+		}
+		void LogTransition (string method, AnimatorAccess.TransitionInfo info) {
+			if (logTransitions) {
+				UnityEngine.Debug.Log (string.Format ("[t={0:0.00}]     ----> {1:-25} callback: {2}", Time.realtimeSinceStartup, info.Name, method));
+			}
+		}
 	}
-
+	
 }
