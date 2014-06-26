@@ -27,6 +27,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using Scio.CodeGeneration;
+using AnimatorAccess;
 
 
 namespace Scio.AnimatorAccessGenerator
@@ -60,6 +61,7 @@ namespace Scio.AnimatorAccessGenerator
 		/// </summary>
 		ReflectionCodeElementsBuilder existingClassBuilder;
 		ClassCodeElement existingClass = null;
+		int existingAllTransitionsHash = 0;
 
 		/// <summary>
 		/// The generating template engine to finally generate the code.
@@ -104,15 +106,16 @@ namespace Scio.AnimatorAccessGenerator
 		/// <param name="go">GameObject to generate an AnimatorAccess class for.</param>
 		public ClassElementsBuilder (GameObject go)
 		{
-			AnimatorAccess.BaseAnimatorAccess animatorAccess = go.GetComponent<AnimatorAccess.BaseAnimatorAccess> ();
+			BaseAnimatorAccess animatorAccess = go.GetComponent<BaseAnimatorAccess> ();
 			if (animatorAccess != null) {
 				existingClassBuilder = new ReflectionCodeElementsBuilder (animatorAccess);
 				className = existingClassBuilder.ClassName;
 				config = ConfigFactory.Get (className);
 				templateEngine = new SmartFormatTemplateEngine ();
 				builder = new AnimatorCodeElementsBuilder (go, className, config);
+				existingAllTransitionsHash = animatorAccess.AllTransitionsHash;
 			} else {
-				Logger.Error ("Cannot access component AnimatorAccess.BaseAnimatorAccess from object " + go.name);
+				Logger.Error ("Cannot access component BaseAnimatorAccess from object " + go.name);
 			}
 		}
 
@@ -129,6 +132,11 @@ namespace Scio.AnimatorAccessGenerator
 					// only Get, Set and Is methods of the existing class are analysed by reflection so remove all 
 					// other methods that are provided by default
 					comparisonResult.RemoveAll ((element) => element.Member == "Awake" || element.Member == "InitialiseEventManager");
+					if (builder.allTransitionsHash != existingAllTransitionsHash) {
+						comparisonResult.Add (new ClassMemberCompareElement (ClassMemberCompareElement.Result.New, 
+							"", "Transition definition changes", "", "Transition changes", ""));
+					}
+
 					string message = "";
 					comparisonResult.ForEach ((s) => message += s + "\n");
 					Logger.Debug ("Comparison between new and existing class reveals " + comparisonResult.Count + " changes: " + message);

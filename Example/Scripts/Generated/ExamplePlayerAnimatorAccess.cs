@@ -6,7 +6,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/25/2014 19:47:55")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/26/2014 15:25:48")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -74,6 +74,10 @@ namespace AnimatorAccess {
 		
 		
 		
+		public override int AllTransitionsHash { 
+			get{ return 859155473; }
+		}
+		
 		
 		public void Awake () { 
 			animator = GetComponent<Animator> ();
@@ -99,11 +103,13 @@ namespace AnimatorAccess {
 			StateInfos.Add (1375079058, new StateInfo (1375079058, 1, "Rot", "Rot.Rotate-Right", "", 1f, false, false, "Rotate-Right"));
 			StateInfos.Add (-1799351532, new StateInfo (-1799351532, 1, "Rot", "Rot.Centered", "", 1f, false, false, "Centered"));
 			TransitionInfos.Add (708569559, new TransitionInfo (708569559, "Base Layer.Walking -> Base Layer.Idle", 0, "Base Layer", -2010423537, 1432961145, true, 0.2068965f, false, 0f, false));
+			TransitionInfos.Add (-2057610033, new TransitionInfo (-2057610033, "Base Layer.Walking -> Base Layer.Jumping", 0, "Base Layer", -2010423537, -1407378526, true, 0.2068965f, false, 0f, false));
 			TransitionInfos.Add (856518066, new TransitionInfo (856518066, "Base Layer.Idle -> Base Layer.Walking", 0, "Base Layer", 1432961145, -2010423537, true, 0.09230769f, false, 0f, false));
 			TransitionInfos.Add (1138507854, new TransitionInfo (1138507854, "Base Layer.Idle -> Base Layer.Yawning", 0, "Base Layer", 1432961145, -117804301, true, 0.09230769f, false, 0f, false));
 			TransitionInfos.Add (389753119, new TransitionInfo (389753119, "Base Layer.Idle -> Base Layer.Jumping", 0, "Base Layer", 1432961145, -1407378526, true, 0.09230769f, false, 0f, false));
 			TransitionInfos.Add (781957174, new TransitionInfo (781957174, "Base Layer.Yawning -> Base Layer.Idle", 0, "Base Layer", -117804301, 1432961145, true, 0.1090909f, false, 0f, false));
 			TransitionInfos.Add (1298684863, new TransitionInfo (1298684863, "Base Layer.Jumping -> Base Layer.Idle", 0, "Base Layer", -1407378526, 1432961145, true, 0.3157895f, false, 0f, false));
+			TransitionInfos.Add (-1019719959, new TransitionInfo (-1019719959, "Base Layer.Jumping -> Base Layer.Walking", 0, "Base Layer", -1407378526, -2010423537, true, 0.3157895f, false, 0f, false));
 			TransitionInfos.Add (796133751, new TransitionInfo (796133751, "Rot.Rotate-Left -> Rot.Rotate-Right", 1, "Rot", -1817809755, 1375079058, true, 0.75f, false, 0f, false));
 			TransitionInfos.Add (-1706334441, new TransitionInfo (-1706334441, "Rot.Rotate-Left -> Rot.Centered", 1, "Rot", -1817809755, -1799351532, false, 0.4559997f, false, 0f, false));
 			TransitionInfos.Add (-1985854260, new TransitionInfo (-1985854260, "Rot.Rotate-Right -> Rot.Rotate-Left", 1, "Rot", 1375079058, -1817809755, true, 0.75f, false, 0f, false));

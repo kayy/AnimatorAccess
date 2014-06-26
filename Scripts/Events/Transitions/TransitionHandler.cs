@@ -63,7 +63,7 @@ namespace AnimatorAccess
 				if (transitionInfos.ContainsKey (transitionId)) {
 					info = transitionInfos [transitionId];
 				} else {
-					Debug.LogWarning ("No transition info found for transition [" + transitionId + "]!");
+					Debug.LogWarning ("No transition info found for transition [" + transitionId + "]! Seems like the AnimatorAccess component needs to be updated.");
 				}
 			}
 			return info;

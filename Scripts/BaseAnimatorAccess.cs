@@ -104,6 +104,8 @@ namespace AnimatorAccess {
 		/// <value>The layer statuses.</value>
 		public LayerStatus [] LayerStatuses { get { return EventManager.LayerStatuses; } }
 
+		public virtual int AllTransitionsHash { get { return 0;} }
+
 		/// <summary>
 		/// Occurs once for every change of an animator state. If there are more than one changes at a time in different
 		/// layers, the listeners are called once for every single change.
@@ -132,12 +134,21 @@ namespace AnimatorAccess {
 		}
 		
 		/// <summary>
-		/// Observe all transitions from the specified i.e. starting there.
+		/// Observe all transitions from the specified i.e. starting from the given state.
 		/// </summary>
 		/// <returns>Handler reference to subscribe to transition events.</returns>
 		/// <param name="source">Starting point of transition.</param>
 		public FromStateTransitionHandler TransitionFrom (int source) {
 			return EventManager.TransitionFrom (source);
+		}
+		
+		/// <summary>
+		/// Observe all transitions to the specified i.e. ending at the given state.
+		/// </summary>
+		/// <returns>Handler reference to subscribe to transition events.</returns>
+		/// <param name="source">Destination of transition.</param>
+		public ToStateTransitionHandler TransitionTo (int destination) {
+			return EventManager.TransitionTo (destination);
 		}
 		
 		/// <summary>

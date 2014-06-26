@@ -51,7 +51,7 @@ namespace AnimatorAccess
 			if (stateInfos.ContainsKey (stateId)) {
 				info = stateInfos [stateId];
 			} else {
-				Debug.LogWarning ("No state info found for state [" + stateId + "]!");
+				Debug.LogWarning ("No state info found for state [" + stateId + "]! Seems like the AnimatorAccess component needs to be updated.");
 			}
 			return info;
 		}

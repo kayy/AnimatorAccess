@@ -64,6 +64,10 @@ namespace Scio.CodeGeneration
 		NamespaceDirective = 40,
 		UsingDirective = 41,
 		File = 100,
+		// some generic IDs for code lines etc.
+		Items = 200, 
+		Entry = 201, 
+		Definition = 202, 
 	}
 	
 }

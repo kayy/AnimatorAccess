@@ -88,7 +88,7 @@ namespace AnimatorAccess
 				}
 			}
 			if (info != null) {
-				FromStateTransitionHandler handler = new FromStateTransitionHandler (info.Layer, info.Id);
+				FromStateTransitionHandler handler = new FromStateTransitionHandler (info.Layer, info.SourceId);
 				int id = handler.GetHashCode ();
 				if (!TransitionHandlers.ContainsKey (id)) {
 					TransitionHandlers [id] = handler;
@@ -100,6 +100,27 @@ namespace AnimatorAccess
 			}
 		}
 
+		public ToStateTransitionHandler TransitionTo (int destination) {
+			TransitionInfo info = null;
+			foreach (TransitionInfo ti in TransitionInfos.Values) {
+				if (ti.DestId == destination) {
+					info = ti;
+					break;
+				}
+			}
+			if (info != null) {
+				ToStateTransitionHandler handler = new ToStateTransitionHandler (info.Layer, info.DestId);
+				int id = handler.GetHashCode ();
+				if (!TransitionHandlers.ContainsKey (id)) {
+					TransitionHandlers [id] = handler;
+				}
+				return (ToStateTransitionHandler)TransitionHandlers [id];
+			} else {
+				Debug.LogWarning ("There seem to be no transitions to state [" + destination + "]. Maybe you need to update the corresonding AnimatorAccess component.");
+				return null;
+			}
+		}
+		
 		public SpecificTransitionHandler Transition (int source, int dest) {
 			TransitionInfo info = null;
 			foreach (TransitionInfo ti in TransitionInfos.Values) {

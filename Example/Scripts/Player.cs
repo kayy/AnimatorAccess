@@ -22,6 +22,7 @@ namespace AnimatorAccessExample
 		
 		Animator animator;
 		int currentState0;
+		int previousState0;
 		
 		/// <summary>
 		/// Probability for start yawning in idle state. Yawning blocks input.
@@ -43,113 +44,71 @@ namespace AnimatorAccessExample
 		/// </summary>
 		float horizontalInput;
 		
-		bool jumpKeyPressed = false;
-		
-		public bool logTransitions = true;
-		public bool logStates = true;
-		
 		void Awake () {
 			animator = GetComponent<Animator> ();
 			anim = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
 			anim.SetRotate ((int)Direction.Facing);
 		}
-		
+
 		void OnEnable () {
-			anim.AnyState ().OnChange += OnAnyStateChange;
-			//			anim.Stat
-			anim.State (anim.stateIdYawning).OnEnter += OnYawning;
-			anim.AnyTransition ().OnStarted += OnAnyTransitionStarted;
-			anim.TransitionFrom (anim.stateIdIdle).OnStarted += OnIdleToAnyState;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted += OnIdleToJumpingStarted;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStay += OnIdleToJumpingStay;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished += OnIdleToJumpingFinished;
+			anim.TransitionTo (anim.stateIdWalking).OnStarted += OnStartedTransitionToWalking;
+			anim.State (anim.stateIdIdle).OnActive += OnIdle;
+			anim.State (anim.stateIdYawning).OnEnter += OnEnterYawning;
 		}
+
 		void OnDisable () {
-			anim.AnyState ().OnChange -= OnAnyStateChange;
-			anim.State (anim.stateIdYawning).OnEnter -= OnYawning;
-			anim.AnyTransition ().OnStarted -= OnAnyTransitionStarted;
-			anim.TransitionFrom (anim.stateIdIdle).OnStarted -= OnIdleToAnyState;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStarted -= OnIdleToJumpingStarted;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnStay -= OnIdleToJumpingStay;
-			anim.Transition (anim.stateIdIdle, anim.stateIdJumping).OnFinished -= OnIdleToJumpingFinished;
+			anim.State (anim.stateIdYawning).OnEnter -= OnEnterYawning;
+			anim.State (anim.stateIdIdle).OnActive -= OnIdle;
+			anim.TransitionTo (anim.stateIdWalking).OnStarted -= OnStartedTransitionToWalking;
+		}
+
+		void OnEnterYawning (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			speed = 0f;
+			audio.Play ();
+		}
+
+		void OnIdle (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			float random = Random.value;
+			if (random > YawnThreshold) {
+				// start yawning from time to time which will block input
+				anim.SetYawnTrigger ();
+			}
+			if (Time.realtimeSinceStartup - randomRotationTimestamp > randomRotationInterval) {
+				// rotate after randomRotationInterval to random direction
+				int currrentRotation = anim.GetRotate ();
+				int newRotation = currrentRotation == 0 ? (int)Mathf.Sign ((int)Random.Range (-1, 1)) : 0;
+				anim.SetRotate (newRotation);
+				randomRotationTimestamp = Time.realtimeSinceStartup;
+			}
+		}
+		
+		void OnStartedTransitionToWalking (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+			walkingDirection = ToDirection (speed);
+			anim.SetRotate ((int)walkingDirection);
+			randomRotationTimestamp = Time.realtimeSinceStartup;
+//			LogTransition ("OnStartedTransitionToWalking", info);
 		}
 		
 		void Update () {
 			horizontalInput = Input.GetAxis ("Horizontal");
-			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
+			if (Input.GetKeyDown (KeyCode.UpArrow)) {
+				anim.SetJumpTrigger ();
+			}
 		}
 		
 		void FixedUpdate () {
 			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
-			if (anim.IsYawning (currentState0)) {
-				return;
-			} else if (anim.IsIdle (currentState0)) {
-				float random = Random.value;
-				if (random > YawnThreshold) {
-					// start yawning from time to time which will block input
-					anim.SetYawnTrigger ();
-				}
-				if (Time.realtimeSinceStartup - randomRotationTimestamp > randomRotationInterval) {
-					// rotate after randomRotationInterval to random direction
-					int currrentRotation = anim.GetRotate ();
-					int newRotation = currrentRotation == 0 ? (int)Mathf.Sign ((int)Random.Range (-1, 1)) : 0;
-					anim.SetRotate (newRotation);
-					randomRotationTimestamp = Time.realtimeSinceStartup;
-				}
-			} else if (anim.IsJumping (currentState0)) {
-				// wait until the jump has finished
-				return;
+			// input is blocked while yawning
+			if (!anim.IsYawning (currentState0)) {
+				speed = horizontalInput * maxSpeed;
+				// if speed != 0, walking animation is triggered
+				anim.SetSpeed (Mathf.Abs (speed));
+				// alternative (not recommended) way of accessing hash IDs directly:
+				// animator.SetFloat (anim.paramIdSpeed, Mathf.Abs (speed));
+				rigidbody.MovePosition (transform.position + speed * Vector3.right * Time.deltaTime);
 			}
-			if (jumpKeyPressed) {
-				anim.SetJumpTrigger ();
-			}
-			speed = horizontalInput * maxSpeed;
-			Direction newWalkingDirection = ToDirection (speed);
-			if (walkingDirection != Direction.Facing) {
-				// only turn the player after walking
-				anim.SetRotate ((int)newWalkingDirection);
-				randomRotationTimestamp = Time.realtimeSinceStartup;
-			}
-			walkingDirection = newWalkingDirection;
-			rigidbody.MovePosition (transform.position + speed * Vector3.right * Time.deltaTime);
-			// if speed != 0, walking animation is triggered
-			anim.SetSpeed (Mathf.Abs (speed));
-			// alternative (not recommended) way of accessing hash IDs directly:
-			// animator.SetFloat (anim.paramIdSpeed, Mathf.Abs (speed));
-		}
-		
-		// state callbacks
-		void OnAnyStateChange (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
-			LogStateChange ("OnAnyStateChange", info, status.State.Previous);
-		}
-		
-		void OnYawning (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
-			// input is suppressed on yawning
-			speed = 0f;
-			LogStateChange ("OnEnterYawning", info, status.State.Previous);
 		}
 
-		// transition callbacks
-		int noOfCallsToOnIdleToJumpingStay = 0;
-		void OnIdleToJumpingStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
-			noOfCallsToOnIdleToJumpingStay = 0;
-			LogTransition ("OnIdleToJumpingStarted", info);
-		}
-		void OnIdleToJumpingStay (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
-			noOfCallsToOnIdleToJumpingStay++;
-		}
-		void OnIdleToJumpingFinished (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
-			Debug.Log ("                     " + noOfCallsToOnIdleToJumpingStay + " calls to OnIdleToJumpingStay");
-			LogTransition ("OnIdleToJumpingFinished", info);
-		}
-		
-		void OnIdleToAnyState (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
-			LogTransition ("OnIdleToAnyState", info);
-		}
-		void OnAnyTransitionStarted (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
-			LogTransition ("OnAnyTransitionStarted", info);
-		}
-		
 		void OnTriggerstay (Collider other) {
 			PushBack ();
 		}
@@ -168,17 +127,18 @@ namespace AnimatorAccessExample
 		Direction ToDirection (float newSpeed) {
 			return newSpeed > 0 ? Direction.Right : newSpeed < 0f ? Direction.Left : Direction.Facing;
 		}
-		
-		void LogStateChange (string method, AnimatorAccess.StateInfo info, int previous) {
-			if (logStates) {
-				UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.Name, method, anim.GetStateName (previous)));
-			}
+
+#region Debug Utils
+		void OnAnyStateChangeDebug (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			LogStateChange ("OnAnyStateChange", info, status);
+		}
+		void LogStateChange (string method, AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}] == '{1:-25}' callback: {2}, previous state was {3}", Time.realtimeSinceStartup, info.Name, method, anim.GetStateName (status.State.Previous)));
 		}
 		void LogTransition (string method, AnimatorAccess.TransitionInfo info) {
-			if (logTransitions) {
-				UnityEngine.Debug.Log (string.Format ("[t={0:0.00}]     ----> {1:-25} callback: {2}", Time.realtimeSinceStartup, info.Name, method));
-			}
+			UnityEngine.Debug.Log (string.Format ("[t={0:0.00}]     ----> {1:-25} callback: {2}", Time.realtimeSinceStartup, info.Name, method));
 		}
+#endregion
 	}
 	
 }

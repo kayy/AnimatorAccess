@@ -39,26 +39,29 @@ namespace Scio.CodeGeneration
 			Remove = 2,
 			Obsolete = 3,
 		}
-		public Result result { get; set; }
+		public Result result;
 	
-		public MemberTypeID memberType { get { return element.MemberType; } }
+		public virtual string memberType { get; private set; }
 	
-		public string Member { get { return element.Name; } }
+		public virtual string Member { get; private set; }
 		
-		public string ElementType { get { return element.ElementType; } }
+		public virtual string ElementType { get; private set; }
 		
-		public string Signature { get { return element.GetSignature (); } }
+		public virtual string Signature { get; private set; }
 
-		public MemberCodeElement element { get; private set; }
+		public string Message;
 
-		public string Message { get; set; }
-
-		public ClassMemberCompareElement (MemberCodeElement element, Result result) {
-			this.element = element;
+		protected ClassMemberCompareElement (Result result) {
 			this.result = result;
 		}
 
-		public ClassMemberCompareElement (MemberCodeElement element, string message) : this (element, Result.Error) {
+		public ClassMemberCompareElement (Result result, string memberType, string Member, string ElementType, string Signature, 
+		        string message) : this (Result.Error) {
+			this.result = result;
+			this.memberType = memberType;
+			this.Member = Member;
+			this.ElementType = ElementType;
+			this.Signature = Signature;
 			this.Message = message;
 		}
 
@@ -67,6 +70,26 @@ namespace Scio.CodeGeneration
 			return string.Format ("[{0} {1}: {2}]", result, memberType, Member);
 		}
 		
+	}
+
+	public class CodeElementBasedCompareElement : ClassMemberCompareElement
+	{
+		public override string memberType { get { return UnderlyingElement.MemberType.ToString (); } }
+		
+		public override string Member { get { return UnderlyingElement.Name; } }
+		
+		public override string ElementType { get { return UnderlyingElement.ElementType; } }
+		
+		public override string Signature { get { return UnderlyingElement.GetSignature (); } }
+		
+		public readonly MemberCodeElement UnderlyingElement;
+		
+		public CodeElementBasedCompareElement (MemberCodeElement element, Result result) : base (result){
+			UnderlyingElement = element;
+		}
+		public CodeElementBasedCompareElement (MemberCodeElement element, string message) : this (element, Result.Error){
+			this.Message = message;
+		}
 	}
 	
 }

@@ -44,8 +44,6 @@ namespace AnimatorAccessExample
 		/// </summary>
 		float horizontalInput;
 		
-		bool jumpKeyPressed = false;
-
 		void Awake () {
 			animator = GetComponent<Animator> ();
 			anim = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
@@ -54,7 +52,9 @@ namespace AnimatorAccessExample
 
 		void Update () {
 			horizontalInput = Input.GetAxis ("Horizontal");
-			jumpKeyPressed = Input.GetKeyDown (KeyCode.UpArrow);
+			if (Input.GetKeyDown (KeyCode.UpArrow)) {
+				anim.SetJumpTrigger ();
+			}
 		}
 
 		void FixedUpdate () {
@@ -64,9 +64,9 @@ namespace AnimatorAccessExample
 				// input is suppressed on yawning
 				speed = 0f;
 				if (currentState0 != previousState0) {
-					Log.Temp ("YAWN");
+					// just entered yawning state, play sound
+					Debug.Log ("Yawning state entered");
 					audio.Play ();
-					// just entered yawning state
 				}
 				return;
 			} else if (anim.IsIdle (currentState0)) {
@@ -82,21 +82,11 @@ namespace AnimatorAccessExample
 					anim.SetRotate (newRotation);
 					randomRotationTimestamp = Time.realtimeSinceStartup;
 				}
-			} else if (anim.IsJumping (currentState0)) {
-				// wait until the jump has finished
-				return;
-			}
-			if (jumpKeyPressed) {
-				anim.SetJumpTrigger ();
 			}
 			speed = horizontalInput * maxSpeed;
-			Direction newWalkingDirection = ToDirection (speed);
-			if (walkingDirection != Direction.Facing) {
-				// only turn the player after walking
-				anim.SetRotate ((int)newWalkingDirection);
-				randomRotationTimestamp = Time.realtimeSinceStartup;
-			}
-			walkingDirection = newWalkingDirection;
+			walkingDirection = ToDirection (speed);
+			anim.SetRotate ((int)walkingDirection);
+			randomRotationTimestamp = Time.realtimeSinceStartup;
 			rigidbody.MovePosition (transform.position + speed * Vector3.right * Time.deltaTime);
 			// if speed != 0, walking animation is triggered
 			anim.SetSpeed (Mathf.Abs (speed));

@@ -53,6 +53,10 @@ namespace Scio.AnimatorAccessGenerator
 
 		ICodeBlock EventManagerInitialiser;
 
+		Dictionary<int, TransitionInfo> TransitionInfos = new Dictionary<int, TransitionInfo> ();
+
+		public int allTransitionsHash = 0;
+
 		public AnimatorCodeElementsBuilder (GameObject go, string className, Config c)
 		{
 			this.targetClassName = className;
@@ -201,9 +205,19 @@ namespace Scio.AnimatorAccessGenerator
 		/// </summary>
 		void ProcessTransitions () {
 			InternalAPIAccess.ProcessAllTransitions (animator, ProcessTransition);
+			string allIds = "";
+			foreach (int id in TransitionInfos.Keys) {
+				allIds += ":" + id;
+			}
+			allTransitionsHash = allIds.GetHashCode ();
+			PropertyCodeElement<int> p = new PropertyCodeElement<int> ("AllTransitionsHash");
+			p.overrideModifier = OverrideType.Override;
+			p.Getter.CodeLines.Add ("return " + allTransitionsHash + ";");
+			classCodeElement.Properties.Add (p);
 		}
 
 		void ProcessTransition (TransitionInfo info) {
+			TransitionInfos.Add (info.Id, info);
 			object [] parameters = new object[] {info.Id,
 				info.Name, 
 				info.Layer, 

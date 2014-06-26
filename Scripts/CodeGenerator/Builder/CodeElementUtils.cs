@@ -122,9 +122,10 @@ namespace Scio.CodeGeneration
 			newClass.Properties.ForEach ((GenericPropertyCodeElement element) => allNew.Add (element));
 			newClass.Methods.ForEach ((GenericMethodCodeElement element) => allNew.Add (element));
 			l.ForEach ((ClassMemberCompareElement element) => {
-				if (element.result == ClassMemberCompareElement.Result.Obsolete) {
-					element.element.Obsolete = true;
-					allNew.Add (element.element);
+				if (element.result == ClassMemberCompareElement.Result.Obsolete && element is CodeElementBasedCompareElement) {
+					MemberCodeElement underlyingElement = ((CodeElementBasedCompareElement)element).UnderlyingElement;
+					underlyingElement.Obsolete = true;
+					allNew.Add (underlyingElement);
 				}
 			});
 			int nextToLast = allNew.Count - 2;
@@ -142,7 +143,7 @@ namespace Scio.CodeGeneration
 					} else {
 						message += " Avoid using the same name for an Animator state and a parameter.";
 					}
-					l.Add (new ClassMemberCompareElement (element, message));
+					l.Add (new CodeElementBasedCompareElement (element, message));
 					Logger.Debug (message);
 				}
 			}
@@ -155,14 +156,14 @@ namespace Scio.CodeGeneration
 			List<ClassMemberCompareElement> result = new List<ClassMemberCompareElement> ();
 			IEnumerable<T> newMinusOldList = newMembers.Except (oldMembers);
 			foreach (T newElement in newMinusOldList) {
-				result.Add (new ClassMemberCompareElement (newElement, ClassMemberCompareElement.Result.New));
+				result.Add (new CodeElementBasedCompareElement (newElement, ClassMemberCompareElement.Result.New));
 			}
 			IEnumerable<T> oldMinusNewList = oldMembers.Except (newMembers);
 			foreach (T oldElement in oldMinusNewList) {
 				if (!removeOldMembers && (keepObsolete || !oldElement.Obsolete)) {
-					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Obsolete));
+					result.Add (new CodeElementBasedCompareElement (oldElement, ClassMemberCompareElement.Result.Obsolete));
 				} else {
-					result.Add (new ClassMemberCompareElement (oldElement, ClassMemberCompareElement.Result.Remove));
+					result.Add (new CodeElementBasedCompareElement (oldElement, ClassMemberCompareElement.Result.Remove));
 				}
 			}
 			return result;
