@@ -4,6 +4,8 @@ Code generator utility for Unity game engine. Creates a class to conveniently ac
 states and parameters. The goal is to facilitate access to Animator states and parameters. Further on encapsulting 
 access through dedicated methods makes it possible to detect potential problems and inconsistencies already at compile time. 
 
+[See also the quick overview at YouTube](http://youtu.be/hElatZAms3E)
+
 ## Quick Start
 ### Installation:
 -  Unity 4.3 is needed
