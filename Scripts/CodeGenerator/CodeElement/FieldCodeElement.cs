@@ -47,6 +47,8 @@ namespace Scio.CodeGeneration
 					} else {
 						return "static";
 					}
+				} else if (ReadOnly) {
+					return "readonly";
 				}
 				return "";
 			}

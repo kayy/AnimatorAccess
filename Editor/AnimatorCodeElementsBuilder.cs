@@ -49,7 +49,7 @@ namespace Scio.AnimatorAccessGenerator
 		/// The initialiser code i.e. Awake method. Future releases might contain an option to generate a plain class 
 		/// version.
 		/// </summary>
-		ICodeBlock AwakeMethod;
+		protected ICodeBlock AwakeMethod;
 
 		ICodeBlock EventManagerInitialiser;
 
@@ -172,11 +172,10 @@ namespace Scio.AnimatorAccessGenerator
 			string fieldName = CodeGenerationUtils.GenerateStateName (config.AnimatorStateHashPrefix, info.Name, layerPrefix);
 			fieldName = fieldName.FirstCharToLower ();
 			// field declaration
-			GenericFieldCodeElement field = new GenericFieldCodeElement (typeof(int), fieldName);
+			GenericFieldCodeElement field = new GenericFieldCodeElement (typeof(int), fieldName, "" + info.Id);
+			field.ReadOnly = true;
 			field.Summary.Add ("Hash of Animator state " + info.Name);
 			classCodeElement.Fields.Add (field);
-			// field initialisation
-			AwakeMethod.Code.Add (fieldName + " = Animator.StringToHash (\"" + info.Name + "\");");
 			// IsXXX method
 			string methodName = "Is" + name;
 			MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
@@ -256,7 +255,8 @@ namespace Scio.AnimatorAccessGenerator
 			fieldName = fieldName.FirstCharToLower ();
 			VoidMethodCodeElement setterMethod = new VoidMethodCodeElement (setterName);
 			GenericMethodCodeElement getterMethod = null;
-			GenericFieldCodeElement field = new FieldCodeElement<int> (fieldName, "");
+			GenericFieldCodeElement field = new FieldCodeElement<int> (fieldName, "" + Animator.StringToHash (item));
+			field.ReadOnly = true;
 			if (t == AnimatorParameterType.Bool) {
 				getterMethod = new MethodCodeElement<bool> (getterName);
 				getterMethod.Summary.Add ("Access to boolean parameter " + item + ", default is: " + defaultValue + ".");
@@ -304,7 +304,6 @@ namespace Scio.AnimatorAccessGenerator
 				classCodeElement.Methods.Add (getterMethod);
 			}
 			field.Summary.Add ("Hash of parameter " + item);
-			AwakeMethod.Code.Add (fieldName + " = Animator.StringToHash (\"" + item + "\");");
 			classCodeElement.Fields.Add (field);
 		}
 

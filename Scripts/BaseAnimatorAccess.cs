@@ -77,6 +77,10 @@ namespace AnimatorAccess {
 			get {
 				if (_internalEventManager == null) {
 					_internalEventManager = new EventManager ();
+					if (animator == null) {
+						// might be called before Awake
+						animator = GetComponent<Animator> ();
+					}
 					EventManager.Initialise (animator, this);
 				}
 				return _internalEventManager;

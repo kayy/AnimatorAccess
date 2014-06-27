@@ -6,7 +6,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/26/2014 15:25:48")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/27/2014 10:32:33")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -20,57 +20,57 @@ namespace AnimatorAccess {
         /// <summary>
 		/// Hash of Animator state Base Layer.Walking
 		/// </summary>
-		public int stateIdWalking;
+		public readonly int stateIdWalking = -2010423537;
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Idle
 		/// </summary>
-		public int stateIdIdle;
+		public readonly int stateIdIdle = 1432961145;
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Yawning
 		/// </summary>
-		public int stateIdYawning;
+		public readonly int stateIdYawning = -117804301;
 		
         /// <summary>
 		/// Hash of Animator state Base Layer.Jumping
 		/// </summary>
-		public int stateIdJumping;
+		public readonly int stateIdJumping = -1407378526;
 		
         /// <summary>
 		/// Hash of Animator state Rot.Rotate-Left
 		/// </summary>
-		public int stateIdRot_Rotate_Left;
+		public readonly int stateIdRot_Rotate_Left = -1817809755;
 		
         /// <summary>
 		/// Hash of Animator state Rot.Rotate-Right
 		/// </summary>
-		public int stateIdRot_Rotate_Right;
+		public readonly int stateIdRot_Rotate_Right = 1375079058;
 		
         /// <summary>
 		/// Hash of Animator state Rot.Centered
 		/// </summary>
-		public int stateIdRot_Centered;
+		public readonly int stateIdRot_Centered = -1799351532;
 		
         /// <summary>
 		/// Hash of parameter Speed
 		/// </summary>
-		public int paramIdSpeed;
+		public readonly int paramIdSpeed = -823668238;
 		
         /// <summary>
 		/// Hash of parameter JumpTrigger
 		/// </summary>
-		public int paramIdJumpTrigger;
+		public readonly int paramIdJumpTrigger = 113680519;
 		
         /// <summary>
 		/// Hash of parameter YawnTrigger
 		/// </summary>
-		public int paramIdYawnTrigger;
+		public readonly int paramIdYawnTrigger = 1330169897;
 		
         /// <summary>
 		/// Hash of parameter Rotate
 		/// </summary>
-		public int paramIdRotate;
+		public readonly int paramIdRotate = 807753530;
 		
 		
 		
@@ -81,17 +81,6 @@ namespace AnimatorAccess {
 		
 		public void Awake () { 
 			animator = GetComponent<Animator> ();
-			stateIdWalking = Animator.StringToHash ("Base Layer.Walking");
-			stateIdIdle = Animator.StringToHash ("Base Layer.Idle");
-			stateIdYawning = Animator.StringToHash ("Base Layer.Yawning");
-			stateIdJumping = Animator.StringToHash ("Base Layer.Jumping");
-			stateIdRot_Rotate_Left = Animator.StringToHash ("Rot.Rotate-Left");
-			stateIdRot_Rotate_Right = Animator.StringToHash ("Rot.Rotate-Right");
-			stateIdRot_Centered = Animator.StringToHash ("Rot.Centered");
-			paramIdSpeed = Animator.StringToHash ("Speed");
-			paramIdJumpTrigger = Animator.StringToHash ("JumpTrigger");
-			paramIdYawnTrigger = Animator.StringToHash ("YawnTrigger");
-			paramIdRotate = Animator.StringToHash ("Rotate");
 		}
 		
 		public override void InitialiseEventManager () { 

@@ -47,6 +47,9 @@ namespace AnimatorAccessExample
 		void Awake () {
 			animator = GetComponent<Animator> ();
 			anim = GetComponent<AnimatorAccess.ExamplePlayerAnimatorAccess> ();
+		}
+
+		void Start () {
 			anim.SetRotate ((int)Direction.Facing);
 		}
 
