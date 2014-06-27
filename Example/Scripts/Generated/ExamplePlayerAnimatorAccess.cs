@@ -6,7 +6,7 @@ using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/27/2014 10:32:33")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("06/27/2014 11:47:44")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -108,49 +108,98 @@ namespace AnimatorAccess {
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Walking").
+		/// true if the current Animator state of layer 0 is  "Base Layer.Walking".
+		/// </summary>
+		public bool IsWalking () { 
+			return stateIdWalking == animator.GetCurrentAnimatorStateInfo (0).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Base Layer.Walking").
 		/// </summary>
 		public bool IsWalking (int nameHash) { 
 			return nameHash == stateIdWalking;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Idle").
+		/// true if the current Animator state of layer 0 is  "Base Layer.Idle".
+		/// </summary>
+		public bool IsIdle () { 
+			return stateIdIdle == animator.GetCurrentAnimatorStateInfo (0).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Base Layer.Idle").
 		/// </summary>
 		public bool IsIdle (int nameHash) { 
 			return nameHash == stateIdIdle;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Yawning").
+		/// true if the current Animator state of layer 0 is  "Base Layer.Yawning".
+		/// </summary>
+		public bool IsYawning () { 
+			return stateIdYawning == animator.GetCurrentAnimatorStateInfo (0).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Base Layer.Yawning").
 		/// </summary>
 		public bool IsYawning (int nameHash) { 
 			return nameHash == stateIdYawning;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Base Layer.Jumping").
+		/// true if the current Animator state of layer 0 is  "Base Layer.Jumping".
+		/// </summary>
+		public bool IsJumping () { 
+			return stateIdJumping == animator.GetCurrentAnimatorStateInfo (0).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Base Layer.Jumping").
 		/// </summary>
 		public bool IsJumping (int nameHash) { 
 			return nameHash == stateIdJumping;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Rot.Rotate-Left").
+		/// true if the current Animator state of layer 1 is  "Rot.Rotate-Left".
+		/// </summary>
+		public bool IsRot_Rotate_Left () { 
+			return stateIdRot_Rotate_Left == animator.GetCurrentAnimatorStateInfo (1).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Rot.Rotate-Left").
 		/// </summary>
 		public bool IsRot_Rotate_Left (int nameHash) { 
 			return nameHash == stateIdRot_Rotate_Left;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Rot.Rotate-Right").
+		/// true if the current Animator state of layer 1 is  "Rot.Rotate-Right".
+		/// </summary>
+		public bool IsRot_Rotate_Right () { 
+			return stateIdRot_Rotate_Right == animator.GetCurrentAnimatorStateInfo (1).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Rot.Rotate-Right").
 		/// </summary>
 		public bool IsRot_Rotate_Right (int nameHash) { 
 			return nameHash == stateIdRot_Rotate_Right;
 		}
 		
 		/// <summary>
-		/// true if nameHash equals Animator.StringToHash ("Rot.Centered").
+		/// true if the current Animator state of layer 1 is  "Rot.Centered".
+		/// </summary>
+		public bool IsRot_Centered () { 
+			return stateIdRot_Centered == animator.GetCurrentAnimatorStateInfo (1).nameHash;
+		}
+		
+		/// <summary>
+		/// true if the given (state) nameHash equals Animator.StringToHash ("Rot.Centered").
 		/// </summary>
 		public bool IsRot_Centered (int nameHash) { 
 			return nameHash == stateIdRot_Centered;

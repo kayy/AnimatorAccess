@@ -20,7 +20,7 @@ namespace AnimatorAccessExample
 		
 		AnimatorAccess.ExamplePlayerAnimatorAccess anim;
 		
-		Animator animator;
+		protected Animator animator;
 		int currentState0;
 		int previousState0;
 		
@@ -100,9 +100,8 @@ namespace AnimatorAccessExample
 		}
 		
 		void FixedUpdate () {
-			currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
 			// input is blocked while yawning
-			if (!anim.IsYawning (currentState0)) {
+			if (!anim.IsYawning ()) {
 				speed = horizontalInput * maxSpeed;
 				// if speed != 0, walking animation is triggered
 				anim.SetSpeed (Mathf.Abs (speed));

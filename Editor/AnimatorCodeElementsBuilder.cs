@@ -176,14 +176,20 @@ namespace Scio.AnimatorAccessGenerator
 			field.ReadOnly = true;
 			field.Summary.Add ("Hash of Animator state " + info.Name);
 			classCodeElement.Fields.Add (field);
-			// IsXXX method
 			string methodName = "Is" + name;
+			// IsXXX method ()
 			MethodCodeElement<bool> method = new MethodCodeElement<bool> (methodName);
 			method.Origin = "state " + info.Name;
-			method.AddParameter (typeof(int), "nameHash");
-			method.Code.Add ("return nameHash == " + fieldName + ";");
-			method.Summary.Add ("true if nameHash equals Animator.StringToHash (\"" + info.Name + "\").");
+			method.Code.Add ("return " + fieldName + " == animator.GetCurrentAnimatorStateInfo (" + info.Layer + ").nameHash" + ";");
+			method.Summary.Add ("true if the current Animator state of layer " + info.Layer + " is  \"" + info.Name + "\".");
 			classCodeElement.Methods.Add (method);
+			// overloaded IsXXX (int nameHash)
+			MethodCodeElement<bool> methodWithLayerParameter = new MethodCodeElement<bool> (methodName);
+			methodWithLayerParameter.Origin = "state " + info.Name;
+			methodWithLayerParameter.AddParameter (typeof(int), "nameHash");
+			methodWithLayerParameter.Code.Add ("return nameHash == " + fieldName + ";");
+			methodWithLayerParameter.Summary.Add ("true if the given (state) nameHash equals Animator.StringToHash (\"" + info.Name + "\").");
+			classCodeElement.Methods.Add (methodWithLayerParameter);
 			// state dictionary is filled in overriden method InitialiseEventManager
 			object [] parameters = new object[] {info.Id,
 				info.Layer, 
