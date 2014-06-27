@@ -43,8 +43,7 @@ directly, there are predefined methods for querying the state (prefix **Is**) an
 parameters in a type safe way like **IsWalking ()** **SetSpeed ()**:
 
 	void FixedUpdate () {
-		currentState0 = animator.GetCurrentAnimatorStateInfo (0).nameHash;
-		if (anim.IsWalking (currentState0)) {
+		if (anim.IsWalking ()) {
 			// set speed 
 			anim.SetSpeed (speed);
 			// alternatively you can use hash IDs directly but this is more cumbersome:
@@ -137,13 +136,16 @@ Note that there will be no _Get_ method for _trigger_ parameters. On the other h
 like in class Animator.
 
 ### Working with States
-Like with parameters integer member fields are created for holding the name hash of each state. For checking the current state of a specific layer a bool method is generated:
+Like with parameters integer member fields are created for holding the name hash of each state. For checking the 
+current state of a specific layer two bool methods are generated:
 
 	public int stateIdIdle;
+	public bool IsIdle () { ... }
 	public bool IsIdle (int nameHash) { ... }
 
-At the moment (release 0.8) the name hash of the layer has to be provided as argument. Maybe a future release will 
-provide an overlodaded version without parameter doing the look up internally.
+The parameterless version automatically looks up the current state as the correct layer is baked in during generation. 
+The overlodaded version expects a state name hash from _animator.GetCurrentAnimatorStateInfo (layerOfState).nameHash_ 
+and is useful when you do a bunch of checks and don't want .
 
 ### Events on States And Transitions
 All generated AnimatorAccess components provide an interface to register listener callbacks for a wide range of use 
