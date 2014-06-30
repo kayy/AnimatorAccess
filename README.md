@@ -4,7 +4,8 @@ Code generator utility for Unity game engine. Creates a class to conveniently ac
 states and parameters. The goal is to facilitate access to Animator states and parameters. Further on encapsulting 
 access through dedicated methods makes it possible to detect potential problems and inconsistencies already at compile time. 
 
-[See also the quick overview at YouTube](http://youtu.be/hElatZAms3E)
+[See also the quick overview at YouTube](http://youtu.be/hElatZAms3E), [walkthrough video](http://youtu.be/u8-iBkFMBIg) and
+[blog](http://www.scio.de/en/blog-a-news/scio-development-blog-en/entry/animator-access-generator-for-unity).
 
 ## Quick Start
 ### Installation:
