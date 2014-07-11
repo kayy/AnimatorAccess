@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("07/11/2014 15:00:38")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("07/11/2014 15:16:18")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
@@ -83,13 +83,13 @@ namespace AnimatorAccess {
 		}
 		
 		public override void InitialiseEventManager () { 
-			StateInfos.Add (-2010423537, new StateInfo (-2010423537, 0, "Base Layer", "Base Layer.Walking", "", 1f, false, false, "Walk"));
-			StateInfos.Add (1432961145, new StateInfo (1432961145, 0, "Base Layer", "Base Layer.Idle", "", 1f, false, false, "Idle"));
-			StateInfos.Add (-117804301, new StateInfo (-117804301, 0, "Base Layer", "Base Layer.Yawning", "", 1f, false, false, "Yawn"));
-			StateInfos.Add (-1407378526, new StateInfo (-1407378526, 0, "Base Layer", "Base Layer.Jumping", "", 1f, false, false, "Jump"));
-			StateInfos.Add (-1817809755, new StateInfo (-1817809755, 1, "Rot", "Rot.Rotate-Left", "", 1f, false, false, "Rotate-Left"));
-			StateInfos.Add (1375079058, new StateInfo (1375079058, 1, "Rot", "Rot.Rotate-Right", "", 1f, false, false, "Rotate-Right"));
-			StateInfos.Add (-1799351532, new StateInfo (-1799351532, 1, "Rot", "Rot.Centered", "", 1f, false, false, "Centered"));
+			StateInfos.Add (-2010423537, new StateInfo (-2010423537, 0, "Base Layer", "Base Layer.Walking", "", 1f, false, false, "Walk", 1.208333f));
+			StateInfos.Add (1432961145, new StateInfo (1432961145, 0, "Base Layer", "Base Layer.Idle", "", 1f, false, false, "Idle", 2.708333f));
+			StateInfos.Add (-117804301, new StateInfo (-117804301, 0, "Base Layer", "Base Layer.Yawning", "", 1f, false, false, "Yawn", 2.291667f));
+			StateInfos.Add (-1407378526, new StateInfo (-1407378526, 0, "Base Layer", "Base Layer.Jumping", "", 1f, false, false, "Jump", 0.7916667f));
+			StateInfos.Add (-1817809755, new StateInfo (-1817809755, 1, "Rot", "Rot.Rotate-Left", "", 1f, false, false, "Rotate-Left", 0.1666667f));
+			StateInfos.Add (1375079058, new StateInfo (1375079058, 1, "Rot", "Rot.Rotate-Right", "", 1f, false, false, "Rotate-Right", 0.1666667f));
+			StateInfos.Add (-1799351532, new StateInfo (-1799351532, 1, "Rot", "Rot.Centered", "", 1f, false, false, "Centered", 0.1666667f));
 			TransitionInfos.Add (708569559, new TransitionInfo (708569559, "Base Layer.Walking -> Base Layer.Idle", 0, "Base Layer", -2010423537, 1432961145, true, 0.2068965f, false, 0f, false));
 			TransitionInfos.Add (-2057610033, new TransitionInfo (-2057610033, "Base Layer.Walking -> Base Layer.Jumping", 0, "Base Layer", -2010423537, -1407378526, true, 0.2068965f, false, 0f, false));
 			TransitionInfos.Add (856518066, new TransitionInfo (856518066, "Base Layer.Idle -> Base Layer.Walking", 0, "Base Layer", 1432961145, -2010423537, true, 0.09230769f, false, 0f, false));

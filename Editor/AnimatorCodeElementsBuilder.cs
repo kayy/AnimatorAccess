@@ -199,7 +199,8 @@ namespace Scio.AnimatorAccessGenerator
 				info.Speed, 
 				info.FootIK, 
 				info.Mirror, 
-				info.Motion.Name
+				info.Motion.Name,
+				info.Motion.Duration
 			};
 			string parameterList = CodeElementUtils.GetCallParameterString (parameters);
 			EventManagerInitialiser.Code.Add (StateInfoDict + ".Add (" + info.Id + ", new StateInfo (" + parameterList + "));");

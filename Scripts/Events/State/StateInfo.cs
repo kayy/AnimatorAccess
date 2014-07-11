@@ -50,7 +50,7 @@ namespace AnimatorAccess
 		public readonly bool Mirror;
 
 		public StateInfo (int id, int layer, string layerName, string name, string tag, float speed, bool footIK, 
-				bool mirror, string motionName) {
+				bool mirror, string motionName, float duration = 0f) {
 			this.Id = id;
 			this.Layer = layer;
 			this.LayerName = layerName;
@@ -59,7 +59,7 @@ namespace AnimatorAccess
 			this.Speed = speed;
 			this.FootIK = footIK;
 			this.Mirror = mirror;
-			this.Motion = new StateMotionInfo (motionName);
+			this.Motion = new StateMotionInfo (motionName, duration);
 		}
 		
 		public override string ToString () {
@@ -76,8 +76,14 @@ namespace AnimatorAccess
 		/// The name of the motion behind the state.
 		/// </summary>
 		public readonly string Name;
-		public StateMotionInfo (string name) {
+		/// <summary>
+		/// The average duration of this motion.
+		/// </summary>
+		public readonly float Duration;
+
+		public StateMotionInfo (string name, float duration) {
 			this.Name = name;
+			this.Duration = duration;
 		}
 	}
 }
