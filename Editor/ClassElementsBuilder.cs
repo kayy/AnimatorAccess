@@ -229,7 +229,6 @@ namespace Scio.AnimatorAccessGenerator
 			}
 			FileCodeElement fileElement = new FileCodeElement (newClass);
 			fileElement.Usings.Add (new UsingCodeElement ("UnityEngine"));
-			fileElement.Usings.Add (new UsingCodeElement ("System.Collections"));
 			CodeGeneratorResult result = templateEngine.GenerateCode (fileElement);
 			if (result.Success) {
 				code = templateEngine.Code;

@@ -2,11 +2,10 @@
 // Version for Mac / UNIX 
 
 using UnityEngine;
-using System.Collections;
 
 
 namespace AnimatorAccess {
-    [Scio.CodeGeneration.GeneratedClassAttribute ("06/27/2014 11:47:44")]
+    [Scio.CodeGeneration.GeneratedClassAttribute ("07/11/2014 15:00:38")]
 	/// <summary>
 	/// Convenience class to access Animator states and parameters.
 	/// Edits will be lost when this class is regenerated. 
