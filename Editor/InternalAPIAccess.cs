@@ -67,8 +67,9 @@ namespace Scio.AnimatorAccessGenerator
 				UnityEditorInternal.StateMachine sm = controller.GetLayer (layer).stateMachine;
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
-					float duration = state.GetMotion ().averageDuration;
-					string motionName = (state.GetMotion () != null ? state.GetMotion ().name : "");
+					Motion motion = state.GetMotion ();
+					float duration = (motion != null ? motion.averageDuration : 0f);
+					string motionName = (motion != null ? motion.name : "");
 					StateInfo info = new StateInfo (state.uniqueNameHash, layer, layerName, state.uniqueName, state.tag,
 						state.speed, state.iKOnFeet, state.mirror, motionName, duration);
 					callback (info);
