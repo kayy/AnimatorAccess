@@ -74,9 +74,9 @@ namespace AnimatorAccess
 			AnyTransitionHandler handler = new AnyTransitionHandler (layer);
 			int id = handler.GetHashCode ();
 			if (!TransitionHandlers.ContainsKey (id)) {
-				TransitionHandlers [0] = handler;
+				TransitionHandlers [id] = handler;
 			}
-			return (AnyTransitionHandler)TransitionHandlers [0];
+			return (AnyTransitionHandler)TransitionHandlers [id];
 		}
 
 		public FromStateTransitionHandler TransitionFrom (int source) {

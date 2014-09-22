@@ -57,14 +57,32 @@ namespace AnimatorAccessExample
 			anim.TransitionTo (anim.stateIdWalking).OnStarted += OnStartedTransitionToWalking;
 			anim.State (anim.stateIdIdle).OnActive += OnIdle;
 			anim.State (anim.stateIdYawning).OnEnter += OnEnterYawning;
+			anim.AnyTransition ().OnStarted += OnAnyTransition;
+			anim.AnyTransition (0).OnStarted += OnAnyLayer0Transition;
+			anim.AnyTransition (0).OnStarted += OnAnyLayer0TransitionSecondAction;
 		}
 
 		void OnDisable () {
 			anim.State (anim.stateIdYawning).OnEnter -= OnEnterYawning;
 			anim.State (anim.stateIdIdle).OnActive -= OnIdle;
 			anim.TransitionTo (anim.stateIdWalking).OnStarted -= OnStartedTransitionToWalking;
+			anim.AnyTransition ().OnStarted -= OnAnyTransition;
+			anim.AnyTransition (0).OnStarted -= OnAnyLayer0Transition;
+			anim.AnyTransition (0).OnStarted -= OnAnyLayer0TransitionSecondAction;
 		}
 
+		void OnAnyTransition (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+//			LogTransition ("OnAnyTransition - " + status.Layer, info);
+		}
+		
+		void OnAnyLayer0Transition (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+//			LogTransition ("OnAnyLayer0Transition - " + status.Layer, info);
+		}
+		
+		void OnAnyLayer0TransitionSecondAction (AnimatorAccess.TransitionInfo info, AnimatorAccess.LayerStatus status) {
+//			LogTransition ("OnAnyLayer0TransitionSecondAction - " + status.Layer, info);
+		}
+		
 		void OnEnterYawning (AnimatorAccess.StateInfo info, AnimatorAccess.LayerStatus status) {
 			speed = 0f;
 			audio.Play ();

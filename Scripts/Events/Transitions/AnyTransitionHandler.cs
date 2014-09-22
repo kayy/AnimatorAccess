@@ -34,6 +34,10 @@ namespace AnimatorAccess
 			this.layer = layer;
 		}
 		
+		public override string GetKeyString () {
+			return base.GetKeyString () + ":" + layer;
+		}
+
 		public override void Perform (LayerStatus[] statuses, Dictionary<int, TransitionInfo> transitionInfos) {
 			if (layer == -1) {
 				foreach (LayerStatus status in statuses) {
