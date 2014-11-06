@@ -83,15 +83,15 @@ namespace Scio.AnimatorAccessGenerator
 			for (int layer = 0; layer < layerCount; layer++) {
 				string layerName = controller.GetLayer (layer).name;
 				UnityEditorInternal.StateMachine sm = controller.GetLayer (layer).stateMachine;
-                //Handle anyState cases. see UnityEditorInternal.StateMachine.transitions
-                {
-                    Transition[] anyTransitions = sm.GetTransitionsFromState(null);
-                    foreach (var t in anyTransitions) {
-                        TransitionInfo info = new TransitionInfo (t.uniqueNameHash, t.uniqueName, layer, layerName, 
-                            0, t.dstState.uniqueNameHash, t.atomic, t.duration, t.mute, t.offset, t.solo);
-                        callback (info);
-                    }
-                }
+                		//Handle anyState cases. see UnityEditorInternal.StateMachine.transitions
+				{
+					Transition[] anyTransitions = sm.GetTransitionsFromState(null);
+					foreach (var t in anyTransitions) {
+						TransitionInfo info = new TransitionInfo (t.uniqueNameHash, t.uniqueName, layer, layerName, 
+							0, t.dstState.uniqueNameHash, t.atomic, t.duration, t.mute, t.offset, t.solo);
+						callback (info);
+					}
+				}
 				for (int i = 0; i < sm.stateCount; i++) {
 					UnityEditorInternal.State state = sm.GetState (i);
 					Transition[] transitions = sm.GetTransitionsFromState(state);
