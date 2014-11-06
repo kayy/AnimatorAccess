@@ -41,7 +41,7 @@ namespace AnimatorAccess
 		void CheckLayerStatus (LayerStatus status, Dictionary<int, StateInfo> stateInfos) {
 			if (status.State.HasChanged) {
 				StateInfo info = GetStateInfo (status.State.Current, stateInfos);
-                if (status != null && OnChange != null) {
+				if (status != null && OnChange != null) {
 					OnChange (info, status);
 				}
 			}
