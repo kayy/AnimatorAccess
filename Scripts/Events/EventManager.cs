@@ -167,14 +167,33 @@ namespace AnimatorAccess
 				}
 			}
 			if (StateHandlers != null && StateHandlers.Count > 0) {
-				foreach (StateHandler handler in StateHandlers.Values) {
-					handler.Perform (LayerStatuses, StateInfos);
-				}
+                var enumerator = StateHandlers.GetEnumerator();
+                try {
+                    while (enumerator.MoveNext()) {
+
+                        var pair = enumerator.Current;
+                        var handler = pair.Value;
+                        handler.Perform (LayerStatuses, StateInfos);
+                    }
+                }
+                finally {
+                    enumerator.Dispose();
+                }
+
 			}
 			if (TransitionHandlers != null && TransitionHandlers.Count > 0) {
-				foreach (TransitionHandler handler in TransitionHandlers.Values) {
-					handler.Perform (LayerStatuses, TransitionInfos);
-				}
+                var enumerator = TransitionHandlers.GetEnumerator();
+                try {
+                    while (enumerator.MoveNext()) {
+
+                        var pair = enumerator.Current;
+                        var handler = pair.Value;
+                        handler.Perform (LayerStatuses, TransitionInfos);
+                    }
+                }
+                finally {
+                    enumerator.Dispose();
+                }
 			}
 		}
 	}
