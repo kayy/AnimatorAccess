@@ -3,6 +3,7 @@
 //
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 namespace AnimatorAccess {
@@ -18,7 +19,7 @@ namespace AnimatorAccess {
 		/// Stores the current value of T in field previous whenever set is called. This is done even if the new value
 		/// equals to current.
 		/// </summary>
-		public class HistorisedProperty <T> where T : System.IComparable
+        public class HistorisedProperty <T> where T : System.IComparable<T>
 		{
 			T previous = default (T);
 			/// <summary>
@@ -43,7 +44,10 @@ namespace AnimatorAccess {
 			/// true if Current != Previous
 			/// </summary>
 			/// <value><c>true</c> if this instance has changed; otherwise, <c>false</c>.</value>
-			public bool HasChanged { get { return !current.Equals (previous); } }
+			public bool HasChanged { get { 
+                    return 0 != current.CompareTo (previous); 
+                    //return !current.Equals (previous); 
+                } }
 		}
 	
 		/// <summary>
